@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'eaststandart/eaststandart.github.io'
+          token: ${{ secrets.MY_ADMIN_TOKEN }}
           path: '_actions_core'
 
       # 3. Настраиваем окружение Python
