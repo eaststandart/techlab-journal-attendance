@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Python Scripts From Main Site
         uses: actions/checkout@v4
         with:
-          repository: 'ТВОЙ_ЛОГИН_GITHUB/ТВОЙ_ЛОГИН_GITHUB.github.io'
+          repository: 'eaststandart/eaststandart.github.io'
           path: '_actions_core'
 
       # 3. Настраиваем окружение Python
