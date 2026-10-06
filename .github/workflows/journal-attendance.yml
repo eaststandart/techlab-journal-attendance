@@ -45,7 +45,7 @@ jobs:
       # 6. Запускаем Главный Диспетчер конвейера
       - name: Run Main Dispatcher
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_ADMIN_TOKEN }}
           MY_ADMIN_TOKEN: ${{ secrets.MY_ADMIN_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: python journalattendance.py
