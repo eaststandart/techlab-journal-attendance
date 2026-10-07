@@ -125,7 +125,7 @@ def run_notifier():
     }
     
     payload = {
-        "event_type": "journal_submission"
+        "event_type": "journal-notify"
     }
 
     try:
