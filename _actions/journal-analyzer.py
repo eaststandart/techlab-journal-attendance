@@ -4,6 +4,7 @@
 @module journal-analyzer.py
 @about Изолированный модуль проверки комплектности журналов
 @purpose Группировка файлов по датам и дням недели, сверка с YAML-расписанием
+@author TechLab
 @version 4.0.0
 """
 
