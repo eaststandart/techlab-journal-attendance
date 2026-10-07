@@ -19,7 +19,7 @@ import subprocess
 CHECK_MODE = "CONTENTS"
 
 def run_control_pipeline():
-    print("\n=== [МОДУЛЬ JOURNAL_NOTIFY] ЗАПУСК УПРАВЛЯЮЩЕГО ДИСПЕТЧЕРА ===")
+    print("\n=== [МОДУЛЬ JOURNAL-NOTIFY] ЗАПУСК УПРАВЛЯЮЩЕГО ДИСПЕТЧЕРА ===")
     
     output_dir = os.path.join(os.getcwd(), '_output')
     if not os.path.exists(output_dir):
@@ -110,7 +110,7 @@ def run_control_pipeline():
 
     while True:
         check_counter += 1
-        print(f"\n[ДИСПЕТЧЕР] Круг проверки №{check_counter} (Прошло времени: {int(time.time() - start_time)} сек.)")
+        print(f"\n[ДИСПЕТЧЕР] Проверка №{check_counter} (Прошло времени: {int(time.time() - start_time)} сек.)")
 
         # РЕЖИМ КОНТРОЛЯ ПО СОДЕРЖИМОМУ ДИРЕКТОРИИ
         if CHECK_MODE == "CONTENTS":
@@ -126,7 +126,7 @@ def run_control_pipeline():
                     else:
                         print(f"[ДИСПЕТЧЕР] Директория содержит файлы ({len(live_files)} шт.): {live_files}")
                 elif check_res.status_code == 404:
-                    print("[ДИСПЕТЧЕР] Код ответа 404. Директория вывода удалена (очищена).")
+                    print("[ДИСПЕТЧЕР] Код ответа 404. Директория вывода очищена.")
                     break
             except Exception as check_err:
                 print(f"[ДИСПЕТЧЕР] Ошибка запроса к API директории: {str(check_err)}")
@@ -139,7 +139,7 @@ def run_control_pipeline():
                 if commits_res.status_code == 200:
                     last_commit = commits_res.json()[0]
                     commit_message = last_commit.get("commit", {}).get("message", "")
-                    print(f"[ДИСПЕТЧЕР] Текст последнего коммита в истории: '{commit_message}'")
+                    print(f"[ДИСПЕТЧЕР] Текст последнего коммита: '{commit_message}'")
                     
                     if "cleanup" in commit_message.lower() or "удаление" in commit_message.lower():
                         print("[ДИСПЕТЧЕР] Обнаружен коммит очистки репозитория.")
