@@ -133,7 +133,7 @@ def run_control_pipeline():
 
         # РЕЗЕРВНЫЙ РЕЖИМ КОНТРОЛЯ ПО ТЕКСТУ КОММИТОВ ИСТОРИИ ИЗМЕНЕНИЙ
         elif CHECK_MODE == "COMMIT":
-            commits_url = "https://github.com"
+            commits_url = "https://api.github.com/repos/eaststandart/techlab-journal-attendance/commits"
             try:
                 commits_res = requests.get(commits_url, headers=headers_check)
                 if commits_res.status_code == 200:
