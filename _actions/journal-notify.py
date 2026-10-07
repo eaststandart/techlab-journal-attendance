@@ -164,7 +164,7 @@ def run_notifier():
     print("[ШЛЮЗ] Отправляем ровно 1 точечный POST импульс dispatches на основной сайт...")
     
     # Служебный адрес API роботов для dispatches основного сайта (://github.com)
-    site_api_url = "https://://github.com/repos/eaststandart/eaststandart.github.io/dispatches"
+    site_api_url = "https://api.github.com/repos/eaststandart/eaststandart.github.io/dispatches"
     
     headers = {
         "Accept": "application/vnd.github+json",
