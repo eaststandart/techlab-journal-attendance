@@ -4,7 +4,8 @@
 @module journal-notify.py
 @about Управляющий диспетчер буферного шлюза
 @purpose Управление блокировками, фиксация папок через Git и контроль очистки шлюза
-@version 5.0.0
+@author TechLab
+@version 7.0.0
 """
 
 import os
@@ -14,9 +15,10 @@ import requests
 import subprocess
 
 # ==============================================================================
-# УПРАВЛЯЮЩИЙ ТУМБЛЕР РЕЖИМА ПРОВЕРКИ ОЧИСТКИ ШЛЮЗА: "CONTENTS" ИЛИ "COMMIT"
+# КОНФИГУРАЦИЯ ВНЕШНИХ ИНТЕРНЕТ-АДРЕСОВ GITHUB API
 # ==============================================================================
-CHECK_MODE = "COMMIT"
+SITE_API_URL = "https://api.github.com/repos/eaststandart/eaststandart.github.io/dispatches"
+CHECK_URL = "https://api.github.com/repos/eaststandart/techlab-journal-attendance/contents/_output"
 
 def run_control_pipeline():
     print("\n=== [МОДУЛЬ JOURNAL-NOTIFY] ЗАПУСК УПРАВЛЯЮЩЕГО ДИСПЕТЧЕРА ===")
@@ -26,13 +28,13 @@ def run_control_pipeline():
         print(f"[ДИСПЕТЧЕР] ❌ Ошибка: Директория вывода не найдена: {output_dir}")
         return
 
-    # 1. ПРОВЕРКА СОСТОЯНИЯ ДИРЕКТОРИИ _output НА СТАРТЕ
+    # 1. ПРОВЕРКА НАЛИЧИЯ ФАЙЛОВ JSON В ДИРЕКТОРИИ _output НА СТАРТЕ
     live_output_json = [f for f in os.listdir(output_dir) if f.endswith('.json')]
     if live_output_json:
-        print(f"[ДИСПЕТЧЕР] Директория _output содержит файлы ({len(live_output_json)} шт.). Работа остановлена.")
+        print(f"[ДИСПЕТЧЕР] В _output файлы: {live_output_json}. К поиску в _input не переходим.")
         return
 
-    print("[ДИСПЕТЧЕР] Директория _output чистая. Конвейер готов к работе.")
+    print("[ДИСПЕТЧЕР] В директории _output пусто. Переходим к анализу.")
 
     # 2. ЗАПУСК ИЗОЛИРОВАННОГО МОДУЛЯ АНАЛИЗА ФАЙЛОВ
     print("[ДИСПЕТЧЕР] Запуск модуля 'journal-analyzer.py'...")
@@ -61,7 +63,7 @@ def run_control_pipeline():
         if diff_check.returncode != 0:
             subprocess.run(["git", "commit", "-m", f"chore: фиксация переноса комплекта для {teacher_login} в папку выход"], check=True)
             subprocess.run(["git", "push", "origin", "main"], check=True)
-            print("[ДИСПЕТЧЕР] Изменения папок записаны в историю Гитхаба.")
+            print("[ДИСПЕТЧЕР] Изменения папок записаны in историю Гитхаба.")
         else:
             print("[ДИСПЕТЧЕР] Изменений в репозитории не обнаружено. Отмена отправки сигнала.")
             return
@@ -76,7 +78,6 @@ def run_control_pipeline():
         print("[ДИСПЕТЧЕР] ❌ Ошибка: Ключ MY_FINE_TOKEN не найден в секретах репозитория.")
         return
 
-    site_api_url = "https://api.github.com/repos/eaststandart/eaststandart.github.io/dispatches"
     headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"token {fine_token}",
@@ -85,21 +86,21 @@ def run_control_pipeline():
     payload = {"event_type": "journal-notify"}
 
     try:
-        response = requests.post(site_api_url, json=payload, headers=headers)
+        response = requests.post(SITE_API_URL, json=payload, headers=headers)
         if response.status_code != 204:
             print(f"[ДИСПЕТЧЕР] ⚠️ Ошибка отправки сигнала. Код ответа сервера: {response.status_code}")
             return
-        print(f"[ДИСПЕТЧЕР] Одиночный сигнал успешно отправлен. Робот сайта вызван.")
+        print("[ДИСПЕТЧЕР] Сигнал передан в репозиторий eaststandart.github.io.")
     except Exception as err:
         print(f"[ДИСПЕТЧЕР] ❌ Исключение при отправке сигнала: {str(err)}")
         return
 
-    # 5. ЦИКЛИЧЕСКОЕ ЕЖЕМИНУТНОЕ ОЖИДАНИЕ ОЧИСТКИ ШЛЮЗА
-    print(f"[ДИСПЕТЧЕР] Включение режима ожидания очистки шлюза для '{teacher_login}'. Интервал: 60 секунд.")
-    print(f"[ДИСПЕТЧЕР] Активный режим контроля: '{CHECK_MODE}'")
+    # 5. ЦИКЛИЧЕСКОЕ ОЖИДАНИЕ ОЧИСТКИ ШЛЮЗА С АВАРИЙНОЙ ПАУЗОЙ НА 1 ЧАС
+    print(f"[ДИСПЕТЧЕР] Ожидание удаления файлов из _output для '{teacher_login}'. Интервал: 60 сек.")
 
     start_time = time.time()
     check_counter = 0
+    
     headers_check = {
         "Authorization": f"token {fine_token}",
         "Accept": "application/vnd.github+json",
@@ -110,49 +111,42 @@ def run_control_pipeline():
 
     while True:
         check_counter += 1
-        print(f"\n[ДИСПЕТЧЕР] Проверка №{check_counter} (Прошло времени: {int(time.time() - start_time)} сек.)")
+        print(f"\n[ДИСПЕТЧЕР] Проверка №{check_counter} (Время: {int(time.time() - start_time)} сек.)")
+        print("[ДИСПЕТЧЕР] Делаем запрос к API techlab-journal-attendance для проверки удаления файлов.")
 
-        # РЕЖИМ КОНТРОЛЯ ПО СОДЕРЖИМОМУ ДИРЕКТОРИИ
-        if CHECK_MODE == "CONTENTS":
-            check_url = "https://api.github.com/repos/eaststandart/techlab-journal-attendance/contents/_output"
-            try:
-                check_res = requests.get(check_url, headers=headers_check)
-                if check_res.status_code == 200:
-                    output_contents = check_res.json()
-                    live_files = [item["name"] for item in output_contents if item["name"].endswith('.json')]
-                    if not live_files:
-                        print("[ДИСПЕТЧЕР] Директория вывода опустела.")
-                        break
-                    else:
-                        print(f"[ДИСПЕТЧЕР] Директория содержит файлы ({len(live_files)} шт.): {live_files}")
-                elif check_res.status_code == 404:
-                    print("[ДИСПЕТЧЕР] Код ответа 404. Директория вывода очищена.")
+        try:
+            response_check = requests.get(CHECK_URL, headers=headers_check)
+            
+            if response_check.status_code >= 500:
+                print(f"[ДИСПЕТЧЕР] ❌ Ошибка сервера GitHub API: {response_check.status_code}. Пауза 1 час.")
+                time.sleep(3600)
+                continue
+
+            if response_check.status_code == 200:
+                output_contents = response_check.json()
+                live_files = [item["name"] for item in output_contents if item["name"].endswith('.json')]
+                if not live_files:
+                    print("[ДИСПЕТЧЕР] Директория вывода опустела.")
                     break
-            except Exception as check_err:
-                print(f"[ДИСПЕТЧЕР] Ошибка запроса к API директории: {str(check_err)}")
+                else:
+                    print(f"[ДИСПЕТЧЕР] Директория содержит файлы ({len(live_files)} шт.): {live_files}")
+            elif response_check.status_code == 404:
+                print("[ДИСПЕТЧЕР] Ответ API: 404. Директория вывода очищена.")
+                break
+            else:
+                print(f"[ДИСПЕТЧЕР] ⚠️ Нетипичный ответ API: {response_check.status_code}. Пауза 1 час.")
+                time.sleep(3600)
+                continue
 
-        # РЕЗЕРВНЫЙ РЕЖИМ КОНТРОЛЯ ПО ТЕКСТУ КОММИТОВ ИСТОРИИ ИЗМЕНЕНИЙ
-        elif CHECK_MODE == "COMMIT":
-            commits_url = "https://api.github.com/repos/eaststandart/techlab-journal-attendance/commits"
-            try:
-                commits_res = requests.get(commits_url, headers=headers_check)
-                if commits_res.status_code == 200:
-                    last_commit = commits_res.json()[0]
-                    commit_message = last_commit.get("commit", {}).get("message", "")
-                    print(f"[ДИСПЕТЧЕР] Текст последнего коммита: '{commit_message}'")
-                    
-                    if "cleanup" in commit_message.lower() or "удаление" in commit_message.lower():
-                        print("[ДИСПЕТЧЕР] Обнаружен коммит очистки репозитория.")
-                        break
-                    else:
-                        print("[ДИСПЕТЧЕР] Коммит очистки репозитория в истории пока отсутствует.")
-            except Exception as commit_err:
-                print(f"[ДИСПЕТЧЕР] Ошибка запроса к API истории коммитов: {str(commit_err)}")
+        except Exception as check_err:
+            print(f"[ДИСПЕТЧЕР] ❌ Сетевой сбой API: {str(check_err)}. Пауза 1 час.")
+            time.sleep(3600)
+            continue
 
         time.sleep(60)
 
-    # 6. УСПЕШНОЕ РАЗБЛОКИРОВАНИЕ
-    print("\n[ДИСПЕТЧЕР] Работа управляющего конвейера успешно завершена.")
+    # 6. УСПЕШНОЕ ЗАВЕРШЕНИЕ
+    print("\n[ДИСПЕТЧЕР] Процесс контроля успешно завершён.")
 
 if __name__ == "__main__":
     run_control_pipeline()
