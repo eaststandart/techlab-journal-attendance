@@ -109,7 +109,7 @@ def analyze_and_move_bundle():
                 print(f"[АНАЛИЗАТОР] Для даты '{target_date}' готово {len(bundle_files)} из {len(schedule_groups)} групп. Комплект не собран.")
                 continue
             
-            day_short = target_day[:2]
+            day_short = target_day[:3]
             print(f"[АНАЛИЗАТОР] Обнаружен комплект файлов JSON '{teacher_login}' за '{target_date} ({day_short})': {len(bundle_files)} шт.")
             print(f"[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
             print(f"[АНАЛИЗАТОР] Перемещаем комплект файлов JSON '{teacher_login}' за '{target_date} ({day_short})' [{len(bundle_files)} из {len(schedule_groups)}].")
