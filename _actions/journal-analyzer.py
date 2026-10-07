@@ -108,12 +108,11 @@ def analyze_and_move_bundle():
             if len(bundle_files) < len(schedule_groups):
                 print(f"[АНАЛИЗАТОР] Для даты '{target_date}' готово {len(bundle_files)} из {len(schedule_groups)} групп. Комплект не собран.")
                 continue
-
-            # ==================================================================
-            # ОСТАНОВКА ПОИСКА И ПЕРЕНОС ФАЙЛОВ
-            # ==================================================================
-            print("[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
-            print(f"[АНАЛИЗАТОР] Перемещаем комплект '{teacher_login}' за дату '{target_date}' ({len(bundle_files)} из {len(schedule_groups)}).")
+            
+            day_short = target_day[:2]
+            print(f"[АНАЛИЗАТОР] Обнаружен комплект файлов JSON '{teacher_login}' за '{target_date} ({day_short})': {len(bundle_files)} шт.")
+            print(f"[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
+            print(f"[АНАЛИЗАТОР] Перемещаем комплект файлов JSON '{teacher_login}' за '{target_date} ({day_short})' [{len(bundle_files)} из {len(schedule_groups)}].")
             
             for file_name in bundle_files:
                 old_file_path = os.path.join(input_dir, file_name)
