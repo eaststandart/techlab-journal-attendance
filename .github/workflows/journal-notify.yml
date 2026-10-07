@@ -1,0 +1,33 @@
+# ==============================================================================
+# @module  journal-notify.yml
+# @about   Умный диспетчер триггеров на стороне базы данных Журнала
+# @purpose Запуск Python-скрипта проверки комплектности перед пингом основного сайта
+# @version 1.0.0
+# ==============================================================================
+
+name: Smart Journal Submission Notifier
+
+on:
+  push:
+    paths:
+      - '_data/**.json'
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Database Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install System Dependencies
+        run: pip install pyyaml requests
+
+      - name: Run Smart Bundle Notifier
+        env:
+          MY_FINE_TOKEN: ${{ secrets.MY_FINE_TOKEN }}
+        run: python _actions/journal-notify.py
