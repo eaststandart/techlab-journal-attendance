@@ -109,23 +109,37 @@ def analyze_and_move_bundle():
                 continue
 
             # ==================================================================
-            # ПОСЛЕДОВАТЕЛЬНОСТЬ:
-            # 1. ПРЕКРАЩЕНИЕ ПОИСКА И БЛОКИРОВКА АНАЛИЗА
-            # 2. ТЕХНИЧЕСКИЙ ЛОГ ОБ ОСТАНОВКЕ ПОИСКА
-            # 3. ФИЗИЧЕСКИЙ ПЕРЕНОС ФАЙЛОВ НАЙДЕННОГО КОМПЛЕКТА
+            # ОСТАНОВКА ПОИСКА И ЧЕСТНЫЙ ПЕРЕНОС ФАЙЛОВ
             # ==================================================================
-            print(f"[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
+            print("[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
             print(f"[АНАЛИЗАТОР] Действие: Перемещаем комплект '{teacher_login}' за дату '{target_date}' ({len(bundle_files)} из {len(schedule_groups)}).")
             
             for file_name in bundle_files:
                 old_file_path = os.path.join(input_dir, file_name)
                 new_file_path = os.path.join(output_dir, file_name)
+                
+                # Физическое перемещение файла на диске
                 shutil.move(old_file_path, new_file_path)
-                print(f"[АНАЛИЗАТОР] Перемещён: '{file_name}' ➔ _output/")
+                
+                # Лог пишется строго по факту успешного переноса
+                if os.path.exists(new_file_path):
+                    print(f"[АНАЛИЗАТОР] Перемещён: '{file_name}' ➔ _output/")
 
+            # Жесткая запись статуса успеха в файл окружения GitHub Actions
+            if "GITHUB_ENV" in os.environ:
+                with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+                    env_file.write(f"ANALYZER_STATUS=SUCCESS_{teacher_login}\n")
+            
+            print(f"[АНАЛИЗАТОР] Финальный статус работы модуля: SUCCESS_{teacher_login}")
             return f"SUCCESS_{teacher_login}"
 
     print("[АНАЛИЗАТОР] Готовых комплектов журналов не обнаружено.")
+    
+    # Запись статуса отсутствия комплектов в файл окружения GitHub Actions
+    if "GITHUB_ENV" in os.environ:
+        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+            env_file.write("ANALYZER_STATUS=NO_BUNDLE_READY\n")
+            
     return "NO_BUNDLE_READY"
 
 if __name__ == "__main__":
