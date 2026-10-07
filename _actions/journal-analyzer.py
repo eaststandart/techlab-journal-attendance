@@ -15,7 +15,7 @@ import yaml
 import shutil
 
 def analyze_and_move_bundle():
-    print("\n=== [МОДУЛЬ JOURNAL_ANALYZER] АНАЛИЗ ПАПКИ _INPUT ===")
+    print("\n=== [МОДУЛЬ JOURNAL-ANALYZER] АНАЛИЗ ПАПКИ _INPUT ===")
     
     input_dir = os.path.join(os.getcwd(), '_input')
     output_dir = os.path.join(os.getcwd(), '_output')
