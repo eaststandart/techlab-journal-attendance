@@ -15,7 +15,7 @@ import yaml
 import shutil
 
 def analyze_and_move_bundle():
-    print("\n=== [МОДУЛЬ JOURNAL_ANALYZER] АНАЛИЗ ПРИЁМНОЙ ПАПКИ ===")
+    print("\n=== [МОДУЛЬ JOURNAL_ANALYZER] АНАЛИЗ ПАПКИ _INPUT ===")
     
     input_dir = os.path.join(os.getcwd(), '_input')
     output_dir = os.path.join(os.getcwd(), '_output')
@@ -29,10 +29,10 @@ def analyze_and_move_bundle():
     json_files = [f for f in all_files if '-journal-attendance-' in f and f.endswith('.json')]
     
     if not json_files:
-        print("[АНАЛИЗАТОР] В директории _input отсутствуют временные файлы JSON.")
+        print("[АНАЛИЗАТОР] В директории _input файлы JSON отсутствуют.")
         return "NO_FILES"
 
-    print(f"[АНАЛИЗАТОР] Обнаружено файлов JSON в очереди: {len(json_files)} шт.")
+    print(f"[АНАЛИЗАТОР] Обнаружено файлов JSON в _input: {len(json_files)} шт.")
 
     # Сбор списка активных преподавателей по файлам расписаний
     active_teachers = []
@@ -109,10 +109,10 @@ def analyze_and_move_bundle():
                 continue
 
             # ==================================================================
-            # ОСТАНОВКА ПОИСКА И ЧЕСТНЫЙ ПЕРЕНОС ФАЙЛОВ
+            # ОСТАНОВКА ПОИСКА И ПЕРЕНОС ФАЙЛОВ
             # ==================================================================
             print("[АНАЛИЗАТОР] Поиск завершен. Анализ директории _input остановлен.")
-            print(f"[АНАЛИЗАТОР] Действие: Перемещаем комплект '{teacher_login}' за дату '{target_date}' ({len(bundle_files)} из {len(schedule_groups)}).")
+            print(f"[АНАЛИЗАТОР] Перемещаем комплект '{teacher_login}' за дату '{target_date}' ({len(bundle_files)} из {len(schedule_groups)}).")
             
             for file_name in bundle_files:
                 old_file_path = os.path.join(input_dir, file_name)
