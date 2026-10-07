@@ -126,7 +126,7 @@ def run_control_pipeline():
                 output_contents = response_check.json()
                 live_files = [item["name"] for item in output_contents if item["name"].endswith('.json')]
                 if not live_files:
-                    print("[ДИСПЕТЧЕР] Директория вывода опустела.")
+                    print("[ДИСПЕТЧЕР] Папка _output опустела.")
                     break
                 else:
                     print(f"[ДИСПЕТЧЕР] Директория содержит файлы ({len(live_files)} шт.): {live_files}")
