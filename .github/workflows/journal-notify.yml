@@ -10,7 +10,7 @@ name: Smart Journal Submission Notifier
 on:
   push:
     paths:
-      - '_data/**.json'
+      - '_input/**.json'
 
 jobs:
   check-and-trigger:
