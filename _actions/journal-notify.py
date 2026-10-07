@@ -135,7 +135,7 @@ def run_control_pipeline():
 
         # Запрашиваем актуальное содержимое папки Выход напрямую с серверов GitHub API
         # Чтобы исключить локальное кэширование виртуальной машины
-        check_url = f"https://github.com"
+        check_url = f"https://api.github.com/repos/eaststandart/techlab-journal-attendance/contents/_output"
         
         try:
             check_res = requests.get(check_url, headers={"Authorization": f"token {fine_token}"})
