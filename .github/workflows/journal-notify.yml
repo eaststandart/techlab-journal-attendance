@@ -13,10 +13,6 @@ on:
     paths:
       - '_input/**.json'
 
-concurrency:
-  group: journal-gate
-  cancel-in-progress: false
-
 permissions:
   contents: write
 
