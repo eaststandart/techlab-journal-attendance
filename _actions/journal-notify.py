@@ -61,9 +61,9 @@ def run_control_pipeline():
         
         diff_check = subprocess.run(["git", "diff", "--cached", "--quiet"])
         if diff_check.returncode != 0:
-            subprocess.run(["git", "commit", "-m", f"chore: фиксация переноса комплекта для {teacher_login} в папку выход"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Фиксация: перенос комплекта для {teacher_login} в _output"], check=True)
             subprocess.run(["git", "push", "origin", "main"], check=True)
-            print("[ДИСПЕТЧЕР] Изменения папок записаны in историю Гитхаба.")
+            print("[ДИСПЕТЧЕР] Изменения папок записаны в историю Гитхаба.")
         else:
             print("[ДИСПЕТЧЕР] Изменений в репозитории не обнаружено. Отмена отправки сигнала.")
             return
