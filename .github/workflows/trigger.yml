@@ -19,10 +19,10 @@ jobs:
       - name: RUN FULL GITHUB API AUDIT LOG
         run: |
           echo "=================== ТЕСТ 1: КТО Я ДЛЯ GITHUB API? ==================="
-          curl -s -H "Authorization: token ${{ secrets.MY_ADMIN_TOKEN }}" https://api.github.com | grep -E "login|id|type" || echo "❌ Токен полностью невалиден!"
+          curl -s -H "Authorization: token ${{ secrets.MY_FINE_TOKEN }}" https://api.github.com | grep -E "login|id|type" || echo "❌ Токен полностью невалиден!"
           
           echo -e "\n=================== ТЕСТ 2: КАКИЕ РЕПОЗИТОРИИ ВИДИТ ТОКЕН? ==================="
-          curl -s -H "Authorization: token ${{ secrets.MY_ADMIN_TOKEN }}" "https://api.github.com/repos?per_page=100" | grep "full_name" || echo "❌ Токен не видит ни одного репозитория!"
+          curl -s -H "Authorization: token ${{ secrets.MY_FINE_TOKEN }}" "https://api.github.com/repos?per_page=100" | grep "full_name" || echo "❌ Токен не видит ни одного репозитория!"
           
           echo -e "\n=================== ТЕСТ 3: ПОЛНЫЙ СЕТЕВОЙ ЛОГ DISPATCHES ==================="
           curl -v -X POST \
