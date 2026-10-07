@@ -29,7 +29,7 @@ def run_control_pipeline():
     # 1. ПРОВЕРКА СОСТОЯНИЯ ДИРЕКТОРИИ _output НА СТАРТЕ
     live_output_json = [f for f in os.listdir(output_dir) if f.endswith('.json')]
     if live_output_json:
-        print(f"[ДИСПЕТЧЕР] Директория _output содержит файлы ({len(live_output_json)} шт.). Работа конвейера остановлена.")
+        print(f"[ДИСПЕТЧЕР] Директория _output содержит файлы ({len(live_output_json)} шт.). Работа остановлена.")
         return
 
     print("[ДИСПЕТЧЕР] Директория _output чистая. Конвейер готов к работе.")
