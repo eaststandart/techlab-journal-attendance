@@ -23,5 +23,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: token ${{ secrets.MY_ADMIN_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://github.com \
+            https://api.github.com \
             -d '{"event_type": "journal_submission"}'
