@@ -1,9 +1,8 @@
 # ==============================================================================
 # @module  journal-notify.yml
-# @about   Умный диспетчер шлюза на стороне базы данных Журнала
-# @purpose Контроль комплектности, фиксация переноса файлов Git и вызов сайта
-# @author TechLab
-# @version 1.0.0
+# @about   Умный последовательный конвейер шлюза Журнала
+# @purpose Защита от параллельных потоков и запуск монолитного диспетчера
+# @version 9.0.0
 # ==============================================================================
 
 name: Smart Journal Submission Notifier
@@ -16,6 +15,12 @@ on:
 permissions:
   contents: write
 
+# Защищаем репозиторий от одновременной работы нескольких диспетчеров.
+# Текущий запущенный сервер последовательно обработает все прилетевшие комплекты.
+concurrency:
+  group: journal-dispatcher
+  cancel-in-progress: false
+
 jobs:
   check-and-trigger:
     runs-on: ubuntu-latest
@@ -23,17 +28,18 @@ jobs:
       - name: Checkout Database Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.MY_FINE_TOKEN }}
+          token: ${{ github.token }}
+          fetch-depth: 0
 
       - name: Set up Python Environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install System Dependencies
+      - name: Install Python Dependencies
         run: pip install pyyaml requests
 
-      - name: Run Smart Bundle Notifier
+      - name: Run Smart Bundle Dispatcher
         env:
           MY_FINE_TOKEN: ${{ secrets.MY_FINE_TOKEN }}
         run: python _actions/journal-notify.py
