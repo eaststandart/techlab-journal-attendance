@@ -7,7 +7,7 @@
 # ==============================================================================
 
 config:
-  publish_as_bot: false
+  publish_as_bot: true
   show_projects_column: true
   discussion_number: 38
   project_category_name:
@@ -44,7 +44,6 @@ config:
 воскресенье:
   "10:00":
     - "Баранова Лиза [э] @eastemitting"
-    - "Димс"
     - "Дмитриев Артем [э]"
     - "Интальева Даша [э] #techlab-intalyueva-dasha"
     - "Носовский Костя [э]"
