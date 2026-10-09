@@ -17,10 +17,14 @@
   ],
   "newbies": [
     {
-      "name": "",
-      "direction": "",
-      "tag": "#"
+      "name": "Димка",
+      "direction": "столярное дело"
     }
   ],
-  "probation": []
+  "probation": [
+    {
+      "name": "Тимка",
+      "direction": "электронное конструирование"
+    }
+  ]
 }
