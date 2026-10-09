@@ -32,7 +32,7 @@ def repair_yaml_file(file_path):
         
         # 1. Исправление и нормализация времени группы (отступ 2 пространства)
         if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):
-            raw_time = stripped.slice(0, -1).replace('"', '').replace("'", '').strip()
+            raw_time = stripped[:-1].replace('"', '').replace("'", '').strip()
             # Убираем любые мусорные разделители из времени (10-00, 10=00)
             digits = "".join([c for c in raw_time if c.isdigit()])
             if len(digits) == 4:
