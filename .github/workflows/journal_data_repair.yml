@@ -36,7 +36,7 @@ jobs:
           git add _data/*.yml _data/*.yaml || true
           if ! git diff --staged --quiet; then
             git commit -m "fix(database): автоматическое исправление синтаксиса и структуры расписания"
-            git push origin main
+            git push origin HEAD:main
           else
             echo "✨ Файлы расписаний находятся в идеальном состоянии, изменений нет."
           fi
