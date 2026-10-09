@@ -1,0 +1,42 @@
+name: Проверка и исправление расписания
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '_data/**.yml'
+      - '_data/**.yaml'
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Проверка исходного кода репозитория
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Настройка среды Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Установка зависимости PyYAML
+        run: pip install pyyaml
+
+      - name: Запуск проверки и исправления расписания
+        run: python _actions/journal_data_repair.py
+
+      - name: Автоматическое сохранение исправлений в репозиторий
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          git add _data/*.yml _data/*.yaml || true
+          if ! git diff --staged --quiet; then
+            git commit -m "fix(database): автоматическое исправление синтаксиса и структуры расписания"
+            git push origin main
+          else
+            echo "✨ Файлы расписаний находятся в идеальном состоянии, изменений нет."
+          fi
