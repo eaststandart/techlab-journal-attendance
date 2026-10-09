@@ -41,15 +41,21 @@ def normalize_time_str(time_str):
     return raw_time
 
 def normalize_direction(dir_str):
-    cleaned = clean_text_field(dir_str).lower()
-    if not cleaned:
+    if not dir_str or not isinstance(dir_str, str):
         return ""
-    # Сопоставление текстовых триггеров для электронного конструирования
-    if any(x in cleaned for x in ["электрон", "э", "e", "электр"]):
+    
+    cleaned = clean_text_field(dir_str).strip()    
+    
+    electronics_letters = ["э", "Э", "е", "Е", "e", "E"]
+    
+    joinery_letters = ["с", "С", "c", "C"]
+    
+    if cleaned in electronics_letters or "электрон" in cleaned.lower() or "электр" in cleaned.lower():
         return "электронное конструирование"
-    # Сопоставление текстовых триггеров для столярного дело
-    if any(x in cleaned for x in ["столяр", "с", "c", "стол"]):
+        
+    if cleaned in joinery_letters or "столяр" in cleaned.lower() or "стол" in cleaned.lower():
         return "столярное дело"
+
     return cleaned
 
 def repair_yaml_file(file_path):
