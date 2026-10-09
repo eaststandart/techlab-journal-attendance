@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 @module  journal-analyzer.py
-@about   Изолированный модуль проверки комплектности журналов
-@purpose Группировка файлов по датам и дням недели,
-         сверка с YAML-расписанием и перенос первого готового комплекта
+@about   Изолированный модуль проверки комплектности журналов.
+@purpose Группировка файлов по датам и дням недели, сверка с YAML-расписанием и перенос первого готового комплекта.
 @author TechLab
 @version 9.0.0
 """
@@ -15,6 +14,7 @@ import re
 import sys
 import yaml
 import shutil
+import journal_data_repair
 
 def analyze_and_move_bundle():
     print("\n=== [МОДУЛЬ JOURNAL-ANALYZER] АНАЛИЗ ПАПКИ _INPUT ===")
@@ -84,6 +84,9 @@ def analyze_and_move_bundle():
             yaml_path = os.path.join(data_dir, f"journal-attendance-{teacher_login}.yml")
             if not os.path.exists(yaml_path):
                 continue
+
+            # Вызываем наш отдельный модуль для исправления опечаток на диске до старта PyYAML
+            journal_data_repair.fix_local_yaml_file(yaml_path)
 
             try:
                 with open(yaml_path, "r", encoding="utf-8") as f:
