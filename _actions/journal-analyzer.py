@@ -84,9 +84,6 @@ def analyze_and_move_bundle():
             if not os.path.exists(yaml_path):
                 continue
 
-            # Вызываем наш отдельный модуль для исправления опечаток на диске до старта PyYAML
-            journal_data_repair.fix_local_yaml_file(yaml_path)
-
             try:
                 with open(yaml_path, "r", encoding="utf-8") as f:
                     yaml_data = yaml.safe_load(f) or {}
