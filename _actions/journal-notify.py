@@ -50,7 +50,7 @@ def commit_and_push_bundle(teacher_login):
     try:
         run_command(["git", "config", "--global", "user.name", "TechLab Notifier Bot"])
         run_command(["git", "config", "--global", "user.email", "notifier@techlab.local"])
-        run_command(["git", "add", "_input", "_output"])
+        run_command(["git", "add", "_input", "_output", "_data"])
         
         diff_check = subprocess.run(["git", "diff", "--cached", "--quiet"])
         if diff_check.returncode == 0:
