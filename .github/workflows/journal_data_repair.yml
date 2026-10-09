@@ -35,8 +35,8 @@ jobs:
           git config --global user.email "github-actions[bot]@://github.com"
           git add _data/*.yml _data/*.yaml || true
           if ! git diff --staged --quiet; then
-            git commit -m "fix(database): автоматическое исправление синтаксиса и структуры расписания"
-            git push origin HEAD:main
+            git commit -m "fix: автоматическое исправление синтаксиса и структуры расписания"
+            git push origin main
           else
             echo "✨ Файлы расписаний находятся в идеальном состоянии, изменений нет."
           fi
