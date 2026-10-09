@@ -4,12 +4,9 @@
   "time": "10:00",
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
-  "present_permanent": [],
-  "newbies": [
-    "имя @login",
-    "имя #techlab-none",
-    "имя [с]",
-    "имя [э] #"
+  "present_permanent": [
+    "Баранова Лиза"
   ],
+  "newbies": [],
   "probation": []
 }
