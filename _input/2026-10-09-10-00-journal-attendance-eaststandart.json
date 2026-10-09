@@ -13,30 +13,14 @@
       "name": "Интальева Даша",
       "direction": "электронное конструирование",
       "tag": "#techlab-intalyueva-dasha"
-    },
-    {
-      "name": "Носовский Костя",
-      "direction": "электронное конструирование"
     }
   ],
   "newbies": [
     {
-      "name": "Васька",
-      "direction": ""
-    },
-    {
-      "name": "Пашеп",
-      "direction": ""
+      "name": "",
+      "direction": "",
+      "tag": "#"
     }
   ],
-  "probation": [
-    {
-      "name": "Петька",
-      "direction": ""
-    },
-    {
-      "name": "Машка",
-      "direction": ""
-    }
-  ]
+  "probation": []
 }
