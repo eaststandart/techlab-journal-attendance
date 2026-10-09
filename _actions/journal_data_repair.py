@@ -106,7 +106,13 @@ def repair_yaml_file(file_path):
                 repaired_tag = clean_tag_field(old_tag)
 
                 if repaired_name != old_name or repaired_dir != old_dir or repaired_tag != old_tag:
-                    print(f"  [УЧЕНИК] Исправление данных ученика: '{old_name}'")
+                    print(f"  [УЧЕНИК] Обнаружены опечатки у: '{old_name}'", flush=True)
+                    if repaired_name != old_name:
+                        print(f"          ИМЯ:  '{old_name}' ➔ '{repaired_name}'", flush=True)
+                    if repaired_dir != old_dir:
+                        print(f"          КУРС: '{old_dir}' ➔ '{repaired_dir}'", flush=True)
+                    if repaired_tag != old_tag:
+                        print(f"          ТЕГ:  '{old_tag}' ➔ '{repaired_tag}'", flush=True)
                     is_modified = True
 
                 new_kid_obj = {
