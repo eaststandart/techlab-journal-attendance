@@ -16,7 +16,7 @@ jobs:
       - name: Проверка исходного кода репозитория
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MY_FINE_TOKEN }}
 
       - name: Настройка среды Python
         uses: actions/setup-python@v5
