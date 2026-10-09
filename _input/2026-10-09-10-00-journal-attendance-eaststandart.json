@@ -1,12 +1,11 @@
 {
   "date": "2026-10-09",
-  "day": "воскресенье",
+  "day": "суббота",
   "time": "10:00",
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [
-    "Дмитриев Артем",
-    "Интальева Даша"
+    "Климов Данил"
   ],
   "newbies": [],
   "probation": []
