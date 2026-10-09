@@ -77,7 +77,7 @@ def repair_yaml_file(file_path):
         # 4. Санация интернет-тегов (отступ 6 пространств)
         if line.startswith("      tag:"):
             raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
-            # Удаляем мусорные знаки препинания строго с конца тега (! , .)
+            # Del знаки препинания строго с конца тега (! , .)
             clean_val = raw_val
             if clean_val.startswith("#techlab-") or clean_val.startswith("@"):
                 while clean_val and clean_val[-1] in ["!", ".", ",", ";", "\"", "'"]:
