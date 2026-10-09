@@ -1,0 +1,72 @@
+# ==============================================================================
+# @module  journal-attendance-eaststandart.yml
+# @about   Новый объектный файл конфигурации и расписания преподавателя TechLab
+# @purpose Полное исключение регулярных выражений и текстовых опечаток синтаксиса
+# @version 10.0.0
+# ==============================================================================
+
+config:
+  publish_as_bot: true
+  show_projects_column: true
+  discussion_number: 38
+  project_category_name:
+    - "Галерея"
+    - "Покажи и расскажи"
+  tg_personal_id:
+    - 511009121
+  tg_public_notify:
+    - channel_id: -1002555901754
+
+суббота:
+  "10:00":
+    - name: "Загородний Денис"
+      direction: "э"
+    - name: "Климов Данил"
+      direction: "э"
+    - name: "Коробицин Рома"
+      direction: "э"
+    - name: "Марченко Тася"
+      direction: "с"
+    - name: "Рыжов Лев"
+      direction: "э"
+    - name: "Т Игорь"
+      direction: "с"
+  "11:00":
+    - name: "Ваня"
+      direction: "с"
+    - name: "Г Алексей"
+      direction: "э"
+    - name: "Долматов Артем"
+      direction: "с"
+    - name: "Матвеев Игнат"
+      direction: "с"
+  "12:00":
+    - name: "Илья Безин"
+      direction: "э"
+    - name: "Марченко Георгий"
+      direction: "э"
+    - name: "Семен Ковток"
+      direction: "э"
+
+воскресенье:
+  "10:00":
+    - name: "Баранова Лиза"
+      direction: "э"
+      tag: "@eastemitting"
+    - name: "Дмитриев Артем"
+      direction: "э"
+    - name: "Интальева Даша"
+      direction: "э"
+      tag: "#techlab-intalyueva-dasha"
+    - name: "Носовский Костя"
+      direction: "э"
+    - name: "Салоха Влад"
+      direction: "э"
+  "11:00":
+    - name: "Интальева Даша"
+      direction: "э"
+      tag: "#techlab-intalyueva-dasha"
+    - name: "Ренькевич Дима"
+      direction: "э"
+    - name: "Салоха Влад"
+      direction: "с"
