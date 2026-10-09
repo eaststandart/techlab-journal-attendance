@@ -31,7 +31,7 @@ config:
     - name: "Климов Данил"
       direction: "Э"
     - name: "Коробицин Рома"
-      direction: "Э"
+      direction: "электронное конструирование"
     - name: "Марченко Тася"
       direction: "столярное дело"
     - name: "Рыжов Лев"
