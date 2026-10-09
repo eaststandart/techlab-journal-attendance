@@ -14,7 +14,6 @@ import re
 import sys
 import yaml
 import shutil
-import journal_data_repair
 
 def analyze_and_move_bundle():
     print("\n=== [МОДУЛЬ JOURNAL-ANALYZER] АНАЛИЗ ПАПКИ _INPUT ===")
