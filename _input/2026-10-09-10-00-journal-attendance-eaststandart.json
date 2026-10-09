@@ -5,9 +5,38 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [
-    "Дмитриев Артем [э]",
-    "Интальева Даша [э] #techlab-intalyueva-dasha"
+    {
+      "name": "Дмитриев Артем",
+      "direction": "электронное конструирование"
+    },
+    {
+      "name": "Интальева Даша",
+      "direction": "электронное конструирование",
+      "tag": "#techlab-intalyueva-dasha"
+    },
+    {
+      "name": "Носовский Костя",
+      "direction": "электронное конструирование"
+    }
   ],
-  "newbies": [],
-  "probation": []
+  "newbies": [
+    {
+      "name": "Васька",
+      "direction": ""
+    },
+    {
+      "name": "Пашеп",
+      "direction": ""
+    }
+  ],
+  "probation": [
+    {
+      "name": "Петька",
+      "direction": ""
+    },
+    {
+      "name": "Машка",
+      "direction": ""
+    }
+  ]
 }
