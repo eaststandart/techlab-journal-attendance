@@ -100,29 +100,57 @@ def repair_yaml_file(file_path):
 
 def main():
     data_dir = "_data"
+    signal_file = os.path.join(data_dir, "signal-repair.json")
     status_file = os.path.join(data_dir, "repair-status.json")
     
     if not os.path.exists(data_dir):
         print(f"❌ Папка данных {data_dir} не найдена.", flush=True)
         sys.exit(0)
 
+    target_teacher = ""
+    
+    # Шаг 1: Извлекаем параметры целевого преподавателя из входящего сигнала JSON
+    if os.path.exists(signal_file):
+        try:
+            with open(signal_file, "r", encoding="utf-8") as sf:
+                signal_data = json.load(sf)
+                target_teacher = signal_data.get("teacher_login", "").strip()
+            print(f"🎯 Получен адресный сигнал на проверку расписания преподавателя: '{target_teacher}'", flush=True)
+        except Exception as e:
+            print(f"⚠️ Ошибка чтения параметров входящего сигнала: {e}", flush=True)
+
     any_file_fixed = False
     has_critical_error = False
 
-    # Сканируем файлы расписаний преподавателей
-    for root, _, files in os.walk(data_dir):
-        for file in files:
-            if (file.endswith(".yml") or file.endswith(".yaml")) and file != "repair-status.json":
-                full_path = os.path.join(root, file)
-                try:
-                    if repair_yaml_file(full_path):
-                        any_file_fixed = True
-                except Exception as e:
-                    # Всеядный щит: ловит YAMLError и сбои структуры, выставляя признак ошибки
-                    print(f"💥 Критический сбой обработки файла {file}: {e}", flush=True)
-                    has_critical_error = True
+    if target_teacher:
+        # Вычисляем строго один целевой файл расписания
+        target_filename = f"journal-attendance-{target_teacher}.yml"
+        full_path = os.path.join(data_dir, target_filename)
+        
+        if os.path.exists(full_path):
+            try:
+                if repair_yaml_file(full_path):
+                    any_file_fixed = True
+            except Exception as e:
+                print(f"💥 Критический сбой обработки файла {target_filename}: {e}", flush=True)
+                has_critical_error = True
+        else:
+            print(f"❌ Файл расписания {target_filename} физически не найден в папке _data", flush=True)
+            has_critical_error = True
+    else:
+        # Если сигнал пустой или пришёл ручной пуш, сканируем всю папку в режиме предохранителя
+        for root, _, files in os.walk(data_dir):
+            for file in files:
+                if (file.endswith(".yml") or file.endswith(".yaml")) and not file.startswith("repair-status"):
+                    full_path = os.path.join(root, file)
+                    try:
+                        if repair_yaml_file(full_path):
+                            any_file_fixed = True
+                    except Exception as e:
+                        print(f"💥 Критический сбой обработки файла {file}: {e}", flush=True)
+                        has_critical_error = True
 
-    # СТРОГО ПОСЛЕ ЗАВЕРШЕНИЯ ВСЕХ РАБОТ ОБНОВЛЯЕМ ФАЙЛ СВЕТОФОРА
+    # Шаг 2: Запись итогового флага светофора строго после всех физических сохранений
     final_status = "error" if has_critical_error else "off"
     status_payload = {
         "status": final_status,
@@ -130,11 +158,12 @@ def main():
     }
     
     try:
-        with open(status_file, "w", encoding="utf-8") as sf:
-            json.dump(status_payload, sf, indent=2, ensure_ascii=False)
+        with open(status_file, "w", encoding="utf-8") as stf:
+            json.dump(status_payload, stf, indent=2, ensure_ascii=False)
         print(f"📶 Переключатель статуса сервера успешно переведён в: '{final_status}'", flush=True)
     except Exception as e:
         print(f"❌ Не удалось обновить файл статуса repair-status.json: {e}", flush=True)
 
 if __name__ == "__main__":
     main()
+
