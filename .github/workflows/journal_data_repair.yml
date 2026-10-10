@@ -5,9 +5,8 @@ o-n:
     branches:
       - main
     paths:
-      - '_data/**.y-ml'
-      - '_data/**.y-aml'
-      - '_data/**.json'
+      - '_data/**.ym-l'
+      - '_data/repair-status.json'
 
 jobs:
   repair:
