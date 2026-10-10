@@ -161,6 +161,17 @@ def repair_yaml_file(file_path):
                 .strip()
             )
 
+            # Не считаем обычные текстовые ключи временем.
+            if not re.match(r"^\d", raw_time):
+                repaired_lines.append(line)
+                continue
+            raw_time = (
+                stripped[:-1]
+                .replace('"', "")
+                .replace("'", "")
+                .strip()
+            )
+
             hour = minute = None
 
             # Форматы HMM и HHMM: 900, 930, 0900, 1730.
