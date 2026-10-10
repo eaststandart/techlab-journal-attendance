@@ -71,6 +71,7 @@ def repair_yaml_file(file_path):
             # Проводим глубокую очистку от всех запрещенных знаков и кавычек
             clean_val = "".join([c for c in old_raw_val if c not in ["[", "]", "\\", "/", ";", '"', "'"]]).strip()
             
+            clean_val = " ".join(clean_val.split()).strip()
             repaired_line = f"    - name: \"{clean_val}\"\n"
             if repaired_line != line:
                 # Очищаем кавычки в отображении старого имени, чтобы лог был аккуратным
@@ -85,6 +86,7 @@ def repair_yaml_file(file_path):
             if clean_val.startswith("#techlab-") or clean_val.startswith("@"):
                 while clean_val and clean_val[-1] in ["!", ".", ",", ";", "\"", "'"]:
                     clean_val = clean_val[:-1]
+            clean_val = " ".join(clean_val.split()).strip()
             repaired_line = f"      tag: \"{clean_val}\"\n"
             if repaired_line != line:
                 print(f"  [ТЕГ] Удаление опечаток в конце строки: '{raw_val}' ➔ '{clean_val}'", flush=True)
