@@ -56,6 +56,7 @@ def repair_yaml_file(file_path):
             elif clean_val in joinery_letters or "столяр" in clean_val.lower():
                 repaired_val = "столярное дело"
 
+            repaired_val = " ".join(repaired_val.split()).strip()
             repaired_line = f"      direction: \"{repaired_val}\"\n"
             if repaired_line != line:
                 print(f"  [КУРС] Изменение направления: '{raw_val}' ➔ '{repaired_val}'", flush=True)
