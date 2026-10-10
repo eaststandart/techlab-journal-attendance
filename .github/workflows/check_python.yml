@@ -1,5 +1,5 @@
 
-name: Проверка синтаксиса Python
+name: Проверка синтаксиса и времени Python
 
 on:
   workflow_dispatch:
@@ -19,3 +19,55 @@ jobs:
       - name: Проверка синтаксиса
         run: |
           python -c "from pathlib import Path; p = Path('_actions/journal_data_repair.py'); compile(p.read_text(encoding='utf-8'), str(p), 'exec'); print('Синтаксис Python корректен.')"
+
+      - name: Проверка преобразования времени
+        run: |
+          python - <<'PY'
+          def normalize_time(raw_time):
+              hour = minute = None
+
+              if raw_time.isdigit() and len(raw_time) in (3, 4):
+                  if len(raw_time) == 3:
+                      hour = int(raw_time[0])
+                      minute = int(raw_time[1:])
+                  else:
+                      hour = int(raw_time[:2])
+                      minute = int(raw_time[2:])
+              elif ":" in raw_time:
+                  parts = raw_time.split(":")
+                  if (
+                      len(parts) == 2
+                      and parts[0].isdigit()
+                      and parts[1].isdigit()
+                      and len(parts[1]) == 2
+                  ):
+                      hour = int(parts[0])
+                      minute = int(parts[1])
+
+              if (
+                  hour is not None
+                  and 0 <= hour <= 23
+                  and 0 <= minute <= 59
+              ):
+                  return f"{hour:02d}:{minute:02d}"
+
+              return None
+
+          tests = {
+              "900": "09:00",
+              "930": "09:30",
+              "0900": "09:00",
+              "1730": "17:30",
+              "9:00": "09:00",
+              "9960": None,
+          }
+
+          for source, expected in tests.items():
+              actual = normalize_time(source)
+              print(f"{source} -> {actual}")
+              assert actual == expected, (
+                  f"Ошибка для {source}: ожидалось {expected}, получено {actual}"
+              )
+
+          print("Все проверки времени пройдены.")
+          PY
