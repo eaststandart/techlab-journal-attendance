@@ -39,7 +39,7 @@ jobs:
       - name: Финальная очистка сигналов и сохранение изменений
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           # Физически удаляем входящий файл-сигнал с сервера
           rm -f _data/signal-repair.json
@@ -49,7 +49,7 @@ jobs:
           git add _data/signal-repair.json || true
           
           if ! git diff --staged --quiet; then
-            git commit -m "fix(database): автоматическое адресное исправление расписания [skip ci]"
+            git commit -m "fix(database): исправление расписания [skip ci]"
             git push origin main
           else
             echo "✨ Изменений в расписании нет, но сигнал успешно очищен."
