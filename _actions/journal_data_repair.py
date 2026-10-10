@@ -106,22 +106,50 @@ def repair_yaml_file(file_path):
 
 def main():
     data_dir = "_data"
+    status_file = os.path.join(data_dir, "repair-status.json")
+    
     if not os.path.exists(data_dir):
         print(f"❌ Папка данных {data_dir} не найдена.", flush=True)
         sys.exit(0)
 
     any_file_fixed = False
+    has_critical_error = False
+
+    # Сканируем и исправляем файлы расписаний
     for root, _, files in os.walk(data_dir):
         for file in files:
-            if file.endswith(".yml") or file.endswith(".yaml"):
+            if (file.endswith(".yml") or file.endswith(".yaml")) and file != "repair-status.json":
                 full_path = os.path.join(root, file)
-                if repair_yaml_file(full_path):
-                    any_file_fixed = True
+                try:
+                    if repair_yaml_file(full_path):
+                        any_file_fixed = True
+                except Exception as e:
+                    print(f"💥 Фатальный сбой обработки файла {file}: {e}", flush=True)
+                    has_critical_error = True
+
+    # СТРОГО ПОСЛЕ ВСЕХ РАБОТ И СОХРАНЕНИЙ ОБНОВЛЯЕМ ФАЙЛ СВЕТОФОРА
+    # Определяем финальный статус на основе результатов работы робота
+    final_status = "error" if has_critical_error else "off"
+    
+    import json
+    from datetime import datetime
+    
+    status_payload = {
+        "status": final_status,
+        "timestamp": datetime.utcnow().isoformat() + "Z"
+    }
+    
+    try:
+        with open(status_file, "w", encoding="utf-8") as sf:
+            json.dump(status_payload, sf, indent=2, ensure_ascii=False)
+        print(f"📶 Переключатель статуса сервера успешно переведён в: '{final_status}'", flush=True)
+    except Exception as e:
+        print(f"❌ Не удалось обновить файл статуса repair-status.json: {e}", flush=True)
 
     if any_file_fixed:
         print("🚀 Все файлы расписаний успешно приведены к регламентированному стандарту.", flush=True)
     else:
-        print("✅ Проверка завершена. Ошибок в файлах расписаний не обнаружено.", flush=True)
+        print("✅ Проверка завершена. Дополнительных изменений в структуре не потребовалось.", flush=True)
 
 if __name__ == "__main__":
     main()
