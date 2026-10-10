@@ -34,18 +34,15 @@ jobs:
         run: pip install pyyaml
 
       - name: Запуск проверки и исправления расписания
+        id: repair
         run: python _actions/journal_data_repair.py
-
 
       - name: Финальная очистка сигналов и сохранение изменений
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Удаляем входящий сигнал
           rm -f _data/signal-repair.json
-
-          # Добавляем исправленные данные и удаление сигнала
           git add -A -- _data
 
           if git diff --staged --quiet; then
@@ -77,8 +74,71 @@ jobs:
           echo "Не удалось опубликовать изменения после $MAX_ATTEMPTS попыток."
           exit 1
 
+      - name: Сохранение статуса error при ошибке Python
+        if: ${{ failure() && steps.repair.outcome == 'failure' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Отбрасываем локальные изменения расписания и сигнала.
+          git reset --hard HEAD
+
+          # Сохраняем только статус ошибки.
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+
+          path = "_data/repair-status.json"
+
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  status = json.load(f)
+              if not isinstance(status, dict):
+                  status = {}
+          except (OSError, json.JSONDecodeError):
+              status = {}
+
+          status["status"] = "error"
+          status["timestamp"] = datetime.now(timezone.utc).isoformat()
+
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(status, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+
+          git add _data/repair-status.json
+
+          if git diff --staged --quiet; then
+            echo "Статус error уже сохранён."
+            exit 0
+          fi
+
+          git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
+
+          MAX_ATTEMPTS=3
+          RETRY_INTERVAL_MINUTES=10
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            echo "Попытка публикации статуса ошибки $attempt из $MAX_ATTEMPTS"
+
+            if git push origin main; then
+              echo "Статус error успешно опубликован."
+              exit 0
+            fi
+
+            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
+              echo "Публикация статуса не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
+              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+              git fetch origin main
+              git rebase origin/main
+            fi
+          done
+
+          echo "Не удалось опубликовать статус ошибки."
+          exit 1
+
       - name: Подтверждение успешного исправления
-        if: success()
+        if: ${{ success() }}
         run: |
           python - <<'PY'
           import json
