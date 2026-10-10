@@ -33,7 +33,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
-          git add _data/*.yml || true
+          git add _data/*.yml _data/repair-status.json || true
           if ! git diff --staged --quiet; then
             git commit -m "fix: автоматическое исправление синтаксиса и структуры расписания"
             git push origin main
