@@ -100,6 +100,18 @@ def write_status(status):
 
     print(f"[СТАТУС] {status}", flush=True)
 
+def clean_field(value, allowed_extra=""):
+    """Оставляет только русские и английские буквы, пробелы и разрешённые знаки."""
+    allowed = set(
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+        "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+        + allowed_extra
+    )
+
+    cleaned = "".join(c for c in value if c in allowed)
+    return " ".join(cleaned.split()).strip()
 
 def repair_yaml_file(file_path):
     """Проверяет и исправляет один файл расписания."""
@@ -201,10 +213,7 @@ def repair_yaml_file(file_path):
                 .strip()
             )
 
-            clean_val = "".join(
-                c for c in raw_val
-                if c not in ["[", "]", "\\", "/",";"]
-            ).strip()
+            clean_val = clean_field(raw_val)
 
             value_lower = clean_val.lower()
 
@@ -244,13 +253,7 @@ def repair_yaml_file(file_path):
             # Убираем внешние кавычки.
             clean_val = old_raw_val.strip('"').strip("'").strip()
 
-            # Удаляем запрещённые символы, включая кавычки.
-            clean_val = "".join(
-                c for c in clean_val
-                if c not in ['"', "'", "[", "]", "\\", ";"]
-            ).strip()
-
-            clean_val = " ".join(clean_val.split()).strip()
+            clean_val = clean_field(clean_val)
 
             repaired_line = (
                 f"    - name: "
@@ -275,15 +278,7 @@ def repair_yaml_file(file_path):
                 .strip()
             )
 
-            clean_val = raw_val
-
-            if (
-                clean_val.startswith("#techlab-")
-                or clean_val.startswith("@")
-            ):
-                clean_val = clean_val.rstrip("!.,;")
-
-            clean_val = " ".join(clean_val.split()).strip()
+            clean_val = clean_field(raw_val, allowed_extra="#@-")
 
             repaired_line = (
                 f"      tag: "
