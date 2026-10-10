@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 @module  journal_data_repair.py
 @about   Проверка и исправление файлов расписания
