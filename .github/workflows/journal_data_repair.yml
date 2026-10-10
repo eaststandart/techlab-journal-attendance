@@ -36,22 +36,43 @@ jobs:
       - name: Запуск проверки и исправления расписания
         run: python _actions/journal_data_repair.py
 
+
       - name: Финальная очистка сигналов и сохранение изменений
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Физически удаляем входящий файл-сигнал с сервера
-          rm -f _data/signal-repair.json
-          
-          # Добавляем в коммит исправленный YAML и измененный JSON статуса
-          git add -A -- _data
-          
 
-          if ! git diff --staged --quiet; then
-            git commit -m "fix(database): автоматическое исправление расписания [skip ci]"
-            git push origin main
-          else
+          # Удаляем входящий сигнал
+          rm -f _data/signal-repair.json
+
+          # Добавляем исправленные данные и удаление сигнала
+          git add -A -- _data
+
+          if git diff --staged --quiet; then
             echo "Изменений для коммита нет."
+            exit 0
           fi
 
+          git commit -m "fix(database): автоматическое исправление расписания [skip ci]"
+
+          MAX_ATTEMPTS=3
+          RETRY_INTERVAL_MINUTES=10
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            echo "Попытка публикации $attempt из $MAX_ATTEMPTS"
+
+            if git push origin main; then
+              echo "Изменения успешно опубликованы."
+              exit 0
+            fi
+
+            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
+              echo "Публикация не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
+              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+              git fetch origin main
+              git rebase origin/main
+            fi
+          done
+
+          echo "Не удалось опубликовать изменения после $MAX_ATTEMPTS попыток."
+          exit 1
