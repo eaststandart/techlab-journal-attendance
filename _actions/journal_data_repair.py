@@ -13,6 +13,12 @@ import sys
 import json
 from datetime import datetime
 
+# ==============================================================================
+# НАСТРОЙКИ ВРЕМЕНИ
+# ==============================================================================
+
+RETRY_INTERVAL_MINUTES = 10  # Интервал повторной попытки после временного сбоя GitHub
+
 def repair_yaml_file(file_path):
     print(f"🔍 Чтение файла расписания: {file_path}", flush=True)
     try:
@@ -158,13 +164,16 @@ def main():
                         print(f"💥 Критический сбой обработки файла {file}: {e}", flush=True)
                         has_critical_error = True
 
-    # Шаг 2: Запись итогового флага светофора строго после всех физических сохранений
-    final_status = "error" if has_critical_error else "off"
-    status_payload = {
-        "status": final_status,
-        "timestamp": datetime.utcnow().isoformat() + "Z"
-    }
-    
+
+# Шаг 2: После обработки не снимаем блокировку до публикации изменений.
+# Статус "off" будет установлен отдельным шагом после успешного git push.
+final_status = "error" if has_critical_error else "on"
+
+status_payload = {
+    "status": final_status,
+    "timestamp": datetime.utcnow().isoformat() + "Z"
+}
+
     try:
         with open(status_file, "w", encoding="utf-8") as stf:
             json.dump(status_payload, stf, indent=2, ensure_ascii=False)
@@ -174,4 +183,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
