@@ -9,6 +9,7 @@
 @version 1.0.0
 """
 
+import re
 import os
 import sys
 import json
@@ -22,6 +23,70 @@ DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
 
+
+def normalize_time(raw_time):
+    """Возвращает HH:MM для допустимого времени, иначе None."""
+    value = raw_time.strip().strip("\"'").strip()
+
+    hour = minute = None
+
+    # 900, 930, 0900, 1730.
+    if re.fullmatch(r"\d{3,4}", value):
+        if len(value) == 3:
+            hour, minute = int(value[0]), int(value[1:])
+        else:
+            hour, minute = int(value[:2]), int(value[2:])
+
+    else:
+        # 10:00, 10\00, 10/00, 10-00, 10=00,
+        # 10–00, 10—00, 10.00, 10 00.
+        match = re.fullmatch(
+            r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})",
+            value,
+        )
+
+        if not match:
+            match = re.fullmatch(r"(\d{1,2})\s+(\d{2})", value)
+
+        if match:
+            hour = int(match.group(1))
+            minute = int(match.group(2))
+
+    if hour is None or minute is None:
+        return None
+
+    if not (0 <= hour <= 23 and 0 <= minute <= 59):
+        return None
+
+    return f"{hour:02d}:{minute:02d}"
+
+
+def normalize_weekday(raw_day):
+    """Нормализует русское название дня недели или его сокращение."""
+    value = raw_day.strip().strip("\"'").strip().lower()
+
+    # Убираем дефисы и тире по краям, включая длинное тире.
+    value = re.sub(r"^[\s\-–—]+|[\s\-–—]+$", "", value)
+    value = value.rstrip(".").strip()
+
+    weekdays = {
+        "понедельник": "Понедельник",
+        "пн": "Понедельник",
+        "вторник": "Вторник",
+        "вт": "Вторник",
+        "среда": "Среда",
+        "ср": "Среда",
+        "четверг": "Четверг",
+        "чт": "Четверг",
+        "пятница": "Пятница",
+        "пт": "Пятница",
+        "суббота": "Суббота",
+        "сб": "Суббота",
+        "воскресенье": "Воскресенье",
+        "вс": "Воскресенье",
+    }
+
+    return weekdays.get(value)
 
 def write_status(status):
     """Сохраняет текущий статус обработки."""
@@ -50,15 +115,38 @@ def repair_yaml_file(file_path):
         return False
 
     is_modified = False
+    has_errors = False
     repaired_lines = []
 
     electronics_letters = ["э", "Э", "е", "Е", "e", "E"]
     joinery_letters = ["с", "С", "c", "C"]
 
+
     for line in lines:
         original_line = line
         stripped = line.strip()
 
+        # 0. Нормализация названий дней недели.
+        if (
+            stripped.endswith(":")
+            and stripped
+            and not line.startswith((" ", "\t"))
+        ):
+            raw_day = stripped[:-1].strip().strip("\"'").strip()
+            clean_day = normalize_weekday(raw_day)
+
+            if clean_day is not None:
+                repaired_line = f"{clean_day}:\n"
+
+                if repaired_line != line:
+                    print(
+                        f"[ДЕНЬ] {filename}: "
+                        f"{raw_day!r} -> {clean_day!r}",
+                        flush=True,
+                    )
+                    line = repaired_line
+                    is_modified = True
+                    stripped = line.strip()
 
         # 1. Нормализация времени группы.
         if (
@@ -68,15 +156,15 @@ def repair_yaml_file(file_path):
         ):
             raw_time = (
                 stripped[:-1]
-                .replace('"', '')
-                .replace("'", '')
+                .replace('"', "")
+                .replace("'", "")
                 .strip()
             )
 
             hour = minute = None
 
-            # Формат HMM или HHMM: 900, 930, 0900, 1730.
-            if raw_time.isdigit() and len(raw_time) in (3, 4):
+            # Форматы HMM и HHMM: 900, 930, 0900, 1730.
+            if re.fullmatch(r"\d{3,4}", raw_time):
                 if len(raw_time) == 3:
                     hour = int(raw_time[0])
                     minute = int(raw_time[1:])
@@ -84,24 +172,36 @@ def repair_yaml_file(file_path):
                     hour = int(raw_time[:2])
                     minute = int(raw_time[2:])
 
-            # Формат H:MM или HH:MM: 9:00, 09:00, 17:30.
-            elif ":" in raw_time:
-                parts = raw_time.split(":")
-                if (
-                    len(parts) == 2
-                    and parts[0].isdigit()
-                    and parts[1].isdigit()
-                    and len(parts[1]) == 2
-                ):
-                    hour = int(parts[0])
-                    minute = int(parts[1])
+            else:
+                # Форматы 10:00, 10\00, 10/00, 10-00,
+                # 10=00, 10–00, 10—00, 10.00 и 10 00.
+                match = re.fullmatch(
+                    r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})",
+                    raw_time,
+                )
 
-            # Исправляем только допустимое время.
+                if not match:
+                    match = re.fullmatch(
+                        r"(\d{1,2})\s+(\d{2})",
+                        raw_time,
+                    )
+
+                if match:
+                    hour = int(match.group(1))
+                    minute = int(match.group(2))
+
             if (
-                hour is not None
-                and 0 <= hour <= 23
-                and 0 <= minute <= 59
+                hour is None
+                or minute is None
+                or not (0 <= hour <= 23 and 0 <= minute <= 59)
             ):
+                print(
+                    f"[ОШИБКА ВРЕМЕНИ] {filename}: "
+                    f"недопустимое значение {raw_time!r}",
+                    flush=True,
+                )
+                has_errors = True
+            else:
                 clean_time = f"{hour:02d}:{minute:02d}"
                 repaired_line = f'  "{clean_time}":\n'
 
@@ -109,7 +209,7 @@ def repair_yaml_file(file_path):
                     print(
                         f"[ВРЕМЯ] {filename}: "
                         f"{stripped!r} -> {repaired_line.strip()!r}",
-                        flush=True
+                        flush=True,
                     )
                     line = repaired_line
                     is_modified = True
@@ -210,30 +310,38 @@ def repair_yaml_file(file_path):
 
         repaired_lines.append(line)
 
-    if not is_modified:
-        print(
-            f"[ИТОГ] {filename}: исправления не требуются.",
-            flush=True
-        )
-        return True
 
-    try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.writelines(repaired_lines)
-
+    # Ошибки времени проверяем до решения о сохранении.
+    if has_errors:
         print(
-            f"[ИТОГ] {filename}: исправления сохранены.",
-            flush=True
-        )
-        return True
-
-    except Exception as e:
-        print(
-            f"[ОШИБКА] {filename}: запись файла: {e}",
-            flush=True
+            f"[ОШИБКА] {filename}: найдены недопустимые значения времени.",
+            flush=True,
         )
         return False
 
+    # Если были изменения, сохраняем исправленные строки.
+    if is_modified:
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.writelines(repaired_lines)
+
+            print(
+                f"[ИТОГ] {filename}: исправления сохранены.",
+                flush=True,
+            )
+        except Exception as e:
+            print(
+                f"[ОШИБКА] {filename}: запись файла: {e}",
+                flush=True,
+            )
+            return False
+    else:
+        print(
+            f"[ИТОГ] {filename}: исправления не требуются.",
+            flush=True,
+        )
+
+    return True
 
 def main():
     # Проверяем наличие папки данных.
