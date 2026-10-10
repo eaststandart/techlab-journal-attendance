@@ -5,8 +5,8 @@ o-n:
     branches:
       - main
     paths:
-      - '_data/**.yml'
-      - '_data/**.yaml'
+      - '_data/**.y-ml'
+      - '_data/**.y-aml'
       - '_data/**.json'
 
 jobs:
