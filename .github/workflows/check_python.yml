@@ -1,0 +1,21 @@
+
+name: Проверка синтаксиса Python
+
+on:
+  workflow_dispatch:
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получение исходного кода
+        uses: actions/checkout@v4
+
+      - name: Настройка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Проверка синтаксиса
+        run: |
+          python -c "from pathlib import Path; p = Path('_actions/journal_data_repair.py'); compile(p.read_text(encoding='utf-8'), str(p), 'exec'); print('Синтаксис Python корректен.')"
