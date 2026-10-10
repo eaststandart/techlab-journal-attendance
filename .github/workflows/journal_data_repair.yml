@@ -76,3 +76,31 @@ jobs:
 
           echo "Не удалось опубликовать изменения после $MAX_ATTEMPTS попыток."
           exit 1
+
+      - name: Подтверждение успешного исправления
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+
+          path = "_data/repair-status.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              status = json.load(f)
+
+          if status.get("status") != "on":
+              print("Статус не 'on'. Подтверждение не требуется.")
+              raise SystemExit(0)
+
+          status["status"] = "off"
+          status["timestamp"] = datetime.now(timezone.utc).isoformat()
+
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(status, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+
+          git add _data/repair-status.json
+          git commit -m "fix(database): подтверждение завершения исправления [skip ci]"
+          git push origin main
