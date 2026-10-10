@@ -8,7 +8,7 @@
 
 name: Проверка и исправление расписания
 
-o-n:
+on:
   push:
     branches:
       - main
