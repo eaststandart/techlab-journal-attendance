@@ -39,14 +39,13 @@ jobs:
       - name: Финальная очистка сигналов и сохранение изменений
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Физически удаляем входящий файл-сигнал с сервера
           rm -f _data/signal-repair.json
           
-          # Добавляем в коммит починенный YAML и измененный JSON статуса
-          git add _data/*.yml _data/repair-status.json || true
-          git add _data/signal-repair.json || true
+          # Добавляем в коммит исправленный YAML и измененный JSON статуса
+          git add -A -- _data
           
           if ! git diff --staged --quiet; then
             git commit -m "fix(database): исправление расписания [skip ci]"
