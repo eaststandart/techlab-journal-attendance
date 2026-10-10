@@ -38,6 +38,7 @@ jobs:
         run: python _actions/journal_data_repair.py
 
       - name: Финальная очистка сигналов и сохранение изменений
+        id: publish
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -74,14 +75,16 @@ jobs:
           echo "Не удалось опубликовать изменения после $MAX_ATTEMPTS попыток."
           exit 1
 
-      - name: Сохранение статуса error при ошибке Python
-        if: ${{ failure() && steps.repair.outcome == 'failure' }}
+      - name: Сохранение статуса error при ошибке
+        if: ${{ failure() && (steps.repair.outcome == 'failure' || steps.publish.outcome == 'failure') }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Отбрасываем локальные изменения расписания и сигнала.
-          git reset --hard HEAD
+          # Возвращаем рабочую копию к последнему состоянию на GitHub.
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
 
           # Сохраняем только статус ошибки.
           python - <<'PY'
@@ -118,10 +121,11 @@ jobs:
           MAX_ATTEMPTS=3
           RETRY_INTERVAL_MINUTES=10
 
+ 
           for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
             echo "Попытка публикации статуса ошибки $attempt из $MAX_ATTEMPTS"
 
-            if git push origin main; then
+            if git push origin HEAD:main; then
               echo "Статус error успешно опубликован."
               exit 0
             fi
@@ -129,8 +133,44 @@ jobs:
             if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
               echo "Публикация статуса не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
               sleep "$((RETRY_INTERVAL_MINUTES * 60))"
-              git fetch origin main
-              git rebase origin/main
+
+              if ! git fetch origin main; then
+                echo "Не удалось получить актуальную версию main."
+                continue
+              fi
+
+              git rebase --abort 2>/dev/null || true
+
+              if ! git rebase origin/main; then
+                echo "Не удалось выполнить rebase. Подготовка повторной попытки."
+                git rebase --abort 2>/dev/null || true
+                git reset --hard origin/main
+
+                python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+
+          path = "_data/repair-status.json"
+
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  status = json.load(f)
+              if not isinstance(status, dict):
+                  status = {}
+          except (OSError, json.JSONDecodeError):
+              status = {}
+
+          status["status"] = "error"
+          status["timestamp"] = datetime.now(timezone.utc).isoformat()
+
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(status, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+
+                git add _data/repair-status.json
+                git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
+              fi
             fi
           done
 
@@ -161,6 +201,38 @@ jobs:
               f.write("\n")
           PY
 
+
           git add _data/repair-status.json
           git commit -m "fix(database): подтверждение завершения исправления [skip ci]"
-          git push origin main
+
+          MAX_ATTEMPTS=3
+          RETRY_INTERVAL_MINUTES=10
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            echo "Попытка публикации статуса off $attempt из $MAX_ATTEMPTS"
+
+            if git push origin HEAD:main; then
+              echo "Статус off успешно опубликован."
+              exit 0
+            fi
+
+            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
+              echo "Публикация не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
+              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+
+              if ! git fetch origin main; then
+                echo "Не удалось получить актуальную версию main."
+                continue
+              fi
+
+              if ! git rebase origin/main; then
+                echo "Не удалось выполнить rebase."
+                git rebase --abort 2>/dev/null || true
+                exit 1
+              fi
+            fi
+          done
+
+          echo "Не удалось опубликовать статус off после $MAX_ATTEMPTS попыток."
+          exit 1
+
