@@ -47,11 +47,11 @@ jobs:
           # Добавляем в коммит исправленный YAML и измененный JSON статуса
           git add -A -- _data
           
+
           if ! git diff --staged --quiet; then
-            git commit -m "fix(database): исправление расписания [skip ci]"
+            git commit -m "fix(database): автоматическое исправление расписания [skip ci]"
             git push origin main
           else
-            echo "✨ Изменений в расписании нет, но сигнал успешно очищен."
-            git commit -m "chore: очистка входящего сигнала ремонта расписания [skip ci]"
-            git push origin main
+            echo "Изменений для коммита нет."
           fi
+
