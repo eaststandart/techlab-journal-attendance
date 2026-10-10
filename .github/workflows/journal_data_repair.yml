@@ -1,3 +1,11 @@
+# ==============================================================================
+# @module  journal_data_repair.yml
+# @about   Автоматизация проверки и исправления файлов расписания на сервере Гитхаб
+# @purpose Запуск сценария приведения времени и направлений базы данных к стандарту
+# @author  TechLab
+# @version 10.0.0
+# ==============================================================================
+
 name: Проверка и исправление расписания
 
 on:
@@ -5,8 +13,7 @@ on:
     branches:
       - main
     paths:
-      - '_data/**.yml'
-      - '_data/repair-status.json'
+      - '_data/signal-repair.json'
 
 jobs:
   repair:
@@ -29,14 +36,23 @@ jobs:
       - name: Запуск проверки и исправления расписания
         run: python _actions/journal_data_repair.py
 
-      - name: Автоматическое сохранение исправлений в репозиторий
+      - name: Финальная очистка сигналов и сохранение изменений
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
+          
+          # Физически удаляем входящий файл-сигнал с сервера
+          rm -f _data/signal-repair.json
+          
+          # Добавляем в коммит починенный YAML и измененный JSON статуса
           git add _data/*.yml _data/repair-status.json || true
+          git add _data/signal-repair.json || true
+          
           if ! git diff --staged --quiet; then
-            git commit -m "fix(database): автоматическое исправление синтаксиса и структуры расписания"
+            git commit -m "fix(database): автоматическое адресное исправление расписания [skip ci]"
             git push origin main
           else
-            echo "✨ Файлы расписаний находятся в идеальном состоянии, изменений нет."
+            echo "✨ Изменений в расписании нет, но сигнал успешно очищен."
+            git commit -m "chore: очистка входящего сигнала ремонта расписания [skip ci]"
+            git push origin main
           fi
