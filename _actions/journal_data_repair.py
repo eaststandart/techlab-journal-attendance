@@ -60,7 +60,6 @@ def normalize_time(raw_time):
 
     return f"{hour:02d}:{minute:02d}"
 
-
 def normalize_weekday(raw_day):
     """Нормализует русское название дня недели или его сокращение."""
     value = raw_day.strip().strip("\"'").strip().lower()
@@ -172,40 +171,9 @@ def repair_yaml_file(file_path):
                 .strip()
             )
 
-            hour = minute = None
+            clean_time = normalize_time(raw_time)
 
-            # Форматы HMM и HHMM: 900, 930, 0900, 1730.
-            if re.fullmatch(r"\d{3,4}", raw_time):
-                if len(raw_time) == 3:
-                    hour = int(raw_time[0])
-                    minute = int(raw_time[1:])
-                else:
-                    hour = int(raw_time[:2])
-                    minute = int(raw_time[2:])
-
-            else:
-                # Форматы 10:00, 10\00, 10/00, 10-00,
-                # 10=00, 10–00, 10—00, 10.00 и 10 00.
-                match = re.fullmatch(
-                    r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})",
-                    raw_time,
-                )
-
-                if not match:
-                    match = re.fullmatch(
-                        r"(\d{1,2})\s+(\d{2})",
-                        raw_time,
-                    )
-
-                if match:
-                    hour = int(match.group(1))
-                    minute = int(match.group(2))
-
-            if (
-                hour is None
-                or minute is None
-                or not (0 <= hour <= 23 and 0 <= minute <= 59)
-            ):
+            if clean_time is None:
                 print(
                     f"[ОШИБКА ВРЕМЕНИ] {filename}: "
                     f"недопустимое значение {raw_time!r}",
@@ -213,7 +181,6 @@ def repair_yaml_file(file_path):
                 )
                 has_errors = True
             else:
-                clean_time = f"{hour:02d}:{minute:02d}"
                 repaired_line = f'  "{clean_time}":\n'
 
                 if repaired_line != line:
@@ -236,30 +203,36 @@ def repair_yaml_file(file_path):
 
             clean_val = "".join(
                 c for c in raw_val
-                if c not in ["[", "]", "\\", "/", ";"]
+                if c not in ["[", "]", "\\", "/",";"]
             ).strip()
 
-            repaired_val = clean_val
+            value_lower = clean_val.lower()
 
             if (
-                clean_val in electronics_letters
-                or "электрон" in clean_val.lower()
+                value_lower in electronics_letters
+                or "электрон" in value_lower
             ):
                 repaired_val = "электронное конструирование"
             elif (
-                clean_val in joinery_letters
-                or "столяр" in clean_val.lower()
+                value_lower in joinery_letters
+                or "столяр" in value_lower
             ):
                 repaired_val = "столярное дело"
+            else:
+                repaired_val = clean_val
 
             repaired_val = " ".join(repaired_val.split()).strip()
-            repaired_line = f'      direction: "{repaired_val}"\n'
+
+            repaired_line = (
+                f"      direction: "
+                f"{json.dumps(repaired_val, ensure_ascii=False)}\n"
+            )
 
             if repaired_line != line:
                 print(
                     f"[КУРС] {filename}: "
                     f"{raw_val!r} -> {repaired_val!r}",
-                    flush=True
+                    flush=True,
                 )
                 line = repaired_line
                 is_modified = True
@@ -267,17 +240,29 @@ def repair_yaml_file(file_path):
         # 3. Очистка имени.
         if line.startswith("    - name:"):
             old_raw_val = line.split(":", 1)[1].strip()
-            
-            # Снимаем внешние кавычки, если они есть
+
+            # Снимаем внешние кавычки, если они есть.
             clean_val = old_raw_val.strip('"').strip("'").strip()
-            
-            # Убираем только запрещенные системные символы, не ломая структуру слэшей
-            clean_val = "".join(c for c in clean_val if c not in ["[", "]", "\\", ";"]).strip()
+
+            # Убираем запрещённые символы.
+            clean_val = "".join(
+                c for c in clean_val
+                if c not in ["[", "]", "\\", ";"]
+            ).strip()
             clean_val = " ".join(clean_val.split()).strip()
-            repaired_line = f'    - name: "{clean_val}"\n'
+
+            # Безопасно формируем строковое значение YAML.
+            repaired_line = (
+                f"    - name: "
+                f"{json.dumps(clean_val, ensure_ascii=False)}\n"
+            )
 
             if repaired_line != line:
-                print(f"[ИМЯ] {filename}: {old_raw_val!r} -> {clean_val!r}", flush=True)
+                print(
+                    f"[ИМЯ] {filename}: "
+                    f"{old_raw_val!r} -> {clean_val!r}",
+                    flush=True,
+                )
                 line = repaired_line
                 is_modified = True
 
@@ -289,25 +274,27 @@ def repair_yaml_file(file_path):
                 .replace("'", '')
                 .strip()
             )
+
             clean_val = raw_val
 
             if (
                 clean_val.startswith("#techlab-")
                 or clean_val.startswith("@")
             ):
-                while clean_val and clean_val[-1] in [
-                    "!", ".", ",", ";", '"', "'"
-                ]:
-                    clean_val = clean_val[:-1]
+                clean_val = clean_val.rstrip("!.,;")
 
             clean_val = " ".join(clean_val.split()).strip()
-            repaired_line = f'      tag: "{clean_val}"\n'
+
+            repaired_line = (
+                f"      tag: "
+                f"{json.dumps(clean_val, ensure_ascii=False)}\n"
+            )
 
             if repaired_line != line:
                 print(
                     f"[ТЕГ] {filename}: "
                     f"{raw_val!r} -> {clean_val!r}",
-                    flush=True
+                    flush=True,
                 )
                 line = repaired_line
                 is_modified = True
