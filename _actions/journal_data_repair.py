@@ -241,17 +241,17 @@ def repair_yaml_file(file_path):
         if line.startswith("    - name:"):
             old_raw_val = line.split(":", 1)[1].strip()
 
-            # Снимаем внешние кавычки, если они есть.
+            # Убираем внешние кавычки.
             clean_val = old_raw_val.strip('"').strip("'").strip()
 
-            # Убираем запрещённые символы.
+            # Удаляем запрещённые символы, включая кавычки.
             clean_val = "".join(
                 c for c in clean_val
-                if c not in ["[", "]", "\\", ";"]
+                if c not in ['"', "'", "[", "]", "\\", ";"]
             ).strip()
+
             clean_val = " ".join(clean_val.split()).strip()
 
-            # Безопасно формируем строковое значение YAML.
             repaired_line = (
                 f"    - name: "
                 f"{json.dumps(clean_val, ensure_ascii=False)}\n"
