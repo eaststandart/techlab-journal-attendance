@@ -104,7 +104,7 @@ def clean_field(value, allowed_extra=""):
     """Оставляет только русские и английские буквы, пробелы и разрешённые знаки."""
     allowed = set(
         "abcdefghijklmnopqrstuvwxyz"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
         "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
         "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
         + allowed_extra
