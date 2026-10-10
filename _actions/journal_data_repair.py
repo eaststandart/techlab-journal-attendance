@@ -267,21 +267,17 @@ def repair_yaml_file(file_path):
         # 3. Очистка имени.
         if line.startswith("    - name:"):
             old_raw_val = line.split(":", 1)[1].strip()
-
-            clean_val = "".join(
-                c for c in old_raw_val
-                if c not in ["[", "]", "\\", "/", ";", '"', "'"]
-            ).strip()
-
+            
+            # Снимаем внешние кавычки, если они есть
+            clean_val = old_raw_val.strip('"').strip("'").strip()
+            
+            # Убираем только запрещенные системные символы, не ломая структуру слэшей
+            clean_val = "".join(c for c in clean_val if c not in ["[", "]", "\\", ";"]).strip()
             clean_val = " ".join(clean_val.split()).strip()
             repaired_line = f'    - name: "{clean_val}"\n'
 
             if repaired_line != line:
-                print(
-                    f"[ИМЯ] {filename}: "
-                    f"{old_raw_val!r} -> {clean_val!r}",
-                    flush=True
-                )
+                print(f"[ИМЯ] {filename}: {old_raw_val!r} -> {clean_val!r}", flush=True)
                 line = repaired_line
                 is_modified = True
 
