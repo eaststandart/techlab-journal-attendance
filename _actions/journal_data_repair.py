@@ -64,11 +64,16 @@ def repair_yaml_file(file_path):
 
         # 3. Очистка мусора из полей имён (отступ 4 пространства)
         if line.startswith("    - name:"):
-            raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
-            clean_val = "".join([c for c in raw_val if c not in ["[", "]", "\\", "/", ";"]]).strip()
+            # Сохраняем исходное грязное значение для честного вывода в логи
+            old_raw_val = line.split(":", 1)[1].strip()
+            
+            # Проводим глубокую очистку от всех запрещенных знаков и кавычек
+            clean_val = "".join([c for c in old_raw_val if c not in ["[", "]", "\\", "/", ";", '"', "'"]]).strip()
+            
             repaired_line = f"    - name: \"{clean_val}\"\n"
             if repaired_line != line:
-                print(f"  [ИМЯ] Очистка запрещенных знаков: '{raw_val}' ➔ '{clean_val}'", flush=True)
+                # Очищаем кавычки в отображении старого имени, чтобы лог был аккуратным
+                print(f"  [ИМЯ] Очистка запрещенных знаков: '{old_raw_val}' ➔ '{clean_val}'", flush=True)
                 line = repaired_line
                 is_modified = True
 
