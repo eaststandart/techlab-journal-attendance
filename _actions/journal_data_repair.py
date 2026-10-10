@@ -59,6 +59,7 @@ def repair_yaml_file(file_path):
         original_line = line
         stripped = line.strip()
 
+
         # 1. Нормализация времени группы.
         if (
             line.startswith("  ")
@@ -71,10 +72,37 @@ def repair_yaml_file(file_path):
                 .replace("'", '')
                 .strip()
             )
-            digits = "".join(c for c in raw_time if c.isdigit())
 
-            if len(digits) == 4:
-                clean_time = f"{digits[:2]}:{digits[2:4]}"
+            hour = minute = None
+
+            # Формат HMM или HHMM: 900, 930, 0900, 1730.
+            if raw_time.isdigit() and len(raw_time) in (3, 4):
+                if len(raw_time) == 3:
+                    hour = int(raw_time[0])
+                    minute = int(raw_time[1:])
+                else:
+                    hour = int(raw_time[:2])
+                    minute = int(raw_time[2:])
+
+            # Формат H:MM или HH:MM: 9:00, 09:00, 17:30.
+            elif ":" in raw_time:
+                parts = raw_time.split(":")
+                if (
+                    len(parts) == 2
+                    and parts[0].isdigit()
+                    and parts[1].isdigit()
+                    and len(parts[1]) == 2
+                ):
+                    hour = int(parts[0])
+                    minute = int(parts[1])
+
+            # Исправляем только допустимое время.
+            if (
+                hour is not None
+                and 0 <= hour <= 23
+                and 0 <= minute <= 59
+            ):
+                clean_time = f"{hour:02d}:{minute:02d}"
                 repaired_line = f'  "{clean_time}":\n'
 
                 if repaired_line != line:
