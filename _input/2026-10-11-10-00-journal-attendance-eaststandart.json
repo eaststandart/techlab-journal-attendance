@@ -5,22 +5,12 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [],
-  "newbies": [
+  "newbies": [],
+  "probation": [
     {
-      "name": "Фамилия Имя #",
+      "name": "#",
       "direction": "столярное дело",
       "tag": "#"
-    },
-    {
-      "name": "Фамилия Имя",
-      "direction": "электронное конструирование",
-      "tag": "#techlab-Фамилия-Имя"
-    },
-    {
-      "name": "Фамилия Имя",
-      "direction": "",
-      "tag": "@eaststandart"
     }
-  ],
-  "probation": []
+  ]
 }
