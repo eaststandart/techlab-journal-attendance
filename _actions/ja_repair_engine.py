@@ -11,7 +11,6 @@
 import re
 import os
 import json
-# Импортируем утилиты чистки строго из нашего первого модуля ja_repair_normalizer
 from ja_repair_normalizer import normalize_time, normalize_weekday, clean_field
 
 def repair_yaml_file(file_path):
@@ -26,209 +25,99 @@ def repair_yaml_file(file_path):
         print(f"[ОШИБКА] {filename}: чтение файла: {e}", flush=True)
         return False
 
-    is_modified = False
-    has_errors = False
+    is_modified = has_errors = False
     repaired_lines = []
 
     electronics_letters = ["э", "Э", "е", "Е", "e", "E"]
     joinery_letters = ["с", "С", "c", "C"]
 
-
     for line in lines:
         original_line = line
         stripped = line.strip()
 
-        # 0. Нормализация названий дней недели.
-        if (
-            stripped.endswith(":")
-            and stripped
-            and not line.startswith((" ", "\t"))
-        ):
+        if stripped.endswith(":") and stripped and not line.startswith((" ", "\t")):
             raw_day = stripped[:-1].strip().strip("\"'").strip()
             clean_day = normalize_weekday(raw_day)
-
             if clean_day is not None:
                 repaired_line = f"{clean_day}:\n"
-
                 if repaired_line != line:
-                    print(
-                        f"[ДЕНЬ] {filename}: "
-                        f"{raw_day!r} -> {clean_day!r}",
-                        flush=True,
-                    )
+                    print(f"[ДЕНЬ] {filename}: {raw_day!r} -> {clean_day!r}", flush=True)
                     line = repaired_line
                     is_modified = True
                     stripped = line.strip()
 
-        # 1. Нормализация времени группы.
-        if (
-            line.startswith("  ")
-            and not line.startswith("    ")
-            and stripped.endswith(":")
-        ):
-            raw_time = (
-                stripped[:-1]
-                .replace('"', "")
-                .replace("'", "")
-                .strip()
-            )
-
-            # Не считаем обычные текстовые ключи временем.
+        if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):
+            raw_time = stripped[:-1].replace('"', "").replace("'", "").strip()
             if not re.match(r"^\d", raw_time):
                 repaired_lines.append(line)
                 continue
-            raw_time = (
-                stripped[:-1]
-                .replace('"', "")
-                .replace("'", "")
-                .strip()
-            )
 
             clean_time = normalize_time(raw_time)
-
             if clean_time is None:
-                print(
-                    f"[ОШИБКА ВРЕМЕНИ] {filename}: "
-                    f"недопустимое значение {raw_time!r}",
-                    flush=True,
-                )
+                print(f"[ОШИБКА ВРЕМЕНИ] {filename}: недопустимое значение {raw_time!r}", flush=True)
                 has_errors = True
             else:
                 repaired_line = f'  "{clean_time}":\n'
-
                 if repaired_line != line:
-                    print(
-                        f"[ВРЕМЯ] {filename}: "
-                        f"{stripped!r} -> {repaired_line.strip()!r}",
-                        flush=True,
-                    )
+                    print(f"[ВРЕМЯ] {filename}: {stripped!r} -> {repaired_line.strip()!r}", flush=True)
                     line = repaired_line
                     is_modified = True
 
-        # 2. Нормализация направления.
         if line.startswith("      direction:"):
-            raw_val = (
-                line.split(":", 1)[1]
-                .replace('"', '')
-                .replace("'", '')
-                .strip()
-            )
-
+            raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
             clean_val = clean_field(raw_val)
-
             value_lower = clean_val.lower()
 
-            if (
-                value_lower in electronics_letters
-                or "электрон" in value_lower
-            ):
+            if value_lower in electronics_letters or "электрон" in value_lower:
                 repaired_val = "электронное конструирование"
-            elif (
-                value_lower in joinery_letters
-                or "столяр" in value_lower
-            ):
+            elif value_lower in joinery_letters or "столяр" in value_lower:
                 repaired_val = "столярное дело"
             else:
                 repaired_val = clean_val
 
             repaired_val = " ".join(repaired_val.split()).strip()
-
-            repaired_line = (
-                f"      direction: "
-                f"{json.dumps(repaired_val, ensure_ascii=False)}\n"
-            )
-
+            repaired_line = f'      direction: {json.dumps(repaired_val, ensure_ascii=False)}\n'
             if repaired_line != line:
-                print(
-                    f"[КУРС] {filename}: "
-                    f"{raw_val!r} -> {repaired_val!r}",
-                    flush=True,
-                )
+                print(f"[КУРС] {filename}: {raw_val!r} -> {repaired_val!r}", flush=True)
                 line = repaired_line
                 is_modified = True
 
-        # 3. Очистка имени.
         if line.startswith("    - name:"):
             old_raw_val = line.split(":", 1)[1].strip()
-
-            # Убираем внешние кавычки.
             clean_val = old_raw_val.strip('"').strip("'").strip()
-
             clean_val = clean_field(clean_val)
-
-            repaired_line = (
-                f"    - name: "
-                f"{json.dumps(clean_val, ensure_ascii=False)}\n"
-            )
-
+            repaired_line = f'    - name: {json.dumps(clean_val, ensure_ascii=False)}\n'
             if repaired_line != line:
-                print(
-                    f"[ИМЯ] {filename}: "
-                    f"{old_raw_val!r} -> {clean_val!r}",
-                    flush=True,
-                )
+                print(f"[ИМЯ] {filename}: {old_raw_val!r} -> {clean_val!r}", flush=True)
                 line = repaired_line
                 is_modified = True
 
-        # 4. Очистка завершающих знаков тега.
         if line.startswith("      tag:"):
-            raw_val = (
-                line.split(":", 1)[1]
-                .replace('"', '')
-                .replace("'", '')
-                .strip()
-            )
-
+            raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
             clean_val = clean_field(raw_val, allowed_extra="#@-")
-
-            repaired_line = (
-                f"      tag: "
-                f"{json.dumps(clean_val, ensure_ascii=False)}\n"
-            )
-
+            repaired_line = f'      tag: {json.dumps(clean_val, ensure_ascii=False)}\n'
             if repaired_line != line:
-                print(
-                    f"[ТЕГ] {filename}: "
-                    f"{raw_val!r} -> {clean_val!r}",
-                    flush=True,
-                )
+                print(f"[ТЕГ] {filename}: {raw_val!r} -> {clean_val!r}", flush=True)
                 line = repaired_line
                 is_modified = True
 
         if line != original_line:
             is_modified = True
-
         repaired_lines.append(line)
 
-
-    # Ошибки времени проверяем до решения о сохранении.
     if has_errors:
-        print(
-            f"[ОШИБКА] {filename}: найдены недопустимые значения времени.",
-            flush=True,
-        )
+        print(f"[ОШИБКА] {filename}: найдены недопустимые значения времени.", flush=True)
         return False
 
-    # Если были изменения, сохраняем исправленные строки.
     if is_modified:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(repaired_lines)
-
-            print(
-                f"[ИТОГ] {filename}: исправления сохранены.",
-                flush=True,
-            )
+            print(f"[ИТОГ] {filename}: исправления сохранены.", flush=True)
         except Exception as e:
-            print(
-                f"[ОШИБКА] {filename}: запись файла: {e}",
-                flush=True,
-            )
+            print(f"[ОШИБКА] {filename}: запись файла: {e}", flush=True)
             return False
     else:
-        print(
-            f"[ИТОГ] {filename}: исправления не требуются.",
-            flush=True,
-        )
+        print(f"[ИТОГ] {filename}: исправления не требуются.", flush=True)
 
     return True
