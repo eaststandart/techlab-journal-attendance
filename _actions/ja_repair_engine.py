@@ -51,7 +51,7 @@ def repair_yaml_file(file_path):
             # --- ЛОГ 1: Сырая строка из файла ---
             print(f"[ДИАГНОСТИКА ЛОГ 1] Сырая строка из YAML: {stripped!r}", flush=True)
             
-            raw_time = stripped[:-1].replace('"', "").replace("'", "").strip()
+            raw_time = stripped[:-1].replace('"', "").replace("'", "").strip().rstrip(":")
 
             # --- ЛОГ 2: Строка после первичной очистки ---
             print(f"[ДИАГНОСТИКА ЛОГ 2] После очистки кавычек: {raw_time!r}", flush=True)
