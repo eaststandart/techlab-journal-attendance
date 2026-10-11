@@ -4,8 +4,13 @@
   "time": "10:00",
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
-  "present_permanent": [],
-  "newbies": [
+  "present_permanent": [
+    "Баранова Лиза",
+    "Дмитриев Артем",
+    "Интальева Даша"
+  ],
+  "newbies": [],
+  "probation": [
     {
       "name": "Иванов Иван",
       "direction": "столярное дело",
@@ -21,6 +26,5 @@
       "direction": "столярное дело",
       "tag": "#techlab-Сидоров-Денис"
     }
-  ],
-  "probation": []
+  ]
 }
