@@ -83,8 +83,8 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 5. ТЕСТ: Служебные поля секции config
-        if stripped in allowed_config:
+        # 5. ТЕСТ: Служебные поля секции config (параметры с отступом 0 на английском языке)
+        if re.match(r'^[a-z_]+:', stripped) and original_line.startswith(stripped[0]):
             repaired_lines.append(original_line)
             is_line_valid = True
             continue
