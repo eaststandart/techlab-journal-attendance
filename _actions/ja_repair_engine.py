@@ -48,7 +48,7 @@ def repair_yaml_file(file_path):
 
         if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):
             raw_time = stripped[:-1].replace('"', "").replace("'", "").strip()
-            if not re.match(r"^\d", raw_time):
+            if not re.match(r"^\d", raw_time.replace(":", "")):
                 repaired_lines.append(line)
                 continue
 
