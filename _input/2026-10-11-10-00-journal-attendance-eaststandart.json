@@ -7,8 +7,19 @@
   "present_permanent": [],
   "newbies": [
     {
-      "name": "Новиков Николай #edfg /#",
-      "direction": ""
+      "name": "Фамилия Имя #",
+      "direction": "столярное дело",
+      "tag": "#"
+    },
+    {
+      "name": "Фамилия Имя",
+      "direction": "электронное конструирование",
+      "tag": "#techlab-Фамилия-Имя"
+    },
+    {
+      "name": "Фамилия Имя",
+      "direction": "",
+      "tag": "@eaststandart"
     }
   ],
   "probation": []
