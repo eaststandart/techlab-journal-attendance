@@ -14,7 +14,8 @@ import json
 from datetime import datetime, timezone
 
 # Импортируем наши автономные модули TechLab
-from ja_repair_engine import repair_yaml_file, write_status
+from ja_repair_normalizer import write_status
+from ja_repair_engine import repair_yaml_file
 from ja_repair_delete import delete_students_from_yaml
 
 # ==============================================================================
