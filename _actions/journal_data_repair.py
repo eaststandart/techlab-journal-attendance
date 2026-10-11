@@ -15,6 +15,7 @@ import json
 from ja_repair_normalizer import write_status
 from ja_repair_engine import repair_yaml_file
 from ja_repair_delete import delete_students_from_yaml
+from ja_repair_structure import repair_yaml_structure
 
 # ==============================================================================
 # НАСТРОЙКИ
@@ -84,6 +85,14 @@ def main():
             print(f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}", flush=True)
             success = False
 
+    # 3. Принудительное выравнивание геометрии отступов (0, 2, 4, 6 пробелов)
+    if success:
+        try:
+            success = repair_yaml_structure(file_path)
+        except Exception as e:
+            print(f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}", flush=True)
+            success = False
+    
     if not success:
         try:
             write_status("error")
