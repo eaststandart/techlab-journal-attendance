@@ -2,19 +2,20 @@
 # -*- coding: utf-8 -*-
 """
 @module  ja_repair_structure.py
-@about   Серверный модуль тотального выравнивания геометрии структуры YAML
-@purpose Принудительное приведение отступов дней (0), групп (2) и учеников (4/6) к эталону
+@about   Серверный модуль контроля целостности и геометрии YAML TechLab
+@purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
 @author  TechLab
 @version 1.0.0
 """
 
 import os
 import re
+from ja_repair_normalizer import normalize_weekday, normalize_time
 
 def repair_yaml_structure(file_path):
-    """Построчно пересобирает YAML, выставляя жесткие эталонные отступы по Белому списку."""
+    """Построчно проверяет легитимность текста по флагу совпадения и штампует отступы."""
     filename = os.path.basename(file_path)
-    print(f"[СТРУКТУРА] Сканирование геометрии файла: {filename}", flush=True)
+    print(f"[СТРУКТУРА] Контроль целостности по флагу совпадения для файла: {filename}", flush=True)
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -23,81 +24,87 @@ def repair_yaml_structure(file_path):
         print(f"[СТРУКТУРА] Ошибка чтения {filename}: {e}", flush=True)
         return False
 
-    # Белый список дней недели с Заглавной буквы строго по новому стандарту базы
-    valid_days = {
-        "понедельник:", "вторник:", "среда:", "четверг:", 
-        "пятница:", "суббота:", "воскресенье:"
-    }
-
+    valid_days = {"Понедельник:", "Вторник:", "Среда:", "Четверг:", "Пятница:", "Суббота:", "Воскресенье:"}
+    allowed_config = {"config:", "project_category_name:", "tg_public_notify:"}
+    
     repaired_lines = []
     is_modified = False
 
-    for line in lines:
+    # Построчно перебираем весь текст файла расписания
+    for i, line in enumerate(lines):
         original_line = line
         stripped = line.strip()
 
-        # Пропускаем системные комментарии и пустые строки без изменений
+        # Законные пустые строки и комментарии пропускаем без проверок
         if not stripped or stripped.startswith("#"):
             repaired_lines.append(original_line)
             continue
 
-        # --- АППАРАТНЫЙ ПЕРЕХВАТ НАРУШЕНИЯ ЦЕЛОСТНОСТИ СИСТЕМНЫХ ПОЛЕЙ ---
-        # Ловим только разорванные пробелами или искалеченные системные слова по краям
-        if (
-            (re.search(r'-\s*n\s*a\s*m\s*e\s*:', stripped) and not stripped.startswith("- name:")) or
-            (re.search(r'\bd\s*i\s*r\s*e\s*c\s*t\s*i\s*o\s*n\s*:', stripped) and not stripped.startswith("direction:")) or
-            (re.search(r'\bt\s*a\s*g\s*:', stripped) and not stripped.startswith("tag:"))
-        ):
-            print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename}: Нарушена целостность системного поля! Обнаружена опечатка в ключевой строке: {stripped!r}", flush=True)
-            return False
+        # Жесткий маркер валидности текущей строки расписания
+        is_line_valid = False
 
-        # 1. Выравнивание Дней недели (Строго 0 пробелов, проверка по белому списку без учета регистра)
-        if stripped.lower() in valid_days:
-            # Приводим к правильному регистру (Заглавная буква на старте)
-            clean_day = stripped.capitalize()
-            repaired_line = f"{clean_day}\n"
+        # 1. ТЕСТ: День недели (Пробуем нормализовать текст)
+        raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
+        clean_day = normalize_weekday(raw_day)
+        if clean_day:
+            repaired_line = f"{clean_day}:\n"
             if repaired_line != original_line:
-                print(f"[ГЕОМЕТРИЯ] {filename}: Выровнен день '{clean_day.strip()}' -> отступ 0", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
+            continue
 
-        # 2. Выравнивание Времени групп (Строго 2 пробела)
-        elif stripped.endswith(":") and re.match(r'^"\d{2}:\d{2}":$', stripped):
-            repaired_line = f"  {stripped}\n"
+        # 2. ТЕСТ: Время группы (Пробуем нормализовать текст)
+        raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
+        clean_time = normalize_time(raw_time)
+        if clean_time and stripped.endswith(":"):
+            repaired_line = f'  "{clean_time}":\n'
             if repaired_line != original_line:
-                print(f"[ГЕОМЕТРИЯ] {filename}: Выровнена группа {stripped} -> отступ 2", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
+            continue
 
-        # 3. Выравнивание Имени ученика (Строго 4 пробела)
-        elif stripped.startswith("- name:"):
+        # 3. ТЕСТ: Имя ученика
+        if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
-                print(f"[ГЕОМЕТРИЯ] {filename}: Выровнено имя ученика -> отступ 4", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
+            continue
 
-        # 4. Выравнивание Параметров ученика (Строго 6 пробелов)
-        elif stripped.startswith("direction:") or stripped.startswith("tag:"):
+        # 4. ТЕСТ: Параметры ученика
+        if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
+            continue
 
-        # Все остальные легитимные строки расписания (например, внутри config:) оставляем как есть
-        else:
+        # 5. ТЕСТ: Служебные поля секции config
+        if stripped in allowed_config:
             repaired_lines.append(original_line)
+            is_line_valid = True
+            continue
 
-    # Записываем изменения на диск, если геометрия была нарушена
+        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False) ---
+        if not is_line_valid:
+            print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r}", flush=True)
+            print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
+            return False
+
+    # Физически сохраняем исправленные отступы, только если проход завершился успехом
     if is_modified:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(repaired_lines)
-            print(f"[ИТОГ СТРУКТУРЫ] {filename}: Геометрия отступов успешно приведена к стандарту.", flush=True)
+            print(f"[ИТОГ] {filename}: Геометрия отступов успешно нормализована.", flush=True)
         except Exception as e:
             print(f"[СТРУКТУРА] Ошибка записи {filename}: {e}", flush=True)
             return False
     else:
-        print(f"[ИТОГ СТРУКТУРЫ] {filename}: Ошибок геометрии отступов не обнаружено.", flush=True)
+        print(f"[ИТОГ] {filename}: Нарушений целостности и геометрии не найдено.", flush=True)
 
     return True
