@@ -42,13 +42,11 @@ def repair_yaml_structure(file_path):
             continue
 
         # --- АППАРАТНЫЙ ПЕРЕХВАТ НАРУШЕНИЯ ЦЕЛОСТНОСТИ СИСТЕМНЫХ ПОЛЕЙ ---
-        # Ловим разорванные пробелами или искалеченные ключевые слова YAML
-        collapsed = stripped.replace(" ", "")
+        # Ловим только разорванные пробелами или искалеченные системные слова по краям
         if (
-            ("name:" in collapsed and not stripped.startswith("- name:")) or
-            ("direction:" in collapsed and not stripped.startswith("direction:")) or
-            ("tag:" in collapsed and not stripped.startswith("tag:")) or
-            (stripped.startswith("-") and "name" in stripped and not stripped.startswith("- name:"))
+            (re.search(r'-\s*n\s*a\s*m\s*e\s*:', stripped) and not stripped.startswith("- name:")) or
+            (re.search(r'\bd\s*i\s*r\s*e\s*c\s*t\s*i\s*o\s*n\s*:', stripped) and not stripped.startswith("direction:")) or
+            (re.search(r'\bt\s*a\s*g\s*:', stripped) and not stripped.startswith("tag:"))
         ):
             print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename}: Нарушена целостность системного поля! Обнаружена опечатка в ключевой строке: {stripped!r}", flush=True)
             return False
