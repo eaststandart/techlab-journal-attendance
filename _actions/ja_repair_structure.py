@@ -5,7 +5,7 @@
 @about   Серверный модуль контроля целостности и геометрии YAML TechLab
 @purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
 @author  TechLab
-@version 1.0.0
+@version 4.6.0
 """
 
 import os
@@ -24,11 +24,9 @@ def repair_yaml_structure(file_path):
         print(f"[СТРУКТУРА] Ошибка чтения {filename}: {e}", flush=True)
         return False
 
-    valid_days = {"Понедельник:", "Вторник:", "Среда:", "Четверг:", "Пятница:", "Суббота:", "Воскресенье:"}
-    allowed_config = {"config:", "project_category_name:", "tg_public_notify:", "publish_as_bot: true"}
-    
     repaired_lines = []
     is_modified = False
+    is_inside_config = False  # Зрячий предохранитель секции конфигурации
 
     # Построчно перебираем весь текст файла расписания
     for i, line in enumerate(lines):
@@ -40,21 +38,35 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # Жесткий маркер валидности текущей строки расписания
-        is_line_valid = False
+        # Перехват входа в секцию конфигурации config:
+        if stripped.lower() == "config:":
+            is_inside_config = True
+            repaired_lines.append(original_line)
+            continue
 
-        # 1. ТЕСТ: День недели (Пробуем нормализовать текст)
+        # Пытаемся зряче нормализовать день недели (лечит "воскре сенье" и сбрасывает config:)
         raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         clean_day = normalize_weekday(raw_day)
+        
         if clean_day:
+            is_inside_config = False  # Робот вышел из настроек, началось расписание!
             repaired_line = f"{clean_day}:\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
-            is_line_valid = True
             continue
 
-        # 2. ТЕСТ: Время группы (Пробуем нормализовать текст)
+        # ХАРД-ЛОК: Если мы летим внутри секции config:, проверки синтаксиса полностью ИГНОРИРУЮТСЯ!
+        if is_inside_config:
+            repaired_lines.append(original_line)
+            continue
+
+        # =========================================================================
+        # 🛑 СИТО ТЕСТОВ ДЛЯ СЕКЦИИ РАСПИСАНИЯ (РАБОТАЕТ С ФЛАГОМ СОВПАДЕНИЯ)
+        # =========================================================================
+        is_line_valid = False
+
+        # 1. ТЕСТ: Время группы (Пробуем нормализовать текст)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         clean_time = normalize_time(raw_time)
         if clean_time and stripped.endswith(":"):
@@ -65,7 +77,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 3. ТЕСТ: Имя ученика
+        # 2. ТЕСТ: Имя ученика
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
@@ -74,7 +86,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 4. ТЕСТ: Параметры ученика
+        # 3. ТЕСТ: Параметры ученика
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
@@ -83,13 +95,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 5. ТЕСТ: Служебные поля секции config (параметры на английском языке с цифрами)
-        if re.match(r'^[a-z0-9_]+:', stripped):
-            repaired_lines.append(original_line)
-            is_line_valid = True
-            continue
-
-        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False) ---
+        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False во внешней базе расписания) ---
         if not is_line_valid:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r}", flush=True)
             print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
