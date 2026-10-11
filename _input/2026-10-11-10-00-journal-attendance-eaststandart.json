@@ -5,14 +5,13 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [
-    "Баранова Лиза",
-    "Дмитриев Артем"
+    "Салоха Влад"
   ],
   "newbies": [
     {
-      "name": "Фамилия Имя techlab-imya",
+      "name": "Фамилия Имя /",
       "direction": "столярное дело",
-      "tag": "#"
+      "tag": "@lgin"
     }
   ],
   "probation": []
