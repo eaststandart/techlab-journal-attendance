@@ -25,7 +25,7 @@ def repair_yaml_structure(file_path):
         return False
 
     valid_days = {"Понедельник:", "Вторник:", "Среда:", "Четверг:", "Пятница:", "Суббота:", "Воскресенье:"}
-    allowed_config = {"config:", "project_category_name:", "tg_public_notify:"}
+    allowed_config = {"config:", "project_category_name:", "tg_public_notify:", "publish_as_bot: true"}
     
     repaired_lines = []
     is_modified = False
