@@ -5,15 +5,13 @@
 @about   Главный диспетчер проверки, исправления и модерации расписания
 @purpose Прием входящих сигналов, управление светофором и вызов модулей TechLab
 @author  TechLab
-@version 1.0.0
+@version 2.0.0
 """
 
 import os
 import sys
 import json
-from datetime import datetime, timezone
 
-# Импортируем наши автономные модули TechLab
 from ja_repair_normalizer import write_status
 from ja_repair_engine import repair_yaml_file
 from ja_repair_delete import delete_students_from_yaml
@@ -26,7 +24,6 @@ SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 
 
 def main():
-    # Проверяем наличие папки данных и входящего сигнала
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
         print("[ОШИБКА] Папка _data или входящий сигнал не найдены.", flush=True)
         sys.exit(1)
@@ -72,20 +69,14 @@ def main():
 
     success = True
 
-    # =========================================================================
-    # 💥 ИСПОЛНИТЕЛЬНЫЙ КОНВЕЙЕР МОДЕРАЦИИ И РЕМОНТА БАЗЫ
-    # =========================================================================
-    
-    # 1. Проверяем, пришел ли запрос на удаление учеников
+    # 1. Проверяем наличие массива на удаление
     students_to_delete = signal_data.get("delete")
     if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
         target_day = signal_data.get("day", "")
         target_time = signal_data.get("time", "")
-        
-        # Запускаем лазерное вырезание указанных учеников по координатам группы
         success = delete_students_from_yaml(file_path, target_day, target_time, students_to_delete)
 
-    # 2. Если удаление прошло успешно, запускаем общую гигиеническую нормализацию оставшегося YAML
+    # 2. Общая гигиеническая нормализация оставшегося расписания
     if success:
         try:
             success = repair_yaml_file(file_path)
@@ -93,7 +84,6 @@ def main():
             print(f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}", flush=True)
             success = False
 
-    # Фиксируем финальный статус для светофора Obsidian фронтенда
     if not success:
         try:
             write_status("error")
