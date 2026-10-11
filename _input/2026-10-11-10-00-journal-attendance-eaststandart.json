@@ -5,12 +5,11 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [],
-  "newbies": [],
-  "probation": [
+  "newbies": [
     {
-      "name": "Новиков Николай #edfg",
-      "direction": "",
-      "tag": "@eaststandart"
+      "name": "Новиков Николай #edfg /#",
+      "direction": ""
     }
-  ]
+  ],
+  "probation": []
 }
