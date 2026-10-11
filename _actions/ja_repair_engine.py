@@ -47,12 +47,25 @@ def repair_yaml_file(file_path):
                     stripped = line.strip()
 
         if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):
+
+            # --- ЛОГ 1: Сырая строка из файла ---
+            print(f"[ДИАГНОСТИКА ЛОГ 1] Сырая строка из YAML: {stripped!r}", flush=True)
+            
             raw_time = stripped[:-1].replace('"', "").replace("'", "").strip()
-            if not re.match(r"^\d", raw_time.replace(":", "")):
+
+            # --- ЛОГ 2: Строка после первичной очистки ---
+            print(f"[ДИАГНОСТИКА ЛОГ 2] После очистки кавычек: {raw_time!r}", flush=True)
+            
+            if not re.match(r"^\d", raw_time):
+                print(f"[ДИАГНОСТИКА] Строка пропущена (это текст): {raw_time!r}", flush=True)
                 repaired_lines.append(line)
                 continue
 
             clean_time = normalize_time(raw_time)
+
+            # --- ЛОГ 3: Результат парсера ---
+            print(f"[ДИАГНОСТИКА ЛОГ 3] Функция normalize_time вернула: {clean_time!r}", flush=True)
+            
             if clean_time is None:
                 print(f"[ОШИБКА ВРЕМЕНИ] {filename}: недопустимое значение {raw_time!r}", flush=True)
                 has_errors = True
