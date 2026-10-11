@@ -5,12 +5,12 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [],
-  "newbies": [],
-  "probation": [
+  "newbies": [
     {
-      "name": "ццц #",
+      "name": "#",
       "direction": "столярное дело",
       "tag": "#"
     }
-  ]
+  ],
+  "probation": []
 }
