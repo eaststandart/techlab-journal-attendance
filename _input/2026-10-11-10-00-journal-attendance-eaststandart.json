@@ -5,13 +5,25 @@
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
   "present_permanent": [
-    "Салоха Влад"
+    "Баранова Лиза",
+    "Дмитриев Артем",
+    "Носовский Костя"
   ],
   "newbies": [
     {
-      "name": "Фамилия Имя /",
+      "name": "Иванов Иван",
       "direction": "столярное дело",
-      "tag": "@lgin"
+      "tag": "#techlab-Иванов-Иван"
+    },
+    {
+      "name": "Петров Петр",
+      "direction": "электронное конструирование",
+      "tag": "@eaststandart"
+    },
+    {
+      "name": "Сидоров Денис /с",
+      "direction": "",
+      "tag": "#"
     }
   ],
   "probation": []
