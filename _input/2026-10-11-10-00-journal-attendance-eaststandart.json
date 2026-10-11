@@ -4,27 +4,20 @@
   "time": "10:00",
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
-  "present_permanent": [
-    "Баранова Лиза",
-    "Дмитриев Артем",
-    "Носовский Костя"
-  ],
-  "newbies": [
+  "present_permanent": [],
+  "newbies": [],
+  "probation": [
     {
-      "name": "Иванов Иван",
-      "direction": "столярное дело",
-      "tag": "#techlab-Иванов-Иван"
+      "name": "Загородний Денис /э",
+      "direction": ""
     },
     {
-      "name": "Петров Петр",
-      "direction": "электронное конструирование",
-      "tag": "@eaststandart"
+      "name": "Климов Данил /с",
+      "direction": ""
     },
     {
-      "name": "Сидоров Денис /с",
-      "direction": "",
-      "tag": "#"
+      "name": "Алексеев Алексей /#",
+      "direction": ""
     }
-  ],
-  "probation": []
+  ]
 }
