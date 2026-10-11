@@ -36,7 +36,6 @@ def delete_students_from_yaml(file_path, target_day, target_time, students_to_de
     repaired_lines = []
     is_modified = False
     
-    # Системные маркеры состояния нашего конвейера
     inside_target_day = False
     inside_target_group = False
     skip_student_block = False
@@ -45,42 +44,37 @@ def delete_students_from_yaml(file_path, target_day, target_time, students_to_de
         stripped = line.strip()
         indent = len(line) - len(line.lstrip(' '))
 
-        # Отслеживаем глобальную смену дней недели (отступ 0, двоеточие на конце)
         if indent == 0 and stripped.endswith(':'):
             current_day = normalize_weekday(stripped[:-1])
             inside_target_day = (current_day == clean_day)
-            inside_target_group = False # Сбрасываем группу при переходе на новый день
+            inside_target_group = False
             skip_student_block = False
 
-        # Отслеживаем смену групп внутри текущего целевого дня (отступ 2, двоеточие на конце)
         elif inside_target_day and indent == 2 and stripped.endswith(':'):
             current_time = normalize_time(stripped[:-1])
             inside_target_group = (current_time == clean_time)
             skip_student_block = False
 
-        # Анализируем блок учеников внутри целевой группы (отступ 4, начинается на - name:)
         elif inside_target_day and inside_target_group and line.startswith("    - name:"):
+            # Снимаем внешние кавычки из YAML
             raw_name = stripped.split(":", 1)[1].replace('"', '').replace("'", '').strip()
             
-            # Если имя совпало со списком на удаление, взводим флаг пропуска строк
             if any(raw_name == name.strip() for name in students_to_delete):
                 print(f"[УДАЛЕНИЕ] {filename}: Вырезан ученик {raw_name!r}", flush=True)
                 skip_student_block = True
                 is_modified = True
-                continue # Эту строку с именем не записываем
+                continue
             else:
                 skip_student_block = False
 
-        # Гасим флаг пропуска, если внутри целевой группы наткнулись на любые другие параметры
         elif inside_target_day and inside_target_group and skip_student_block:
             if line.startswith("      direction:") or line.startswith("      tag:"):
-                continue # Пропускаем (вырезаем) вложенные свойства удаленного ребенка
+                continue
             else:
-                skip_student_block = False # Смежные данные чужих блоков не трогаем
+                skip_student_block = False
 
         repaired_lines.append(line)
 
-    # Если база была физически изменена, перезаписываем файл расписания
     if is_modified:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
