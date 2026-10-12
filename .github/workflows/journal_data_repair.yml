@@ -191,7 +191,11 @@ jobs:
               status = json.load(f)
 
           if status.get("status") != "on":
-              print("Статус не 'on'. Подтверждение не требуется.")
+              print("Статус не 'on'. Фиксация мягкого финиша.")
+              status["timestamp"] = datetime.now(timezone.utc).isoformat()
+              with open(path, "w", encoding="utf-8") as f:
+                  json.dump(status, f, ensure_ascii=False, indent=2)
+                  f.write("\n")
               raise SystemExit(0)
 
           status["status"] = "off"
