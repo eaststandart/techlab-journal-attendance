@@ -134,7 +134,6 @@ jobs:
           MAX_ATTEMPTS=3
           RETRY_INTERVAL_MINUTES=10
 
- 
           for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
             echo "Попытка публикации статуса ошибки $attempt из $MAX_ATTEMPTS"
 
