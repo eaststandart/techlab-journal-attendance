@@ -8,10 +8,6 @@
 
 name: Проверка и исправление расписания
 
-concurrency:
-  group: repair-attendance-group
-  cancel-in-progress: true
-
 on:
   push:
     branches:
