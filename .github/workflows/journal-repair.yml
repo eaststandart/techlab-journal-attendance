@@ -14,6 +14,7 @@ on:
       - main
     paths:
       - '_data/signal-repair.json'
+  workflow_dispatch:
 
 jobs:
   repair:
