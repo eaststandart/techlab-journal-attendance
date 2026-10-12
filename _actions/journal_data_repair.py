@@ -125,12 +125,17 @@ def main():
     # ИСПОЛНЕНИЕ РЕШЕНИЯ АВТОМАТА
     if not force_full_run:
         try:
-            # Изменений нет: за 0.01 сек гасим светофор в off, очищаем mode и закрываем Actions со статусом 0
+            # Изменений нет: за 0.01 сек гасим светофор в off и очищаем mode
             with open(STATUS_FILE, "w", encoding="utf-8") as f:
                 json.dump({"status": "off", "mode": "", "timestamp": datetime.now().isoformat()}, f, indent=2, ensure_ascii=False)
-            print("[УСПЕХ] Светофор успешно погашен в off. Выход.", flush=True)
+            
+            # Аппаратно счищаем файл сигнала с диска. Git увидит удаление, и коммит завершится успехом!
+            if os.path.isfile(SIGNAL_FILE):
+                os.remove(SIGNAL_FILE)
+                
+            print("[УСПЕХ] Оптимизатор сработал. Светофор погашен, сигнал зачищен. Выход.", flush=True)
         except Exception as e:
-            print(f"[ОШИБКА] Не удалось обнулить светофор: {e}", flush=True)
+            print(f"[ОШИБКА] Не удалось завершить оптимизацию: {e}", flush=True)
         sys.exit(0)
 
     # ИНАЧЕ - РАБОТАЕМ ПО ПОЛНОЙ ПРОГРАММЕ КАК И РАНЬШЕ
@@ -168,7 +173,7 @@ def main():
 
     try:
         # Успешный финал: гасим светофор в off и очищаем маркер mode
-        write_status("on")
+        write_status("off")
     except Exception as e:
         print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
