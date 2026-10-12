@@ -107,6 +107,7 @@ jobs:
               status = {}
 
           status["status"] = "error"
+          status["mode"] = status.get("mode", "")
           status["timestamp"] = datetime.now(timezone.utc).isoformat()
 
           with open(path, "w", encoding="utf-8") as f:
@@ -166,6 +167,7 @@ jobs:
               status = {}
 
           status["status"] = "error"
+          status["mode"] = status.get("mode", "")
           status["timestamp"] = datetime.now(timezone.utc).isoformat()
 
           with open(path, "w", encoding="utf-8") as f:
