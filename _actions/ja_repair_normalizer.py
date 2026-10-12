@@ -63,13 +63,15 @@ def clean_field(value, allowed_extra=""):
     cleaned = "".join(c for c in value if c in allowed)
     return " ".join(cleaned.split()).strip()
 
-def write_status(status):
-    """Сохраняет текущий статус обработки."""
+def write_status(status, mode=""):
+    """Сохраняет текущий статус обработки и маркер режима."""
     payload = {
         "status": status,
+        "mode": mode,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     with open(STATUS_FILE, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    print(f"[СТАТУС] {status}", flush=True)
+    print(f"[СТАТУС] {status} (mode: {mode})", flush=True)
+
