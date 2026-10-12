@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_FINE_TOKEN }}
+          fetch-depth: 0
 
       - name: Настройка среды Python
         uses: actions/setup-python@v5
