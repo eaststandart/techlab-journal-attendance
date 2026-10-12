@@ -167,11 +167,11 @@ def main():
         sys.exit(1)
 
     try:
-        write_status("on")
+        # Успешный финал: гасим светофор в off и очищаем маркер mode
+        write_status("off")
     except Exception as e:
         print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
