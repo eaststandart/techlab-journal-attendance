@@ -11,6 +11,8 @@
 import os
 import sys
 import json
+import subprocess
+from datetime import datetime
 
 from ja_repair_normalizer import write_status
 from ja_repair_engine import repair_yaml_file
@@ -23,6 +25,22 @@ from ja_repair_structure import repair_yaml_structure
 DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 
+
+def get_file_commit_date_utc(file_path):
+    """Аппаратно запрашивает у Git точную ISO-UTC дату последнего коммита конкретного файла."""
+    try:
+        # Запрашиваем дату последнего коммита строго в международном формате ISO 8601 (UTC)
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%cI", "--", file_path],
+            capture_output=True, text=True, check=True
+        )
+        date_str = result.stdout.strip()
+        if date_str:
+            # Превращаем в живой объект datetime для математического сравнения
+            return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+    except Exception as e:
+        print(f"[ОПТИМИЗАЦИЯ] Не удалось получить дату коммита через Git: {e}", flush=True)
+    return None
 
 def main():
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
@@ -57,9 +75,6 @@ def main():
     filename = f"journal-attendance-{target_teacher}.yml"
     file_path = os.path.join(DATA_DIR, filename)
 
-    print(f"[СИГНАЛ] Преподаватель: {target_teacher}", flush=True)
-    print(f"[СИГНАЛ] Целевой файл: {filename}", flush=True)
-
     if not os.path.isfile(file_path):
         print(f"[ОШИБКА] Файл {filename} не найден.", flush=True)
         try:
@@ -68,6 +83,57 @@ def main():
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
+    STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
+    print(f"[СИГНАЛ] Преподаватель: {target_teacher}", flush=True)
+    print(f"[СИГНАЛ] Целевой файл: {filename}", flush=True)
+
+    # --- ЗРЯЧИЙ ИЕРАРХИЧЕСКИЙ ШЛАГБАУМ ОПТИМИЗАЦИИ ВРЕМЕНИ TECHLAB ---
+    force_full_run = True  # По умолчанию - полная безопасность при любых сбоях чтения
+    
+    try:
+        if os.path.isfile(STATUS_FILE):
+            with open(STATUS_FILE, "r", encoding="utf-8") as f:
+                status_data = json.load(f)
+            
+            status_mode = status_data.get("mode", "")
+            timestamp_str = status_data.get("timestamp", "")
+            
+            # Извлекаем дату последнего коммита персонального YML-файла из истории Git
+            file_commit_date = get_file_commit_date_utc(file_path)
+            
+            if timestamp_str and file_commit_date:
+                # Приводим timestamp светофора к единому ISO-формату UTC
+                status_timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                
+                # ТВОЯ ИСТИННАЯ МАТРИЦА УСЛОВИЙ:
+                # 1. Если файл изменен руками в репозитории позже, чем был подан сигнал
+                if file_commit_date > status_timestamp:
+                    print(f"[ОПТИМИЗАЦИЯ] Обнаружен новый ручной коммит файла {filename}. Запуск полной проверки.", flush=True)
+                    force_full_run = True
+                # 2. Если коммит старый, но взведен режим готовящихся изменений
+                elif status_mode == "repair":
+                    print(f"[ОПТИМИЗАЦИЯ] Режим готовящихся изменений 'repair' (удаление/ремонт). Запуск полной проверки.", flush=True)
+                    force_full_run = True
+                # 3. ИНАЧЕ - коммитов по расписанию нет, режим пустой -> МГНОВЕННОЕ ЗАВЕРШЕНИЕ СЕССИИ
+                else:
+                    print(f"[ОПТИМИЗАЦИЯ] Файл {filename} не менялся, принудительных команд нет. Мгновенный финиш.", flush=True)
+                    force_full_run = False
+    except Exception as opt_err:
+        print(f"[ПРЕДОХРАНИТЕЛЬ] Сбой оптимизатора (переход в безопасный режим полной проверки): {opt_err}", flush=True)
+        force_full_run = True
+
+    # ИСПОЛНЕНИЕ РЕШЕНИЯ АВТОМАТА
+    if not force_full_run:
+        try:
+            # Изменений нет: за 0.01 сек гасим светофор в off, очищаем mode и закрываем Actions со статусом 0
+            with open(STATUS_FILE, "w", encoding="utf-8") as f:
+                json.dump({"status": "off", "mode": "", "timestamp": datetime.now().isoformat()}, f, indent=2, ensure_ascii=False)
+            print("[УСПЕХ] Светофор успешно погашен в off. Выход.", flush=True)
+        except Exception as e:
+            print(f"[ОШИБКА] Не удалось обнулить светофор: {e}", flush=True)
+        sys.exit(0)
+
+    # ИНАЧЕ - РАБОТАЕМ ПО ПОЛНОЙ ПРОГРАММЕ КАК И РАНЬШЕ
     success = True
 
     # 1. Проверяем наличие массива на удаление
