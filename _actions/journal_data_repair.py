@@ -26,21 +26,34 @@ DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 
 
-def get_file_commit_date_utc(file_path):
-    """Аппаратно запрашивает у Git точную ISO-UTC дату последнего коммита конкретного файла."""
+def get_file_commit_seconds(file_path):
+    """Запрашивает у Git точное число секунд Unix последнего коммита конкретного файла расписания."""
     try:
-        # Запрашиваем дату последнего коммита строго в международном формате ISO 8601 (UTC)
         result = subprocess.run(
-            ["git", "log", "-1", "--format=%cI", "--", file_path],
+            ["git", "log", "-1", "--format=%ct", "--", file_path],
             capture_output=True, text=True, check=True
         )
-        date_str = result.stdout.strip()
-        if date_str:
-            # Превращаем в живой объект datetime для математического сравнения
-            return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        out = result.stdout.strip()
+        if out.isdigit():
+            return int(out)
     except Exception as e:
-        print(f"[ОПТИМИЗАЦИЯ] Не удалось получить дату коммита через Git: {e}", flush=True)
-    return None
+        print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд файла расписания: {e}", flush=True)
+    return 0
+
+def get_last_robot_commit_seconds():
+    """Запрашивает у Git точное число секунд Unix прошлого успешного коммита закрытия сессии роботом."""
+    try:
+        # Ищем в истории репозитория самый свежий коммит с сообщением о подтверждении исправления
+        result = subprocess.run(
+            ["git", "log", "--grep=подтверждение завершения исправления", "-1", "--format=%ct"],
+            capture_output=True, text=True, check=True
+        )
+        out = result.stdout.strip()
+        if out.isdigit():
+            return int(out)
+    except Exception as e:
+        print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд коммита робота: {e}", flush=True)
+    return 0
 
 def main():
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
@@ -87,59 +100,48 @@ def main():
     print(f"[СИГНАЛ] Преподаватель: {target_teacher}", flush=True)
     print(f"[СИГНАЛ] Целевой файл: {filename}", flush=True)
 
-    # --- ЗРЯЧИЙ ИЕРАРХИЧЕСКИЙ ШЛАГБАУМ ОПТИМИЗАЦИИ ВРЕМЕНИ TECHLAB ---
-    force_full_run = True  # По умолчанию - полная безопасность при любых сбоях чтения
+    # --- МОНОЛИТНЫЙ БУЛЕВЫЙ ШЛАГБАУМ ОПТИМИЗАЦИИ Unix-СЕКУНД TECHLAB ---
+    force_full_run = True  # По умолчанию - полная безопасность
     
     try:
         if os.path.isfile(STATUS_FILE):
             with open(STATUS_FILE, "r", encoding="utf-8") as f:
                 status_data = json.load(f)
             
-            status_mode = status_data.get("mode", "")
-            timestamp_str = status_data.get("timestamp", "")
+            status_mode = status_data.get("mode", "").strip()
             
-            # Извлекаем дату последнего коммита персонального YML-файла из истории Git
-            file_commit_date = get_file_commit_date_utc(file_path)
+            # Аппаратно извлекаем чистые секунды Unix напрямую из истории Git
+            commit_seconds = get_file_commit_seconds(file_path)
+            robot_seconds = get_last_robot_commit_seconds()
             
-            if timestamp_str and file_commit_date:
-                status_timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-                
-                # Переводим в секунды Unix
-                commit_seconds = int(file_commit_date.timestamp())
-                signal_seconds = int(status_timestamp.timestamp())
-                delta = commit_seconds - signal_seconds
-                
-                # ТОТАЛЬНЫЙ ЗРЯЧИЙ ВЫВОД ЛОГОВ В КОНСОЛЬ СЕРВЕРА TECHLAB
-                print(f"[ОТЛАДКА ВРЕМЕНИ] Дата коммита из Git: {file_commit_date} (в секундах: {commit_seconds})", flush=True)
-                print(f"[ОТЛАДКА ВРЕМЕНИ] Дата сигнала с сайта: {status_timestamp} (в секундах: {signal_seconds})", flush=True)
-                print(f"[ОТЛАДКА ВРЕМЕНИ] Математическая разница (Commit - Signal): {delta} сек.", flush=True)
-                
-                # ТВОЯ ИСТИННАЯ МАТРИЦА УСЛОВИЙ
-                if commit_seconds > (signal_seconds + 2):
-                    print(f"[ОПТИМИЗАЦИЯ] Обнаружен новый ручной коммит файла {filename}. Запуск полной проверки.", flush=True)
-                    force_full_run = True
-                elif status_mode == "repair":
-                    print(f"[ОПТИМИЗАЦИЯ] Режим готовящихся изменений 'repair' (удаление/ремонт). Запуск полной проверки.", flush=True)
-                    force_full_run = True
-                else:
-                    print(f"[ОПТИМИЗАЦИЯ] Файл {filename} не менялся, принудительных команд нет. Мгновенный финиш.", flush=True)
-                    force_full_run = False
+            print(f"[ОТЛАДКА СЕКУНД] Unix-время файла расписания: {commit_seconds}", flush=True)
+            print(f"[ОТЛАДКА СЕКУНД] Unix-время прошлого ухода робота: {robot_seconds}", flush=True)
+            print(f"[ОТЛАДКА СЕКУНД] Текущий маркер режима с сайта: '{status_mode}'", flush=True)
+            
+            # ТВОЯ СЖАТАЯ МОНОЛИТНАЯ ФОРМУЛА ПРИНЯТИЯ РЕШЕНИЙ:
+            # Полная проверка запускается ТОЛЬКО если есть свежий коммит ИЛИ взведен режим repair
+            if commit_seconds > robot_seconds or status_mode == "repair":
+                print(f"[ОПТИМИЗАЦИЯ] Условия выполнены (Новый коммит: {commit_seconds > robot_seconds}, Режим: {status_mode == 'repair'}). Полный запуск.", flush=True)
+                force_full_run = True
+            else:
+                # ИНАЧЕ - коммитов нет, режим пустой -> МГНОВЕННЫЙ ФИНИШ БЕЗ ИЗБЫТОЧНЫХ ПРОВЕРОК
+                print(f"[ОПТИМИЗАЦИЯ] Новых коммитов расписания нет, принудительных команд нет. Мгновенный финиш.", flush=True)
+                force_full_run = False
     except Exception as opt_err:
-        print(f"[ПРЕДОХРАНИТЕЛЬ] Сбой оптимизатора (переход в безопасный режим полной проверки): {opt_err}", flush=True)
+        print(f"[ПРЕДОХРАНИТЕЛЬ] Сбой булевого оптимизатора (переход в безопасный режим полной проверки): {opt_err}", flush=True)
         force_full_run = True
 
     # ИСПОЛНЕНИЕ РЕШЕНИЯ АВТОМАТА
     if not force_full_run:
         try:
-            # Изменений нет: за 0.01 сек гасим светофор в off и очищаем mode
+            # Изменений нет: за 0.01 сек тушим светофор в off, очищаем mode и удаляем сигнал
             with open(STATUS_FILE, "w", encoding="utf-8") as f:
                 json.dump({"status": "off", "mode": "", "timestamp": datetime.now().isoformat()}, f, indent=2, ensure_ascii=False)
             
-            # Аппаратно счищаем файл сигнала с диска. Git увидит удаление, и коммит завершится успехом!
             if os.path.isfile(SIGNAL_FILE):
                 os.remove(SIGNAL_FILE)
                 
-            print("[УСПЕХ] Оптимизатор сработал. Светофор погашен, сигнал зачищен. Выход.", flush=True)
+            print("[УСПЕХ] Оптимизатор сработал. Светофор погашен в off, сигнал зачищен. Выход.", flush=True)
         except Exception as e:
             print(f"[ОШИБКА] Не удалось завершить оптимизацию: {e}", flush=True)
         sys.exit(0)
