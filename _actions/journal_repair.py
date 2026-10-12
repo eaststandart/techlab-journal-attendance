@@ -15,7 +15,7 @@ import subprocess
 from datetime import datetime
 
 from ja_repair_normalizer import write_status
-from ja_repair_engine import repair_yaml_file
+from ja_repair_day import repair_day_line
 from ja_repair_delete import delete_students_from_yaml
 from ja_repair_structure import repair_yaml_structure
 
@@ -156,10 +156,51 @@ def main():
         target_time = signal_data.get("time", "")
         success = delete_students_from_yaml(file_path, target_day, target_time, students_to_delete)
 
-    # 2. Общая гигиеническая нормализация оставшегося расписания
+    # 2. Общая гигиеническая нормализация расписания (Подмодуль №1: Дни недели)
     if success:
         try:
-            success = repair_yaml_file(file_path)
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            is_modified = False
+            repaired_lines = []
+            is_inside_config = False  # Жесткий предохранитель секции конфигурации из оригинала
+
+            for line in lines:
+                stripped = line.strip()
+
+                if not stripped or stripped.startswith('#'):
+                    repaired_lines.append(line)
+                    continue
+
+                indent = len(line) - len(line.lstrip(' '))
+
+                # Перехват входа в секцию конфигурации config:
+                if indent == 0 and stripped.lower() == 'config:':
+                    is_inside_config = True
+                    repaired_lines.append(line)
+                    continue
+
+                # Выход из config:, если начался реальный день недели
+                check_days = ["понедельник:", "вторник:", "среда:", "четверг:", "пятница:", "суббота:", "воскресенье:"]
+                if stripped.lower() in check_days:
+                    is_inside_config = False
+
+                # Если строка вне config, пускаем её через подмодуль дней недели
+                if not is_inside_config:
+                    line, day_mod = repair_day_line(line, filename)
+                    if day_mod:
+                        is_modified = True
+
+                repaired_lines.append(line)
+
+            if is_modified:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.writelines(repaired_lines)
+                print(f"[ИТОГ] {filename}: синтаксические исправления сохранены.", flush=True)
+            else:
+                print(f"[ИТОГ] {filename}: синтаксических исправлений текста не требуется.", flush=True)
+
         except Exception as e:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}", flush=True)
             success = False
