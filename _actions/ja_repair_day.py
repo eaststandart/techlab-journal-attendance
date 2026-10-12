@@ -5,23 +5,38 @@
 @about   Подмодуль инспекции и исправления синтаксиса дней недели
 @purpose Построчный поиск узлов дней и нормализация их текстовых названий
 @author  TechLab
-@version 1.0.0
+@version 2.0.0
 """
 
-from ja_repair_normalizer import normalize_weekday
-
 def repair_day_line(line, filename):
-    """Проверяет и исправляет синтаксис дней недели строго по логике оригинала."""
+    """Автономно проверяет и исправляет синтаксис и опечатки дней недели."""
     stripped = line.strip()
     is_modified = False
 
+    # Ловим узлы дней на отступе 0
     if stripped.endswith(":") and stripped and not line.startswith((" ", "\t")):
         raw_day = stripped[:-1].strip().strip("\"'").strip()
-        clean_day = normalize_weekday(raw_day)
+        
+        # Принудительно приводим к нижнему регистру для зрячего сопоставления
+        search_day = raw_day.lower()
+
+        # Бронированный внутренний словарь синонимов и частых опечаток TechLab
+        day_vocabulary = {
+            "понедельник": "понедельник", "понеделнник": "понедельник", "пн": "понедельник",
+            "вторник": "вторник", "вт": "вторник",
+            "среда": "среда", "ср": "среда",
+            "четверг": "четверг", "чт": "четверг",
+            "пятница": "пятница", "пт": "пятница",
+            "суббота": "суббота", "субота": "суббота", "сб": "суббота",
+            "воскресенье": "воскресенье", "вс": "воскресенье"
+        }
+
+        clean_day = day_vocabulary.get(search_day)
+        
         if clean_day is not None:
             repaired_line = f"{clean_day}:\n"
             if repaired_line != line:
-                print(f"[ДЕНЬ] {filename}: {raw_day!r} -> {clean_day!r}", flush=True)
+                print(f"[СИНТАКСИС ДНЯ] {filename}: {raw_day!r} -> {clean_day!r}", flush=True)
                 line = repaired_line
                 is_modified = True
                 
