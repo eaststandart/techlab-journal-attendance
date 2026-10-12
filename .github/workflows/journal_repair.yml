@@ -1,5 +1,5 @@
 # ==============================================================================
-# @module  journal_data_repair.yml
+# @module  journal_repair.yml
 # @about   Автоматизация проверки и исправления файлов расписания на сервере GitHub
 # @purpose Запуск сценария приведения времени и направлений базы данных к стандарту
 # @author  TechLab
@@ -36,7 +36,7 @@ jobs:
 
       - name: Запуск проверки и исправления расписания
         id: repair
-        run: python _actions/journal_data_repair.py
+        run: python _actions/journal_repair.py
 
       - name: Финальная очистка сигналов и сохранение изменений
         id: publish
