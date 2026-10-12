@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@module  journal_data_repair.py
+@module  journal_repair.py
 @about   Главный диспетчер проверки, исправления и модерации расписания
 @purpose Прием входящих сигналов, управление светофором и вызов модулей TechLab
 @author  TechLab
