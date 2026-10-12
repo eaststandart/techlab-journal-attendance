@@ -102,23 +102,25 @@ def main():
             file_commit_date = get_file_commit_date_utc(file_path)
             
             if timestamp_str and file_commit_date:
-                # Приводим timestamp светофора к единому ISO-формату UTC
                 status_timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                 
-                # Переводим оба времени в чистые секунды Unix (целые числа) для исключения сдвигов
+                # Переводим в секунды Unix
                 commit_seconds = int(file_commit_date.timestamp())
                 signal_seconds = int(status_timestamp.timestamp())
+                delta = commit_seconds - signal_seconds
                 
-                # ТВОЯ ИСТИННАЯ МАТРИЦА УСЛОВИЙ (ОТКАЛИБРОВАННАЯ ПО СЕКУНДАМ):
-                # 1. Если реальный ручной коммит расписания случился строго после подачи сигнала сайта (зазор более 2 сек)
+                # ТОТАЛЬНЫЙ ЗРЯЧИЙ ВЫВОД ЛОГОВ В КОНСОЛЬ СЕРВЕРА TECHLAB
+                print(f"[ОТЛАДКА ВРЕМЕНИ] Дата коммита из Git: {file_commit_date} (в секундах: {commit_seconds})", flush=True)
+                print(f"[ОТЛАДКА ВРЕМЕНИ] Дата сигнала с сайта: {status_timestamp} (в секундах: {signal_seconds})", flush=True)
+                print(f"[ОТЛАДКА ВРЕМЕНИ] Математическая разница (Commit - Signal): {delta} сек.", flush=True)
+                
+                # ТВОЯ ИСТИННАЯ МАТРИЦА УСЛОВИЙ
                 if commit_seconds > (signal_seconds + 2):
-                    print(f"[ОПТИМИЗАЦИЯ] Обнаружен реальный новый ручной коммит файла {filename}. Запуск полной проверки.", flush=True)
+                    print(f"[ОПТИМИЗАЦИЯ] Обнаружен новый ручной коммит файла {filename}. Запуск полной проверки.", flush=True)
                     force_full_run = True
-                # 2. Если коммит старый, но взведен режим готовящихся изменений
                 elif status_mode == "repair":
                     print(f"[ОПТИМИЗАЦИЯ] Режим готовящихся изменений 'repair' (удаление/ремонт). Запуск полной проверки.", flush=True)
                     force_full_run = True
-                # 3. ИНАЧЕ - файл расписания не менялся, принудительных команд нет -> МГНОВЕННЫЙ ФИНИШ
                 else:
                     print(f"[ОПТИМИЗАЦИЯ] Файл {filename} не менялся, принудительных команд нет. Мгновенный финиш.", flush=True)
                     force_full_run = False
