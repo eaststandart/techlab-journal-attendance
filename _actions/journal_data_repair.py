@@ -105,7 +105,7 @@ def main():
                 # Приводим timestamp светофора к единому ISO-формату UTC
                 status_timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                 
-                # ТВОЯ ИСТИННАЯ МАТРИЦА УСЛОВИЙ:
+                # МАТРИЦА УСЛОВИЙ:
                 # 1. Если файл изменен руками в репозитории позже, чем был подан сигнал
                 if file_commit_date > status_timestamp:
                     print(f"[ОПТИМИЗАЦИЯ] Обнаружен новый ручной коммит файла {filename}. Запуск полной проверки.", flush=True)
