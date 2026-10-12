@@ -166,14 +166,14 @@ def main():
     
     if not success:
         try:
-            write_status("error")
+            write_status("error", mode="")
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
     try:
-        # Успешный финал: гасим светофор в off и очищаем маркер mode
-        write_status("off")
+        # Успешный финал полной работы: гасим светофор в off и очищаем mode в пустоту
+        write_status("off", mode="")
     except Exception as e:
         print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
