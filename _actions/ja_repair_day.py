@@ -5,7 +5,7 @@
 @about   Подмодуль инспекции и исправления синтаксиса дней недели
 @purpose Построчный поиск узлов дней и нормализация их текстовых названий
 @author  TechLab
-@version 2.0.0
+@version 1.0.0
 """
 
 def repair_day_line(line, filename):
