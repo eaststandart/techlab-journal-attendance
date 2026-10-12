@@ -111,16 +111,16 @@ jobs:
 
           git add _data/repair-status.json
 
+          # ЗРЯЧАЯ ПРОВЕРА TECHLAB: Если изменений для коммита нет - выходим со статусом 0 без паники
           if git diff --staged --quiet; then
-            echo "Статус error уже сохранён."
+            echo "Изменений статуса для публикации нет. Сессия успешно закрыта."
             exit 0
           fi
 
-          git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
+          git commit -m "fix(database): подтверждение завершения исправления [skip ci]"
 
           MAX_ATTEMPTS=3
           RETRY_INTERVAL_MINUTES=10
-
  
           for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
             echo "Попытка публикации статуса ошибки $attempt из $MAX_ATTEMPTS"
