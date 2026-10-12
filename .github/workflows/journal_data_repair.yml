@@ -70,10 +70,17 @@ jobs:
             fi
 
             if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
-              echo "Публикация не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
-              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+              echo "Публикация отклонена. Выполняем мгновенную синхронизацию версий через rebase..."
               git fetch origin main
-              git rebase origin/main
+              if git rebase origin/main; then
+                echo "История успешно выровнена. Повторяем пуш без паники."
+                continue
+              fi
+              
+              # Если даже rebase упал — значит сервера GitHub реально лежат. Включаем твой защитный режим сна!
+              git rebase --abort 2>/dev/null || true
+              echo "Критический сбой сети GitHub. Повтор через $RETRY_INTERVAL_MINUTES минут."
+              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
             fi
           done
 
