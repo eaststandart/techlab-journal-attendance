@@ -197,8 +197,11 @@ jobs:
           with open(path, "r", encoding="utf-8") as f:
               status = json.load(f)
 
+          current_mode = status.get("mode", "")
+
           if status.get("status") != "on":
               print("Статус не 'on'. Фиксация мягкого финиша.")
+              status["mode"] = current_mode
               status["timestamp"] = datetime.now(timezone.utc).isoformat()
               with open(path, "w", encoding="utf-8") as f:
                   json.dump(status, f, ensure_ascii=False, indent=2)
@@ -206,6 +209,7 @@ jobs:
               raise SystemExit(0)
 
           status["status"] = "off"
+          status["mode"] = ""
           status["timestamp"] = datetime.now(timezone.utc).isoformat()
 
           with open(path, "w", encoding="utf-8") as f:
