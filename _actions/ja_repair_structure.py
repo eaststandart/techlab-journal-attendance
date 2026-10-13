@@ -25,48 +25,32 @@ def repair_yaml_structure(file_path):
 
     repaired_lines = []
     is_modified = False
-    is_inside_config = False  # Зрячий предохранитель секции конфигурации
 
-    # Построчно перебираем весь текст файла расписания
+    # Построчно перебираем весь текст файла расписания в плоском режиме
     for i, line in enumerate(lines):
         original_line = line
         stripped = line.strip()
 
-        # Законные пустые строки и комментарии пропускаем без проверок
+        # Законные пустые строки и комментарии пропускаем без провевок
         if not stripped or stripped.startswith("#"):
             repaired_lines.append(original_line)
             continue
 
-        # Перехват входа в секцию конфигурации config:
-        if stripped.lower() == "config:":
-            is_inside_config = True
-            repaired_lines.append(original_line)
-            continue
-
-        # АВТОНОМНЫЙ ТЕСТ: День недели (на нулевом отступе оканчивается на двоеточие)
-        check_days = ["понедельник:", "вторник:", "среда:", "четверг:", "пятница:", "суббота:", "воскресенье:"]
-        if stripped.lower() in check_days and not line.startswith((" ", "\t")):
-            is_inside_config = False  # Робот вышел из настроек, началось расписание!
+        # 1. ТЕСТ ГЕОМЕТРИИ: Узлы дней недели (или config:) на нулевом отступе
+        if stripped.endswith(":") and not line.startswith((" ", "\t")):
             repaired_line = f"{stripped.lower()}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
             continue
 
-        # ХАРД-ЛОК: Если мы летим внутри секции config:, проверки синтаксиса полностью ИГНОРИРУЮТСЯ!
-        if is_inside_config:
-            repaired_lines.append(original_line)
-            continue
-
-        # =========================================================================
-        # 🛑 СИТО ТЕСТОВ ДЛЯ СЕКЦИИ РАСПИСАНИЯ (РАБОТАЕТ С ФЛАГОМ СОВПАДЕНИЯ)
-        # =========================================================================
+        # Внутренние строки конфигурации обходят сито тестов автоматически,
+        # так как не имеют префиксов расписания (- name, direction, tag) и не являются временем ЧЧ:ММ.
         is_line_valid = False
 
-        # 1. ТЕСТ: Время группы (Плоский автономный разбор регулярным выражением ЧЧ:ММ)
+        # 2. ТЕСТ ГЕОМЕТРИИ: Время группы (Определяем плоско по наличию стартовой цифры и двоеточия)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
-            # Форматируем в красивый стандарт ЧЧ:ММ
             if len(raw_time) == 3:
                 clean_time = f"0{raw_time[0]}:{raw_time[1:]}"
             else:
@@ -79,7 +63,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 2. ТЕСТ: Имя ученика (Штампуем жесткий отступ 4 пробела)
+        # 3. ТЕСТ ГЕОМЕТРИИ: Имя ученика (Штампуем жесткий отступ 4 пробела)
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
@@ -88,12 +72,19 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 3. ТЕСТ: Параметры ученика (Штампуем жесткий отступ 6 пробелов)
+        # 4. ТЕСТ ГЕОМЕТРИИ: Параметры ученика (Штампуем жесткий отступ 6 пробелов)
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
+            continue
+
+        # 5. ТЕСТ ГЕОМЕТРИИ: Пропуск служебных строк конфигурации (tg_public_notify, channel_id и т.д.)
+        # Если строка имеет отступ и не относится к расписанию, она легитимно пропускается
+        if line.startswith((" ", "\t")) and not stripped.startswith(("- name:", "direction:", "tag:")) and not re.match(r"^\d", raw_time):
+            repaired_lines.append(original_line)
             is_line_valid = True
             continue
 
@@ -116,4 +107,3 @@ def repair_yaml_structure(file_path):
         print(f"[ИТОГ] {filename}: Нарушений целостности и геометрии не найдено.", flush=True)
 
     return True
-    
