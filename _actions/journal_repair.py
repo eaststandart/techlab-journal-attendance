@@ -168,7 +168,7 @@ def main():
                     flush=True,
                 )
                 try:
-                    write_status("error", mode="")
+                    write_status("error", mode="", teacher_login=target_teacher)
                 except Exception as status_error:
                     print(
                         f"[ОШИБКА] Не удалось сохранить статус: {status_error}",
@@ -216,14 +216,14 @@ def main():
     if not success:
 
         try:
-            write_status("error", mode="")
+            write_status("error", mode="", teacher_login=target_teacher)
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
     try:
         # Успешный финал полной работы: гасим светофор в off и очищаем mode в пустоту
-        write_status("off", mode="")
+        write_status("off", mode="", teacher_login=target_teacher)
     except Exception as e:
         print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
