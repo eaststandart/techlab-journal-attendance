@@ -18,8 +18,8 @@ def delete_students_from_yaml(file_path, target_day, target_time, students_to_de
     filename = os.path.basename(file_path)
 
     # Диспетчер передает координаты уже чистыми (в нижнем регистре и без мусора)
-    clean_day = target_day.strip().lower()
-    clean_time = target_time.strip()
+    clean_day = target_day
+    clean_time = target_time
 
     print(f"[УДАЛЕНИЕ] Цель: {filename} -> {clean_day} в {clean_time}. Список: {students_to_delete}", flush=True)
 
