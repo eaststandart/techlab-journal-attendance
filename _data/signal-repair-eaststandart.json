@@ -1,0 +1,9 @@
+{
+  "teacher_login": "eaststandart",
+  "day": "понедельник",
+  "time": "10:00",
+  "command": "delete",
+  "delete": [
+    "Салоха В"
+  ]
+}
