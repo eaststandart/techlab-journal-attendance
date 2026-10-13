@@ -38,13 +38,10 @@ def repair_time_line(line, filename):
     is_modified = False
     has_errors = False
 
-    # Оригинальный нож-инспектор из ja_repair_engine.py
-    if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):            
-        raw_time = stripped[:-1].replace('"', "").replace("'", "").strip().rstrip(":")           
-        
-        # Обход конфига: если строка начинается с букв (например tg_public_notify:), пропускаем
-        if not re.match(r"^\d", raw_time):
-            return line, is_modified, has_errors
+    # Зряче ловим время по смыслу (3-4 цифры с разделителем или без), игнорируя любые начальные пробелы
+    content_inside = stripped.replace('"', "").replace("'", "").strip().rstrip(":")
+    if stripped.endswith(":") and re.match(r"^\d{1,2}\s*[:\\/.\=–—-]?\s*\d{2}$", content_inside):
+        raw_time = content_inside
             
         clean_time = normalize_time_internal(raw_time)
         
