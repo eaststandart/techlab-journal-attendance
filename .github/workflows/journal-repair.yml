@@ -35,28 +35,69 @@ jobs:
       - name: Установка зависимости PyYAML
         run: pip install pyyaml
 
+      - name: Сохранение исходного сигнала
+        run: |
+          mkdir -p "$RUNNER_TEMP/repair"
+
+          if [ -f _data/signal-repair.json ]; then
+            cp _data/signal-repair.json "$RUNNER_TEMP/repair/signal-repair.json"
+            touch "$RUNNER_TEMP/repair/signal-existed"
+          fi
+
       - name: Запуск проверки и исправления расписания
         id: repair
         run: python _actions/journal_repair.py
 
       - name: Финальная очистка сигналов и сохранение изменений
         id: publish
+        shell: bash
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -e
 
-          rm -f _data/signal-repair.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          SIGNAL_FILE="_data/signal-repair.json"
+          SAVED_SIGNAL="$RUNNER_TEMP/repair/signal-repair.json"
+          REMOTE_SIGNAL="$RUNNER_TEMP/repair/remote-signal.json"
+
+          # Получаем актуальную ветку до формирования коммита.
+          if ! git fetch origin main; then
+            echo "Не удалось связаться с GitHub. Повтор через 10 минут."
+            sleep 600
+            git fetch origin main
+          fi
+
+          # Удаляем только обработанный сигнал.
+          # Если Java уже отправила новый, сохраняем его.
+          if [ -f "$RUNNER_TEMP/repair/signal-existed" ]; then
+            if git show "origin/main:$SIGNAL_FILE" > "$REMOTE_SIGNAL" 2>/dev/null; then
+              if cmp -s "$SAVED_SIGNAL" "$REMOTE_SIGNAL"; then
+                rm -f "$SIGNAL_FILE"
+                echo "Исходный сигнал обработан; его можно удалить."
+              else
+                cp "$REMOTE_SIGNAL" "$SIGNAL_FILE"
+                echo "Обнаружен новый сигнал Java. Сохраняем его."
+              fi
+            else
+              rm -f "$SIGNAL_FILE"
+              echo "Сигнал уже удалён из удалённой ветки."
+            fi
+          else
+            echo "Исходного сигнала нет; новый сигнал не удаляем."
+          fi
+
           git add -A -- _data
 
-          if git diff --staged --quiet; then
-            echo "Изменений для коммита нет."
+          if git diff --cached --quiet; then
+            echo "Изменений для публикации нет."
             exit 0
           fi
 
           git commit -m "fix(database): автоматическое исправление расписания [skip ci]"
 
           MAX_ATTEMPTS=3
-          RETRY_INTERVAL_MINUTES=10
+          RETRY_INTERVAL_SECONDS=600
 
           for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
             echo "Попытка публикации $attempt из $MAX_ATTEMPTS"
@@ -66,26 +107,85 @@ jobs:
               exit 0
             fi
 
-            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
-              echo "Публикация отклонена. Выполняем мгновенную синхронизацию версий через rebase..."
-              git fetch origin main
-              if git rebase origin/main; then
-                echo "История успешно выровнена. Повторяем пуш без паники."
-                continue
-              fi
-              
-              # Если даже rebase упал — значит сервера GitHub реально лежат. Включаем твой защитный режим сна!
-              git rebase --abort 2>/dev/null || true
-              echo "Критический сбой сети GitHub. Повтор через $RETRY_INTERVAL_MINUTES минут."
-              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+            if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
+              break
             fi
+
+            # Если fetch не работает, это может быть реальный сбой GitHub.
+            if ! git fetch origin main; then
+              echo "GitHub недоступен. Повтор через 10 минут."
+              sleep "$RETRY_INTERVAL_SECONDS"
+              continue
+            fi
+
+            # Если origin/main уже является предком нашего коммита,
+            # удалённая ветка не опережает локальную. Повторяем позже:
+            # это может быть временный сбой публикации.
+            if git merge-base --is-ancestor origin/main HEAD; then
+              echo "Удалённая ветка не опережает локальную. Повтор через 10 минут."
+              sleep "$RETRY_INTERVAL_SECONDS"
+              continue
+            fi
+
+            # Ветка изменилась: пытаемся синхронизироваться немедленно.
+            echo "Обнаружены новые коммиты. Выполняем rebase без ожидания."
+
+            if git rebase origin/main; then
+              echo "Rebase завершён. Немедленно повторяем публикацию."
+              continue
+            fi
+
+            # Разрешаем автоматически только ожидаемые конфликты:
+            # статус робота и входящий сигнал.
+            conflicts="$(git diff --name-only --diff-filter=U)"
+            unexpected_conflict=0
+
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+
+              case "$file" in
+                _data/repair-status.json|_data/signal-repair.json)
+                  echo "Конфликт $file: сохраняем актуальную версию origin/main."
+
+                  if git cat-file -e "origin/main:$file" 2>/dev/null; then
+                    git checkout --ours -- "$file"
+                    git add -- "$file"
+                  else
+                    git rm -f -- "$file" || true
+                  fi
+                  ;;
+                *)
+                  echo "Неожиданный конфликт в $file. Автоматически не разрешаем."
+                  unexpected_conflict=1
+                  ;;
+              esac
+            done <<< "$conflicts"
+
+            if [ "$unexpected_conflict" -ne 0 ]; then
+              git rebase --abort || true
+              echo "Rebase остановлен из-за конфликта вне файлов статуса и сигнала."
+              exit 1
+            fi
+
+            # Продолжаем rebase после разрешения ожидаемых конфликтов.
+            if ! GIT_EDITOR=true git rebase --continue; then
+              # Если после разрешения конфликта коммит стал пустым,
+              # Git может попросить пропустить его.
+              if ! git rebase --skip; then
+                git rebase --abort || true
+                echo "Не удалось завершить rebase."
+                exit 1
+              fi
+            fi
+
+            echo "Конфликт обработан. Повторяем публикацию без десятиминутной паузы."
           done
 
           echo "Не удалось опубликовать изменения после $MAX_ATTEMPTS попыток."
           exit 1
 
       - name: Сохранение статуса error при ошибке
-        if: ${{ failure() && (steps.repair.outcome == 'failure' || steps.publish.outcome == 'failure' || steps.confirm.outcome == 'failure') }}
+        if: ${{ failure() && (steps.repair.outcome == 'failure' || steps.publish.outcome == 'failure') }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -129,33 +229,40 @@ jobs:
           git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
 
           MAX_ATTEMPTS=3
-          RETRY_INTERVAL_MINUTES=10
+          RETRY_INTERVAL_SECONDS=600
 
           for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
-            echo "Попытка публикации статуса ошибки $attempt из $MAX_ATTEMPTS"
+            echo "Попытка публикации статуса error $attempt из $MAX_ATTEMPTS"
 
             if git push origin HEAD:main; then
               echo "Статус error успешно опубликован."
               exit 0
             fi
 
-            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
-              echo "Публикация статуса не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
-              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
+            if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
+              break
+            fi
 
-              if ! git fetch origin main; then
-                echo "Не удалось получить актуальную версию main."
-                continue
-              fi
+            # Не удалось связаться с GitHub — сохраняем защитную паузу.
+            if ! git fetch origin main; then
+              echo "GitHub недоступен. Повтор через 10 минут."
+              sleep "$RETRY_INTERVAL_SECONDS"
+              continue
+            fi
 
-              git rebase --abort 2>/dev/null || true
+            # Если удалённая ветка не опережает наш коммит, повторяем публикацию после защитной паузы.
+            if git merge-base --is-ancestor origin/main HEAD; then
+              echo "Ветка не опережает локальный коммит. Повтор через 10 минут."
+              sleep "$RETRY_INTERVAL_SECONDS"
+              continue
+            fi
 
-              if ! git rebase origin/main; then
-                echo "Не удалось выполнить rebase. Подготовка повторной попытки."
-                git rebase --abort 2>/dev/null || true
-                git reset --hard origin/main
+            # Удалённая ветка обновилась: немедленно перестраиваем
+            # коммит error поверх её актуального состояния.
+            git rebase --abort 2>/dev/null || true
+            git reset --hard origin/main
 
-                python - <<'PY'
+            python - <<'PY'
           import json
           from datetime import datetime, timezone
 
@@ -178,86 +285,14 @@ jobs:
               f.write("\n")
           PY
 
-                git add _data/repair-status.json
-                git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
-              fi
-            fi
+            git add _data/repair-status.json
+            git commit -m "fix(database): сохранение статуса ошибки [skip ci]"
+
+            echo "Статус error пересоздан поверх актуальной ветки. Повторяем публикацию."
           done
+
+          echo "Не удалось опубликовать статус ошибки после $MAX_ATTEMPTS попыток."
+          exit 1
 
           echo "Не удалось опубликовать статус ошибки."
           exit 1
-
-      - name: Подтверждение успешного исправления
-        id: confirm
-        if: ${{ success() }}
-        run: |
-          python - <<'PY'
-          import json
-          from datetime import datetime, timezone
-
-          path = "_data/repair-status.json"
-
-          with open(path, "r", encoding="utf-8") as f:
-              status = json.load(f)
-
-          current_mode = status.get("mode", "")
-
-          if status.get("status") != "on":
-              print("Статус не 'on'. Фиксация мягкого финиша.")
-              status["mode"] = current_mode
-              status["timestamp"] = datetime.now(timezone.utc).isoformat()
-              with open(path, "w", encoding="utf-8") as f:
-                  json.dump(status, f, ensure_ascii=False, indent=2)
-                  f.write("\n")
-              raise SystemExit(0)
-
-          status["status"] = "off"
-          status["mode"] = ""
-          status["timestamp"] = datetime.now(timezone.utc).isoformat()
-
-          with open(path, "w", encoding="utf-8") as f:
-              json.dump(status, f, ensure_ascii=False, indent=2)
-              f.write("\n")
-          PY
-
-          git add _data/repair-status.json
-
-          # ЗРЯЧАЯ ПРОВЕРА TECHLAB: Если изменений для коммита нет - выходим со статусом 0 без паники
-          if git diff --staged --quiet; then
-            echo "Изменений статуса для публикации нет. Сессия успешно закрыта."
-            exit 0
-          fi
-
-          git commit -m "fix(database): подтверждение завершения исправления [skip ci]"
-
-          MAX_ATTEMPTS=3
-          RETRY_INTERVAL_MINUTES=10
-
-          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
-            echo "Попытка публикации статуса off $attempt из $MAX_ATTEMPTS"
-
-            if git push origin HEAD:main; then
-              echo "Статус off успешно опубликован."
-              exit 0
-            fi
-
-            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
-              echo "Публикация не удалась. Повтор через $RETRY_INTERVAL_MINUTES минут."
-              sleep "$((RETRY_INTERVAL_MINUTES * 60))"
-
-              if ! git fetch origin main; then
-                echo "Не удалось получить актуальную версию main."
-                continue
-              fi
-
-              if ! git rebase origin/main; then
-                echo "Не удалось выполнить rebase."
-                git rebase --abort 2>/dev/null || true
-                exit 1
-              fi
-            fi
-          done
-
-          echo "Не удалось опубликовать статус off после $MAX_ATTEMPTS попыток."
-          exit 1
-
