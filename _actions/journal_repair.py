@@ -156,7 +156,7 @@ def main():
         target_time = signal_data.get("time", "")
         success = delete_students_from_yaml(file_path, target_day, target_time, students_to_delete)
 
-    # 2. Общая гигиеническая нормализация расписания (Подмодуль №1: Дни недели)
+    # 2. Общая нормализация расписания (Подмодуль №1: Дни недели)
     if success:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -164,7 +164,6 @@ def main():
 
             is_modified = False
             repaired_lines = []
-            is_inside_config = False  # Жесткий предохранитель секции конфигурации из оригинала
 
             for line in lines:
                 stripped = line.strip()
@@ -173,24 +172,10 @@ def main():
                     repaired_lines.append(line)
                     continue
 
-                indent = len(line) - len(line.lstrip(' '))
-
-                # Перехват входа в секцию конфигурации config:
-                if indent == 0 and stripped.lower() == 'config:':
-                    is_inside_config = True
-                    repaired_lines.append(line)
-                    continue
-
-                # Выход из config:, если начался реальный день недели
-                check_days = ["понедельник:", "вторник:", "среда:", "четверг:", "пятница:", "суббота:", "воскресенье:"]
-                if stripped.lower() in check_days:
-                    is_inside_config = False
-
-                # Если строка вне config, пускаем её через подмодуль дней недели
-                if not is_inside_config:
-                    line, day_mod = repair_day_line(line, filename)
-                    if day_mod:
-                        is_modified = True
+                # Абсолютно сквозной запуск подмодуля для каждой строки 1 в 1 по оригиналу
+                line, day_mod = repair_day_line(line, filename)
+                if day_mod:
+                    is_modified = True
 
                 repaired_lines.append(line)
 
