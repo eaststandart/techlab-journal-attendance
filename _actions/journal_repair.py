@@ -12,9 +12,12 @@ import os
 import sys
 import json
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime
 
-from ja_repair_normalizer import write_status
+# ПОДКЛЮЧАЕМ АВТОНОМНЫЙ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ TECHLAB
+from ja_session_manager import write_status, get_file_commit_seconds, get_last_robot_commit_seconds
+
+# ПОДКЛЮЧАЕМ СИНТАКСИЧЕСКИЕ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
 from ja_repair_day import repair_day_line
 from ja_repair_time import repair_time_line
 from ja_repair_fields import repair_fields_line
@@ -27,47 +30,6 @@ from ja_repair_structure import repair_yaml_structure
 DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
-
-def write_status(status, mode=""):
-    """Сохраняет текущий статус обработки и маркер режима (Автономная версия TechLab)."""
-    payload = {
-        "status": status,
-        "mode": mode,
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
-    with open(STATUS_FILE, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    print(f"[СТАТУС] {status} (mode: {mode})", flush=True)
-
-def get_file_commit_seconds(file_path):
-    """Запрашивает у Git точное число секунд Unix последнего коммита конкретного файла расписания."""
-    try:
-        result = subprocess.run(
-            ["git", "log", "-1", "--format=%ct", "--", file_path],
-            capture_output=True, text=True, check=True
-        )
-        out = result.stdout.strip()
-        if out.isdigit():
-            return int(out)
-    except Exception as e:
-        print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд файла расписания: {e}", flush=True)
-    return 0
-
-def get_last_robot_commit_seconds():
-    """Запрашивает у Git точное число секунд Unix прошлого успешного коммита закрытия сессии роботом."""
-    try:
-        # Ищем в истории репозитория самый свежий коммит с сообщением о подтверждении исправления
-        result = subprocess.run(
-            ["git", "log", "--grep=подтверждение завершения исправления", "-1", "--format=%ct"],
-            capture_output=True, text=True, check=True
-        )
-        out = result.stdout.strip()
-        if out.isdigit():
-            return int(out)
-    except Exception as e:
-        print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд коммита робота: {e}", flush=True)
-    return 0
 
 def main():
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
