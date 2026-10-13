@@ -80,7 +80,5 @@ config:
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
       tag: "@eastemitting"
-    - name: "Ренькевич Д"
-      direction: "электронное конструирование"
     - name: "Салоха В"
       direction: "столярное дело"
