@@ -53,14 +53,15 @@ def normalize_weekday(raw_day):
     return None
 
 def clean_field(value, allowed_extra=""):
-    """Оставляет только русские и английские буквы, пробелы и разрешённые знаки."""
-    allowed = set(
-        "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
-        "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-        + allowed_extra
-    )
-    cleaned = "".join(c for c in value if c in allowed)
-    return " ".join(cleaned.split()).strip()
+    """[ОТКЛЮЧЕНО TECHLAB] Старая функция закомментирована во избежание дублирования."""
+    # allowed = set(
+    #     "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+    #     "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+    #     + allowed_extra
+    # )
+    # cleaned = "".join(c for c in value if c in allowed)
+    # return " ".join(cleaned.split()).strip()
+    return None
 
 def write_status(status, mode=""):
     """Сохраняет текущий статус обработки и маркер режима."""
