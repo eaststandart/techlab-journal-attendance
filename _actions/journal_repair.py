@@ -222,6 +222,32 @@ def main():
             except Exception as e:
                 print(f"[КРИТИЧЕСКИЙ СБОЙ] Финальное вырезание учеников {filename}: {e}", flush=True)
                 success = False
+
+        # Контур Б: Точечное изменение структуры времени группы в расписании
+        elif cmd_type == "modify":
+            target_day = signal_data.get("day", "").strip()
+            old_time = signal_data.get("time", "").strip()
+            new_time = signal_data.get("modify_time", "").strip()
+
+            if target_day and old_time and new_time:
+                # Нормализуем координаты силами ядер TechLab перед вызовом замены
+                sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
+                clean_day = sim_day_line.replace(":", "").strip()
+                clean_old_time = normalize_time_internal(old_time)
+                clean_new_time = normalize_time_internal(new_time)
+
+                if clean_old_time and clean_new_time:
+                    try:
+                        success = modify_time_in_yaml(file_path, clean_day, clean_old_time, clean_new_time)
+                    except Exception as e:
+                        print(f"[КРИТИЧЕСКИЙ СБОЙ] Точечное изменение времени {filename}: {e}", flush=True)
+                        success = False
+                else:
+                    print(f"[ОШИБКА МОДИФИКАЦИИ] Неверный формат времени в сигнале: старое {old_time!r}, новое {new_time!r}", flush=True)
+                    success = False
+            else:
+                print("[ОШИБКА МОДИФИКАЦИИ] Сигнал modify прилетел без обязательных параметров day/time/modify_time", flush=True)
+                success = False
     
     if not success:
 
