@@ -201,11 +201,15 @@ def main():
             print(f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}", flush=True)
             success = False
 
-    # 4. Удаление учеников из полностью нормализованной и выровненной базы
+    # 4. Выполнение команд модификации базы данных из однотипного сигнала
     if success:
-        students_to_delete = signal_data.get("delete")
-        if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
-            target_day = signal_data.get("day", "")
+        cmd_type = signal_data.get("command", "").strip().lower()
+        
+        # Контур А: Удаление учеников из полностью нормализованной базы
+        if cmd_type == "delete":
+            students_to_delete = signal_data.get("delete")
+            if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
+                target_day = signal_data.get("day", "")
             target_time = signal_data.get("time", "")
             
             # Нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
