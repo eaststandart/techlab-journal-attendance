@@ -29,7 +29,6 @@ from journal_repair.ja_repair_delete import delete_students_from_yaml
 # ==============================================================================
 DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
-STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
 
 def main():
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
