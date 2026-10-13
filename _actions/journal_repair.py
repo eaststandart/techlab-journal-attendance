@@ -17,6 +17,7 @@ from datetime import datetime
 from ja_repair_normalizer import write_status
 from ja_repair_day import repair_day_line
 from ja_repair_time import repair_time_line
+from ja_repair_fields import repair_fields_line
 from ja_repair_delete import delete_students_from_yaml
 from ja_repair_structure import repair_yaml_structure
 
@@ -179,12 +180,17 @@ def main():
                 if day_mod:
                     is_modified = True
 
-                # 2. Подмодуль времени групп (с сохранением контроля флага has_errors)
+                # 2. Подмодуль времени групп
                 line, time_mod, time_err = repair_time_line(line, filename)
                 if time_mod:
                     is_modified = True
                 if time_err:
                     has_errors = True
+
+                # 3. Подмодуль текстовых полей учащихся (курсы, имена, теги)
+                line, fields_mod = repair_fields_line(line, filename)
+                if fields_mod:
+                    is_modified = True
 
                 repaired_lines.append(line)
 
