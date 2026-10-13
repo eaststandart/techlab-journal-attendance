@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 @module  ja_repair_structure.py
-@about   Серверный module контроля целостности и геометрии YAML TechLab
+@about   Серверный модуль контроля целостности и геометрии YAML TechLab
 @purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
 @author  TechLab
-@version 5.3.0
+@version 5.4.0
 """
 
 import os
@@ -25,7 +25,7 @@ def repair_yaml_structure(file_path):
 
     repaired_lines = []
     is_modified = False
-    is_inside_config = False  # Жесткий предохранитель секции конфигурации
+    is_schedule_zone = False  # Твое плоское правило управления зоной расписания
 
     # Построчно перебираем весь текст файла расписания
     for i, line in enumerate(lines):
@@ -37,39 +37,36 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # Перехват входа в секцию конфигурации config:
-        if stripped.lower() == "config:":
-            is_inside_config = True
-            repaired_lines.append(original_line)
-            continue
-
-        # АВТОНОМНЫЙ ПЕРЕХВАТ ГРАНИЦЫ: Выход из config:, если пошла любая строка дня на нулевом отступе
+        # --- ТВОЁ НОВОЕ ПЛОСКОЕ ПРАВИЛО УПРАВЛЕНИЯ ЗОНОЙ НАСТРОЕК И РАСПИСАНИЯ ---
         if stripped.endswith(":") and not line.startswith((" ", "\t")):
-            is_inside_config = False
+            raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
+            # Учитываем текущие изменения системы: дни теперь строго в нижнем регистре
+            structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
+            
+            if raw_day in structure_days:
+                is_schedule_zone = True  # Это день недели, включаем жесткий контроль расписания
+                repaired_line = f"{stripped}\n"
+                if repaired_line != original_line:
+                    is_modified = True
+                repaired_lines.append(repaired_line)
+                continue
+            else:
+                is_schedule_zone = False  # Это не день расписания (например config:), выключаем сито тестов
+                repaired_lines.append(original_line)
+                continue
 
-        # ХАРД-ЛОК CONFIG: Если мы внутри настроек, любые внутренние строки YAML пропускаются легитимно!
-        if is_inside_config:
+        # АВТОНОМНЫЙ ПРОПУСК БЛОКА КОНФИГУРАЦИИ:
+        # Если мы находимся вне зоны расписания, любые внутренние строки настроек пропускаются легитимно
+        if not is_schedule_zone:
             repaired_lines.append(original_line)
             continue
 
         # =========================================================================
-        # 🛑 СИТО ТЕСТОВ ДЛЯ СЕКЦИИ РАСПИСАНИЯ (РАБОТАЕТ С ФЛАГОМ СОВПАДЕНИЯ)
+        # 🛑 ТВОЕ ОРИГИНАЛЬНОЕ СИТО ТЕСТОВ (ВКЛЮЧАЕТСЯ СТРОГО ВНУТРИ РАСПИСАНИЯ)
         # =========================================================================
         is_line_valid = False
 
-        # 1. ТЕСТ: День недели (Плоский автономный аналог)
-        raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
-        structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
-        
-        if raw_day in structure_days and stripped.endswith(":"):
-            repaired_line = f"{stripped}\n"
-            if repaired_line != original_line:
-                is_modified = True
-            repaired_lines.append(repaired_line)
-            is_line_valid = True
-            continue
-
-        # 2. ТЕСТ: Время группы (Плоский автономный аналог)
+        # 2. ТЕСТ: Время группы (Плоский автономный аналог без внешних импортов)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
             if len(raw_time) == 3:
@@ -83,7 +80,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 3. ТЕСТ: Имя ученика
+        # 3. ТЕСТ: Имя ученика (Твой оригинальный код 1 в 1)
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
@@ -92,7 +89,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 4. ТЕСТ: Параметры ученика
+        # 4. ТЕСТ: Параметры ученика (Твой оригинальный код 1 в 1)
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
@@ -101,7 +98,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False во внешней базе расписания) ---
+        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False) ---
         if not is_line_valid:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r}", flush=True)
             print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
