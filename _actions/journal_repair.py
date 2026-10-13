@@ -16,6 +16,7 @@ from datetime import datetime
 
 from ja_repair_normalizer import write_status
 from ja_repair_day import repair_day_line
+from ja_repair_time import repair_time_line
 from ja_repair_delete import delete_students_from_yaml
 from ja_repair_structure import repair_yaml_structure
 
@@ -163,6 +164,7 @@ def main():
                 lines = f.readlines()
 
             is_modified = False
+            has_errors = False  # Оригинальный аварийный флаг времени
             repaired_lines = []
 
             for line in lines:
@@ -172,12 +174,24 @@ def main():
                     repaired_lines.append(line)
                     continue
 
-                # Абсолютно сквозной запуск подмодуля для каждой строки 1 в 1 по оригиналу
+                # 1. Подмодуль дней недели
                 line, day_mod = repair_day_line(line, filename)
                 if day_mod:
                     is_modified = True
 
+                # 2. Подмодуль времени групп (с сохранением контроля флага has_errors)
+                line, time_mod, time_err = repair_time_line(line, filename)
+                if time_mod:
+                    is_modified = True
+                if time_err:
+                    has_errors = True
+
                 repaired_lines.append(line)
+
+            # Если найдены недопустимые значения времени — прерываемся
+            if has_errors:
+                print(f"[ОШИБКА] {filename}: найдены недопустимые значения времени.", flush=True)
+                return False
 
             if is_modified:
                 with open(file_path, "w", encoding="utf-8") as f:
