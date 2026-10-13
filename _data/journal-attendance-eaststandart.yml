@@ -82,6 +82,4 @@ config:
       tag: "@eastemitting"
     - name: "Салоха В"
       direction: "столярное дело"
-    - name: "Р Дима"
-      direction: "электронное конструирование"
       
