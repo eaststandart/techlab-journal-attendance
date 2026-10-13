@@ -19,6 +19,7 @@ on:
 jobs:
   repair:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Проверка исходного кода репозитория через личный токен
@@ -62,7 +63,7 @@ jobs:
           REMOTE_SIGNAL="$RUNNER_TEMP/repair/remote-signal.json"
 
           # Получаем актуальную ветку до формирования коммита.
-          if ! git fetch origin-broken-unreachable main; then
+          if ! git fetch origin main; then
             echo "Не удалось связаться с GitHub. Повтор через 10 минут."
             sleep 600
             git fetch origin main
