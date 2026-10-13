@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 @module  ja_repair_structure.py
-@about   Серверный модуль контроля целостности и геометрии YAML TechLab
-@purpose Построчная проверка легитимности полей через точное совпадение и выставление отступов
+@about   Модуль контроля целостности и геометрии YAML TechLab
+@purpose Построчная проверка легитимности полей через точное совпадение и выставление отступов с логированием
 @author  TechLab
-@version 6.1.0
+@version 1.0.0
 """
 
 import os
 import re
 
 def repair_yaml_structure(file_path):
-    """Построчно проверяет текст по белому списку расписания и выставляет эталонные отступы."""
+    """Построчно проверяет текст по белому списку расписания, выставляет отступы и выводит детальные логи."""
     filename = os.path.basename(file_path)
     print(f"[СТРУКТУРА] Контроль целостности и геометрии по белому списку для файла: {filename}", flush=True)
 
@@ -36,23 +36,19 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # =========================================================================
-        # 🛑 БЕЛАЯ МАТРИЦА ТОЧНЫХ СОВПАДЕНИЙ РАСПИСАНИЯ TECHLAB
-        # =========================================================================
-
-        # 1. ТЕСТ: День недели (Отступ любой на входе, точное совпадение слова, отступ 0 на выходе)
+        # 1. ТЕСТ: День недели (Отступ любой на входе -> отступ 0 на выходе)
         raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
         structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
         
         if raw_day in structure_days and stripped.endswith(":"):
-            # Штампуем жесткий отступ 0 пробелов для дня недели на выходе
             repaired_line = f"{raw_day}:\n"
             if repaired_line != original_line:
+                print(f"[ГЕОМЕТРИЯ ДНЯ] Строка {i+1}: {original_line.rstrip()!r} -> {repaired_line.rstrip()!r}", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
             continue
 
-        # 2. ТЕСТ: Время группы (Отступ любой на входе, штампуем ровно 2 пробела на выходе)
+        # 2. ТЕСТ: Время группы (Отступ любой на входе -> ровно 2 пробела на выходе)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
             if len(raw_time) == 3:
@@ -61,6 +57,7 @@ def repair_yaml_structure(file_path):
                 clean_time = f"{raw_time[:2]}:{raw_time[2:]}"
             repaired_line = f'  "{clean_time}":\n'
             if repaired_line != original_line:
+                print(f"[ГЕОМЕТРИЯ ВРЕМЕНИ] Строка {i+1}: {original_line.rstrip()!r} -> {repaired_line.rstrip()!r}", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
             continue
@@ -69,6 +66,7 @@ def repair_yaml_structure(file_path):
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
+                print(f"[ГЕОМЕТРИЯ ИМЕНИ] Строка {i+1}: {original_line.rstrip()!r} -> {repaired_line.rstrip()!r}", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
             continue
@@ -77,12 +75,12 @@ def repair_yaml_structure(file_path):
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
+                print(f"[ГЕОМЕТРИЯ ПОЛЯ] Строка {i+1}: {original_line.rstrip()!r} -> {repaired_line.rstrip()!r}", flush=True)
                 is_modified = True
             repaired_lines.append(repaired_line)
             continue
 
         # --- БЕЗОПАСНЫЙ АВТОНОМНЫЙ ПРОПУСК (БЛОК CONFIG И ВСЕ НАСТРОЙКИ) ---
-        # Если строка не совпала со списком расписания — она легитимно летит дальше без изменений!
         repaired_lines.append(original_line)
 
     # Физически сохраняем исправленные отступы, только если проход завершился успехом
