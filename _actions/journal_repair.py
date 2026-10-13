@@ -234,7 +234,12 @@ def main():
                 # Нормализуем координаты силами ядер TechLab перед вызовом замены
                 sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
                 clean_day = sim_day_line.replace(":", "").strip()
-                clean_old_time = normalize_time_internal(old_time)
+                
+                # Старое время принудительно приводим к ЧЧ:ММ без суточной отбраковки
+                digits_old = "".join(c for c in old_time if c.isdigit())
+                clean_old_time = f"{digits_old[:2]}:{digits_old[2:]}" if len(digits_old) in {3, 4} else ""
+                
+                # Новое целевое время проверяем по полной строгости закона суток
                 clean_new_time = normalize_time_internal(new_time)
 
                 if clean_old_time and clean_new_time:
