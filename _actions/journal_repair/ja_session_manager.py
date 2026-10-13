@@ -13,8 +13,6 @@ import json
 import subprocess
 from datetime import datetime, timezone
 
-STATUS_FILE = os.path.join("_data", "repair-status.json")
-
 def get_file_commit_seconds(file_path):
     """Запрашивает у Git точное число секунд Unix последнего коммита конкретного файла расписания."""
     try:
@@ -43,15 +41,22 @@ def get_last_robot_commit_seconds():
         print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд коммита робота: {e}", flush=True)
     return 0
 
-def write_status(status, mode=""):
+def write_status(status, mode="", teacher_login=""):
     """Сохраняет текущий статус обработки и маркер режима (Сквозная версия сессионного контура)."""
+    if not teacher_login:
+        print("[КРИТИЧЕСКИЙ СБОЙ СТАТУСА] Вызов write_status произведен без указания teacher_login!", flush=True)
+        return
+
+    status_filename = f"repair-status-{teacher_login.strip()}.json"
+    status_filepath = os.path.join("_data", status_filename)
     payload = {
         "status": status,
         "mode": mode,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
-    with open(STATUS_FILE, "w", encoding="utf-8") as f:
+    with open(status_filepath, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    print(f"[СТАТУС] {status} (mode: {mode})", flush=True)
+    print(f"[СТАТУС ПРЕПОДАВАТЕЛЯ: {teacher_login}] {status} (mode: {mode})", flush=True)
+
   
