@@ -108,7 +108,7 @@ def repair_yaml_structure(file_path):
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(repaired_lines)
-            print(f"[ИТОГ] {filename}: Геометрия отступов успешно正常нормализована.", flush=True)
+            print(f"[ИТОГ] {filename}: Геометрия отступов успешно нормализована.", flush=True)
         except Exception as e:
             print(f"[СТРУКТУРА] Ошибка записи {filename}: {e}", flush=True)
             return False
