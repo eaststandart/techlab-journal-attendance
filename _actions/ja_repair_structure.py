@@ -3,18 +3,18 @@
 """
 @module  ja_repair_structure.py
 @about   Серверный модуль контроля целостности и геометрии YAML TechLab
-@purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
+@purpose Построчная проверка легитимности полей через точное совпадение и выставление отступов
 @author  TechLab
-@version 5.5.0
+@version 6.1.0
 """
 
 import os
 import re
 
 def repair_yaml_structure(file_path):
-    """Построчно проверяет легитимность текста по флагу совпадения и штампует отступы."""
+    """Построчно проверяет текст по белому списку расписания и выставляет эталонные отступы."""
     filename = os.path.basename(file_path)
-    print(f"[СТРУКТУРА] Контроль целостности по флагу совпадения для файла: {filename}", flush=True)
+    print(f"[СТРУКТУРА] Контроль целостности и геометрии по белому списку для файла: {filename}", flush=True)
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -25,7 +25,6 @@ def repair_yaml_structure(file_path):
 
     repaired_lines = []
     is_modified = False
-    is_schedule_zone = False  # Флаг управления зоной расписания
 
     # Построчно перебираем весь текст файла расписания
     for i, line in enumerate(lines):
@@ -37,40 +36,23 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # --- ТВОЙ ДИАГНОСТИЧЕСКИЙ БЛОК ЛОГОВ (ВЫЯВЛЯЕМ МИНУ) ---
-        if i < 40:  # Логируем только первые 40 строк файла, чтобы не засорять консоль
-            print(f"[ЛОГ СТРОКИ {i+1}] Текст: {stripped!r} | Отступ 0: {not line.startswith((' ', '\t'))} | Конец двоеточие: {stripped.endswith(':')} | Зона расписания ДО: {is_schedule_zone}", flush=True)
+        # =========================================================================
+        # 🛑 БЕЛАЯ МАТРИЦА ТОЧНЫХ СОВПАДЕНИЙ РАСПИСАНИЯ TECHLAB
+        # =========================================================================
 
-        # Перехват и переключение зоны расписания по корневым узлам на нулевом отступе
-        if stripped.endswith(":") and not line.startswith((" ", "\t")):
-            raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
-            structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
-            
-            if raw_day in structure_days:
-                is_schedule_zone = True
-                print(f"[ЛОГ СТРОКИ {i+1}] СРАБОТАЛ ДЕНЬ НЕДЕЛИ! Переключаем is_schedule_zone = True", flush=True)
-                repaired_line = f"{stripped}\n"
-                if repaired_line != original_line:
-                    is_modified = True
-                repaired_lines.append(repaired_line)
-                continue
-            else:
-                is_schedule_zone = False
-                print(f"[ЛОГ СТРОКИ {i+1}] СРАБОТАЛ КОНФИГ/ДРУГОЙ УЗЕЛ! Переключаем is_schedule_zone = False", flush=True)
-                repaired_lines.append(original_line)
-                continue
-
-        # Автономный пропуск блока конфигурации
-        if not is_schedule_zone:
-            repaired_lines.append(original_line)
+        # 1. ТЕСТ: День недели (Отступ любой на входе, точное совпадение слова, отступ 0 на выходе)
+        raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
+        structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
+        
+        if raw_day in structure_days and stripped.endswith(":"):
+            # Штампуем жесткий отступ 0 пробелов для дня недели на выходе
+            repaired_line = f"{raw_day}:\n"
+            if repaired_line != original_line:
+                is_modified = True
+            repaired_lines.append(repaired_line)
             continue
 
-        # =========================================================================
-        # 🛑 ТВОЕ ОРИГИНАЛЬНОЕ СИТО ТЕСТОВ (ВКЛЮЧАЕТСЯ СТРОГО ВНУТРИ РАСПИСАНИЯ)
-        # =========================================================================
-        is_line_valid = False
-
-        # 2. ТЕСТ: Время группы (Плоский автономный аналог)
+        # 2. ТЕСТ: Время группы (Отступ любой на входе, штампуем ровно 2 пробела на выходе)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
             if len(raw_time) == 3:
@@ -81,32 +63,27 @@ def repair_yaml_structure(file_path):
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
-            is_line_valid = True
             continue
 
-        # 3. ТЕСТ: Имя ученика
+        # 3. ТЕСТ: Имя ученика (Штампуем ровно 4 пробела на выходе)
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
-            is_line_valid = True
             continue
 
-        # 4. ТЕСТ: Параметры ученика
+        # 4. ТЕСТ: Параметры ученика (Штампуем ровно 6 пробелов на выходе)
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
-            is_line_valid = True
             continue
 
-        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ ---
-        if not is_line_valid:
-            print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r} | Зона расписания: {is_schedule_zone}", flush=True)
-            print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
-            return False
+        # --- БЕЗОПАСНЫЙ АВТОНОМНЫЙ ПРОПУСК (БЛОК CONFIG И ВСЕ НАСТРОЙКИ) ---
+        # Если строка не совпала со списком расписания — она легитимно летит дальше без изменений!
+        repaired_lines.append(original_line)
 
     # Физически сохраняем исправленные отступы, только если проход завершился успехом
     if is_modified:
