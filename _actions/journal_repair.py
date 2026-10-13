@@ -23,6 +23,7 @@ from journal_repair.ja_repair_time import repair_time_line, normalize_time_inter
 from journal_repair.ja_repair_fields import repair_fields_line
 from journal_repair.ja_repair_structure import repair_yaml_structure
 from journal_repair.ja_repair_delete import delete_students_from_yaml
+from journal_repair.ja_repair_modify import modify_time_in_yaml
 
 # ==============================================================================
 # НАСТРОЙКИ
