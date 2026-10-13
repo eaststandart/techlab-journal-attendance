@@ -10,7 +10,8 @@
 
 import os
 import re
-from ja_repair_normalizer import normalize_weekday, normalize_time
+from ja_repair_day import repair_day_line
+from ja_repair_time import repair_time_line
 
 def repair_yaml_structure(file_path):
     """Построчно проверяет легитимность текста по флагу совпадения и штампует отступы."""
@@ -44,17 +45,17 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # Пытаемся зряче нормализовать день недели (лечит "воскре сенье" и сбрасывает config:)
-        raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
-        clean_day = normalize_weekday(raw_day)
-        
-        if clean_day:
-            is_inside_config = False  # Робот вышел из настроек, началось расписание!
-            repaired_line = f"{clean_day}:\n"
-            if repaired_line != original_line:
-                is_modified = True
-            repaired_lines.append(repaired_line)
-            continue
+        # Сквозной вызов автономного подмодуля дней недели
+        repaired_line, day_mod = repair_day_line(original_line, filename)
+        if day_mod or (repaired_line.strip().endswith(":") and not repaired_line.startswith(" ")):
+            # Проверяем, что это реальный день из нашего словаря синонимов
+            check_days = ["понедельник:", "вторник:", "среда:", "четверг:", "пятница:", "суббота:", "воскресенье:"]
+            if repaired_line.strip().lower() in check_days:
+                is_inside_config = False  # Робот вышел из настроек, началось расписание!
+                if repaired_line != original_line:
+                    is_modified = True
+                repaired_lines.append(repaired_line)
+                continue
 
         # ХАРД-ЛОК: Если мы летим внутри секции config:, проверки синтаксиса полностью ИГНОРИРУЮТСЯ!
         if is_inside_config:
@@ -66,14 +67,15 @@ def repair_yaml_structure(file_path):
         # =========================================================================
         is_line_valid = False
 
-        # 1. ТЕСТ: Время группы (Пробуем нормализовать текст)
-        raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
-        clean_time = normalize_time(raw_time)
-        if clean_time and stripped.endswith(":"):
-            repaired_line = f'  "{clean_time}":\n'
-            if repaired_line != original_line:
+        # 1. ТЕСТ: Время группы (Сквозной вызов автономного подмодуля времени)
+        # Искусственно подставляем отступ в 2 пробела для корректной симуляции инспектора
+        sim_line = f"  {stripped}\n" if not original_line.startswith("  ") else original_line
+        repaired_time_line_str, time_mod, time_err = repair_time_line(sim_line, filename)
+        
+        if (time_mod or repaired_time_line_str.strip().startswith('"')) and repaired_time_line_str.strip().endswith(':'):
+            if repaired_time_line_str != original_line:
                 is_modified = True
-            repaired_lines.append(repaired_line)
+            repaired_lines.append(repaired_time_line_str)
             is_line_valid = True
             continue
 
