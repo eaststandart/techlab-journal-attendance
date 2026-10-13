@@ -58,7 +58,7 @@ def repair_time_line(line, filename, signal_data=None):
             )
             
             if is_being_fixed:
-                print(f"[ИНДУЛЬГЕНЦИЯ] Брак {raw_time!r} пропущен для выжигания модификатором, синтаксис сохранен.", flush=True)
+                print(f"[ИНДУЛЬГЕНЦИЯ] Брак {raw_time!r} пропущен для исправления модификатором, синтаксис сохранен.", flush=True)
                 clean_time = repaired_format
             
         # Финальный вывод эталона в файл на твоих оригинальных рельсах
