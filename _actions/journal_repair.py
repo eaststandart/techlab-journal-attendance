@@ -161,10 +161,20 @@ def main():
 
                 repaired_lines.append(line)
 
-            # Если найдены недопустимые значения времени — прерываемся
+            # Если найдены недопустимые значения времени — завершаем процесс с ошибкой для GitHub Actions.
             if has_errors:
-                print(f"[ОШИБКА] {filename}: найдены недопустимые значения времени.", flush=True)
-                return False
+                print(
+                    f"[ОШИБКА] {filename}: найдены недопустимые значения времени.",
+                    flush=True,
+                )
+                try:
+                    write_status("error", mode="")
+                except Exception as status_error:
+                    print(
+                        f"[ОШИБКА] Не удалось сохранить статус: {status_error}",
+                        flush=True,
+                    )
+                sys.exit(1)
 
             if is_modified:
                 with open(file_path, "w", encoding="utf-8") as f:
