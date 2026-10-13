@@ -154,9 +154,10 @@ def main():
                     is_modified = True
 
                 # 2. Подмодуль времени групп
-                line, time_mod, time_err = repair_time_line(line, filename)
+                line, time_mod, time_err = repair_time_line(line, filename, signal_data)
                 if time_mod:
                     is_modified = True
+
                 if time_err:
                     has_errors = True
 
