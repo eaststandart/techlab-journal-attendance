@@ -14,15 +14,15 @@ import json
 import subprocess
 from datetime import datetime
 
-# ПОДКЛЮЧАЕМ АВТОНОМНЫЙ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ TECHLAB
-from ja_session_manager import write_status, get_file_commit_seconds, get_last_robot_commit_seconds
+# ПОДКЛЮЧАЕМ АВТОНОМНЫЙ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ TECHLAB ИЗ ПАКЕТА
+from journal_repair.ja_session_manager import write_status, get_file_commit_seconds, get_last_robot_commit_seconds
 
-# ПОДКЛЮЧАЕМ СИНТАКСИЧЕСКИЕ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
-from ja_repair_day import repair_day_line
-from ja_repair_time import repair_time_line, normalize_time_internal
-from ja_repair_fields import repair_fields_line
-from ja_repair_structure import repair_yaml_structure
-from ja_repair_delete import delete_students_from_yaml
+# ПОДКЛЮЧАЕМ СИНТАКСИЧЕСКИЕ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ ИЗ ПАКЕТА
+from journal_repair.ja_repair_day import repair_day_line
+from journal_repair.ja_repair_time import repair_time_line, normalize_time_internal
+from journal_repair.ja_repair_fields import repair_fields_line
+from journal_repair.ja_repair_structure import repair_yaml_structure
+from journal_repair.ja_repair_delete import delete_students_from_yaml
 
 # ==============================================================================
 # НАСТРОЙКИ
