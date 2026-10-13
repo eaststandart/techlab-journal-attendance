@@ -56,7 +56,7 @@ def main():
     except Exception as e:
         print(f"[ОШИБКА] Некорректный сигнал: {e}", flush=True)
         try:
-            write_status("error")
+            write_status("error", teacher_login="unknown")
         except Exception as status_error:
             print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
         sys.exit(1)
@@ -67,7 +67,7 @@ def main():
     if not os.path.isfile(file_path):
         print(f"[ОШИБКА] Файл {filename} не найден.", flush=True)
         try:
-            write_status("error")
+            write_status("error", teacher_login=target_teacher)
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
