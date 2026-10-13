@@ -5,24 +5,21 @@
 @about   Автономный модуль удаления учеников из базы данных расписания
 @purpose Точечное вырезание блоков строк учащихся по координатам дня и времени
 @author  TechLab
-@version 1.0.0
+@version 2.0.0
 """
 
 import os
-from ja_repair_normalizer import normalize_time, normalize_weekday
 
 def delete_students_from_yaml(file_path, target_day, target_time, students_to_delete):
-    """Ищет день, группу и вырезает указанных учеников вместе со всеми их полями."""
+    """Ищет день, группу и вырезает указанных учеников вместе со всеми их полями по чистым координатам."""
     if not students_to_delete:
         return True
 
     filename = os.path.basename(file_path)
-    clean_day = normalize_weekday(target_day)
-    clean_time = normalize_time(target_time)
 
-    if not clean_day or not clean_time:
-        print(f"[УДАЛЕНИЕ] Ошибка: Кривые координаты day={target_day!r}, time={target_time!r}", flush=True)
-        return False
+    # Диспетчер передает координаты уже чистыми (в нижнем регистре и без мусора)
+    clean_day = target_day.strip().lower()
+    clean_time = target_time.strip()
 
     print(f"[УДАЛЕНИЕ] Цель: {filename} -> {clean_day} в {clean_time}. Список: {students_to_delete}", flush=True)
 
@@ -44,19 +41,21 @@ def delete_students_from_yaml(file_path, target_day, target_time, students_to_de
         stripped = line.strip()
         indent = len(line) - len(line.lstrip(' '))
 
+        # 1. СВЕРКА ДНЕЙ НЕДЕЛИ: файл уже гарантированно нормализован в нижний регистр силами ja_repair_day.py
         if indent == 0 and stripped.endswith(':'):
-            current_day = normalize_weekday(stripped[:-1])
+            current_day = stripped[:-1]  # Просто срезаем двоеточие. Регистр уже маленький!
             inside_target_day = (current_day == clean_day)
             inside_target_group = False
             skip_student_block = False
 
+        # 2. СВЕРКА ВРЕМЕНИ ГРУПП: файл уже гарантированно обернут в кавычки силами ja_repair_time.py
         elif inside_target_day and indent == 2 and stripped.endswith(':'):
-            current_time = normalize_time(stripped[:-1])
+            current_time = stripped[:-1].replace('"', '').replace("'", "")  # Убираем кавычки стандарта и двоеточие
             inside_target_group = (current_time == clean_time)
             skip_student_block = False
 
+        # 3. СВЕРКА ИМЕНИ УЧЕНИКА
         elif inside_target_day and inside_target_group and line.startswith("    - name:"):
-            # Снимаем внешние кавычки из YAML
             raw_name = stripped.split(":", 1)[1].replace('"', '').replace("'", '').strip()
             
             if any(raw_name == name.strip() for name in students_to_delete):
@@ -67,6 +66,7 @@ def delete_students_from_yaml(file_path, target_day, target_time, students_to_de
             else:
                 skip_student_block = False
 
+        # 4. ПРОПУСК ПОЛЕЙ УДАЛЕННОГО УЧЕНИКА
         elif inside_target_day and inside_target_group and skip_student_block:
             if line.startswith("      direction:") or line.startswith("      tag:"):
                 continue
