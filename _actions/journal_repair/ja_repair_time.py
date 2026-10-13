@@ -32,7 +32,7 @@ def normalize_time_internal(raw_time):
         return None
     return f"{hour:02d}:{minute:02d}"
 
-def repair_time_line(line, filename):
+def repair_time_line(line, filename, signal_data=None):
     """Проверяет и исправляет синтаксис времени групп строго по логике оригинала."""
     stripped = line.strip()
     is_modified = False
@@ -46,8 +46,24 @@ def repair_time_line(line, filename):
         clean_time = normalize_time_internal(raw_time)
         
         if clean_time is None:
-            print(f"[ОШИБКА ВРЕМЕНИ] {filename}: недопустимое значение {raw_time!r}", flush=True)
-            has_errors = True
+            # Очищаем строки от букв и знаков разделителей до голых цифр для всеядной сверки
+            digits_in_yml = "".join(c for c in raw_time if c.isdigit()) if raw_time else ""
+            
+            signal_time = signal_data.get("time", "") if isinstance(signal_data, dict) else ""
+            digits_in_signal = "".join(c for c in signal_time if c.isdigit())
+            
+            is_being_fixed = (
+                isinstance(signal_data, dict)
+                and signal_data.get("command") == "modify"
+                and digits_in_yml == digits_in_signal
+                and len(digits_in_yml) in {3, 4}
+            )
+            
+            if is_being_fixed:
+                print(f"[ИНДУЛЬГЕНЦИЯ] Брак времени {raw_time!r} временно пропущен, так как на сервер пришёл зрячий сигнал на его исправление.", flush=True)
+            else:
+                print(f"[ОШИБКА ВРЕМЕНИ] {filename}: недопустимое значение {raw_time!r}", flush=True)
+                has_errors = True
         else:
             repaired_line = f'  "{clean_time}":\n'
             if repaired_line != line:
