@@ -5,7 +5,7 @@
 @about   Серверный модуль контроля целостности и геометрии YAML TechLab
 @purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
 @author  TechLab
-@version 5.0.0
+@version 5.2.0
 """
 
 import os
@@ -26,36 +26,40 @@ def repair_yaml_structure(file_path):
     repaired_lines = []
     is_modified = False
 
-    # Построчно перебираем весь текст файла расписания в плоском режиме
+    # Построчно перебираем весь текст файла расписания
     for i, line in enumerate(lines):
         original_line = line
         stripped = line.strip()
 
-        # Законные пустые строки и комментарии пропускаем без провевок
+        # Законные пустые строки и комментарии пропускаем без проверок
         if not stripped or stripped.startswith("#"):
             repaired_lines.append(original_line)
             continue
 
-        # 1. ТЕСТ ГЕОМЕТРИИ: Узлы дней недели (или config:) на нулевом отступе
-        if stripped.endswith(":") and not line.startswith((" ", "\t")):
-            repaired_line = f"{stripped.lower()}\n"
+        # Жесткий маркер валидности текущей строки расписания
+        is_line_valid = False
+
+        # 1. ТЕСТ: День недели (Плоский автономный аналог normalize_weekday)
+        raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
+        # Бронированный список дней TechLab в нижнем регистре
+        structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
+        
+        if raw_day in structure_days and stripped.endswith(":"):
+            # Сохраняем строку дня ровно в том регистре, который записал первый подмодуль
+            repaired_line = f"{stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
             repaired_lines.append(repaired_line)
+            is_line_valid = True
             continue
 
-        # Внутренние строки конфигурации обходят сито тестов автоматически,
-        # так как не имеют префиксов расписания (- name, direction, tag) и не являются временем ЧЧ:ММ.
-        is_line_valid = False
-
-        # 2. ТЕСТ ГЕОМЕТРИИ: Время группы (Определяем плоско по наличию стартовой цифры и двоеточия)
+        # 2. ТЕСТ: Время группы (Плоский автономный аналог normalize_time)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
             if len(raw_time) == 3:
-                clean_time = f"0{raw_time[0]}:{raw_time[1:]}"
+                clean_time = f"0{raw_time[:1]}:{raw_time[1:]}"
             else:
                 clean_time = f"{raw_time[:2]}:{raw_time[2:]}"
-                
             repaired_line = f'  "{clean_time}":\n'
             if repaired_line != original_line:
                 is_modified = True
@@ -63,7 +67,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 3. ТЕСТ ГЕОМЕТРИИ: Имя ученика (Штампуем жесткий отступ 4 пробела)
+        # 3. ТЕСТ: Имя ученика
         if stripped.startswith("- name:"):
             repaired_line = f"    {stripped}\n"
             if repaired_line != original_line:
@@ -72,7 +76,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 4. ТЕСТ ГЕОМЕТРИИ: Параметры ученика (Штампуем жесткий отступ 6 пробелов)
+        # 4. ТЕСТ: Параметры ученика
         if stripped.startswith("direction:") or stripped.startswith("tag:"):
             repaired_line = f"      {stripped}\n"
             if repaired_line != original_line:
@@ -81,17 +85,16 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 5. ТЕСТ ГЕОМЕТРИИ: Пропуск служебных строк конфигурации (tg_public_notify, channel_id и т.д.)
-        # Если строка имеет отступ и не относится к расписанию, она легитимно пропускается
-        if line.startswith((" ", "\t")) and not stripped.startswith(("- name:", "direction:", "tag:")) and not re.match(r"^\d", raw_time):
+        # 5. ТЕСТ: Служебные поля секции config (копируем регулярку из твоего оригинала 1 в 1)
+        if re.match(r'^[a-z0-9_]+:', stripped):
             repaired_lines.append(original_line)
             is_line_valid = True
             continue
 
-        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ ---
+        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False) ---
         if not is_line_valid:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r}", flush=True)
-            print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
+            print("[ИНСТРУК訊] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
             return False
 
     # Физически сохраняем исправленные отступы, только если проход завершился успехом
