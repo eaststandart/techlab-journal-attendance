@@ -1,3 +1,7 @@
 {
-  "teacher_login": "eaststandart"
+  "teacher_login": "eaststandart",
+  "day": "суббота",
+  "time": "35:00",
+  "command": "modify",
+  "modify_time": "35:00"
 }
