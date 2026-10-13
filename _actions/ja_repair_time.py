@@ -5,11 +5,32 @@
 @about   Подмодуль инспекции и форматирования синтаксиса времени групп
 @purpose Контроль формата ЧЧ:ММ и автоматическое оборачивание в кавычки
 @author  TechLab
-@version 1.0.0
+@version 2.0.0
 """
 
 import re
-from ja_repair_normalizer import normalize_time
+
+def normalize_time_internal(raw_time):
+    """Внутренний автономный парсер времени из старого ja_repair_normalizer.py."""
+    value = raw_time.strip().strip("\"'").strip()
+    hour = minute = None
+
+    if re.fullmatch(r"\d{3,4}", value):
+        if len(value) == 3:
+            hour, minute = int(value[0]), int(value[1:])
+        else:
+            hour, minute = int(value[:2]), int(value[2:])
+    else:
+        match = re.fullmatch(r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})", value)
+        if not match:
+            match = re.fullmatch(r"(\d{1,2})\s+(\d{2})", value)
+        if match:
+            hour = int(match.group(1))
+            minute = int(match.group(2))
+
+    if hour is None or minute is None or not (0 <= hour <= 23 and 0 <= minute <= 59):
+        return None
+    return f"{hour:02d}:{minute:02d}"
 
 def repair_time_line(line, filename):
     """Проверяет и исправляет синтаксис времени групп строго по логике оригинала."""
@@ -17,12 +38,15 @@ def repair_time_line(line, filename):
     is_modified = False
     has_errors = False
 
+    # Оригинальный нож-инспектор из ja_repair_engine.py
     if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):            
         raw_time = stripped[:-1].replace('"', "").replace("'", "").strip().rstrip(":")           
+        
+        # Обход конфига: если строка начинается с букв (например tg_public_notify:), пропускаем
         if not re.match(r"^\d", raw_time):
             return line, is_modified, has_errors
             
-        clean_time = normalize_time(raw_time)
+        clean_time = normalize_time_internal(raw_time)
         
         if clean_time is None:
             print(f"[ОШИБКА ВРЕМЕНИ] {filename}: недопустимое значение {raw_time!r}", flush=True)
@@ -35,3 +59,4 @@ def repair_time_line(line, filename):
                 is_modified = True
 
     return line, is_modified, has_errors
+    
