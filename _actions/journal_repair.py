@@ -21,8 +21,8 @@ from ja_session_manager import write_status, get_file_commit_seconds, get_last_r
 from ja_repair_day import repair_day_line
 from ja_repair_time import repair_time_line
 from ja_repair_fields import repair_fields_line
-from ja_repair_delete import delete_students_from_yaml
 from ja_repair_structure import repair_yaml_structure
+from ja_repair_delete import delete_students_from_yaml
 
 # ==============================================================================
 # НАСТРОЙКИ
@@ -125,13 +125,6 @@ def main():
     # ИНАЧЕ - РАБОТАЕМ ПО ПОЛНОЙ ПРОГРАММЕ КАК И РАНЬШЕ
     success = True
 
-    # 1. Проверяем наличие массива на удаление
-    students_to_delete = signal_data.get("delete")
-    if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
-        target_day = signal_data.get("day", "")
-        target_time = signal_data.get("time", "")
-        success = delete_students_from_yaml(file_path, target_day, target_time, students_to_delete)
-
     # 2. Общая нормализация расписания (Подмодуль №1: Дни недели)
     if success:
         try:
@@ -191,8 +184,30 @@ def main():
         except Exception as e:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}", flush=True)
             success = False
+
+    # 4. Удаление учеников из полностью нормализованной и выровненной базы
+    if success:
+        students_to_delete = signal_data.get("delete")
+        if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
+            target_day = signal_data.get("day", "")
+            target_time = signal_data.get("time", "")
+            
+            # Зряче нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
+            from ja_repair_day import repair_day_line
+            from ja_repair_time import normalize_time_internal
+            
+            sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
+            clean_day = sim_day_line.replace(":", "").strip()
+            clean_time = normalize_time_internal(target_time)
+            
+            try:
+                success = delete_students_from_yaml(file_path, clean_day, clean_time, students_to_delete)
+            except Exception as e:
+                print(f"[КРИТИЧЕСКИЙ СБОЙ] Финальное вырезание учеников {filename}: {e}", flush=True)
+                success = False
     
     if not success:
+
         try:
             write_status("error", mode="")
         except Exception as e:
