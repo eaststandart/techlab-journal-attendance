@@ -63,7 +63,7 @@ def main():
     except Exception as e:
         print(f"[ОШИБКА] Некорректный сигнал: {e}", flush=True)
         try:
-            write_status("error", teacher_login="unknown")
+            write_status("error", teacher_login=cmd_teacher if 'cmd_teacher' in locals() else "unknown")
         except Exception as status_error:
             print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
         sys.exit(1)
