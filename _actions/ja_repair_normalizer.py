@@ -16,26 +16,25 @@ from datetime import datetime, timezone
 STATUS_FILE = os.path.join("_data", "repair-status.json")
 
 def normalize_time(raw_time):
-    """Возвращает HH:MM для допустимого времени, иначе None."""
-    value = raw_time.strip().strip("\"'").strip()
-    hour = minute = None
-
-    if re.fullmatch(r"\d{3,4}", value):
-        if len(value) == 3:
-            hour, minute = int(value[0]), int(value[1:])
-        else:
-            hour, minute = int(value[:2]), int(value[2:])
-    else:
-        match = re.fullmatch(r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})", value)
-        if not match:
-            match = re.fullmatch(r"(\d{1,2})\s+(\d{2})", value)
-        if match:
-            hour = int(match.group(1))
-            minute = int(match.group(2))
-
-    if hour is None or minute is None or not (0 <= hour <= 23 and 0 <= minute <= 59):
-        return None
-    return f"{hour:02d}:{minute:02d}"
+    """[ОТКЛЮЧЕНО TECHLAB] Старая функция закомментирована во избежание дублирования."""
+    # value = raw_time.strip().strip("\"'").strip()
+    # hour = minute = None
+    # if re.fullmatch(r"\d{3,4}", value):
+    #     if len(value) == 3:
+    #         hour, minute = int(value[0]), int(value[1:])
+    #     else:
+    #         hour, minute = int(value[:2]), int(value[2:])
+    # else:
+    #     match = re.fullmatch(r"(\d{1,2})\s*[:\\/.\=–—-]\s*(\d{2})", value)
+    #     if not match:
+    #         match = re.fullmatch(r"(\d{1,2})\s+(\d{2})", value)
+    #     if match:
+    #         hour = int(match.group(1))
+    #         minute = int(match.group(2))
+    # if hour is None or minute is None or not (0 <= hour <= 23 and 0 <= minute <= 59):
+    #     return None
+    # return f"{hour:02d}:{minute:02d}"
+    return None
 
 def normalize_weekday(raw_day):
     """[ОТКЛЮЧЕНО TECHLAB] Старая функция закомментирована во избежание дублирования."""
