@@ -19,7 +19,7 @@ from ja_session_manager import write_status, get_file_commit_seconds, get_last_r
 
 # ПОДКЛЮЧАЕМ СИНТАКСИЧЕСКИЕ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
 from ja_repair_day import repair_day_line
-from ja_repair_time import repair_time_line
+from ja_repair_time import repair_time_line, normalize_time_internal
 from ja_repair_fields import repair_fields_line
 from ja_repair_structure import repair_yaml_structure
 from ja_repair_delete import delete_students_from_yaml
@@ -192,10 +192,7 @@ def main():
             target_day = signal_data.get("day", "")
             target_time = signal_data.get("time", "")
             
-            # Зряче нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
-            from ja_repair_day import repair_day_line
-            from ja_repair_time import normalize_time_internal
-            
+            # Нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
             sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
             clean_day = sim_day_line.replace(":", "").strip()
             clean_time = normalize_time_internal(target_time)
