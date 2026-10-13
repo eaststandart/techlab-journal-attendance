@@ -59,7 +59,7 @@ config:
   "10:00":
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
-        tag: "@eastemitting"
+      tag: "@eastemitting"
     - name: "Дмитриев Артем"
       direction: "электронное конструирование"
     - name: "Интальева Даша"
