@@ -12,7 +12,7 @@ import os
 import sys
 import json
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ja_repair_normalizer import write_status
 from ja_repair_day import repair_day_line
@@ -26,7 +26,19 @@ from ja_repair_structure import repair_yaml_structure
 # ==============================================================================
 DATA_DIR = "_data"
 SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
+STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
 
+def write_status(status, mode=""):
+    """Сохраняет текущий статус обработки и маркер режима (Автономная версия TechLab)."""
+    payload = {
+        "status": status,
+        "mode": mode,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    with open(STATUS_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    print(f"[СТАТУС] {status} (mode: {mode})", flush=True)
 
 def get_file_commit_seconds(file_path):
     """Запрашивает у Git точное число секунд Unix последнего коммита конкретного файла расписания."""
