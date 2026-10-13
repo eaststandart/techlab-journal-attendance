@@ -62,7 +62,7 @@ jobs:
           REMOTE_SIGNAL="$RUNNER_TEMP/repair/remote-signal.json"
 
           # Получаем актуальную ветку до формирования коммита.
-          if ! git fetch origin main; then
+          if ! git fetch origin-broken-unreachable main; then
             echo "Не удалось связаться с GitHub. Повтор через 10 минут."
             sleep 600
             git fetch origin main
