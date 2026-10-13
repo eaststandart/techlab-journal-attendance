@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 @module  ja_repair_structure.py
-@about   Серверный модуль контроля целостности и геометрии YAML TechLab
+@about   Серверный module контроля целостности и геометрии YAML TechLab
 @purpose Построчная проверка легитимности полей через флаг совпадения и выставление отступов
 @author  TechLab
-@version 5.2.0
+@version 5.3.0
 """
 
 import os
@@ -25,6 +25,7 @@ def repair_yaml_structure(file_path):
 
     repaired_lines = []
     is_modified = False
+    is_inside_config = False  # Жесткий предохранитель секции конфигурации
 
     # Построчно перебираем весь текст файла расписания
     for i, line in enumerate(lines):
@@ -36,16 +37,31 @@ def repair_yaml_structure(file_path):
             repaired_lines.append(original_line)
             continue
 
-        # Жесткий маркер валидности текущей строки расписания
+        # Перехват входа в секцию конфигурации config:
+        if stripped.lower() == "config:":
+            is_inside_config = True
+            repaired_lines.append(original_line)
+            continue
+
+        # АВТОНОМНЫЙ ПЕРЕХВАТ ГРАНИЦЫ: Выход из config:, если пошла любая строка дня на нулевом отступе
+        if stripped.endswith(":") and not line.startswith((" ", "\t")):
+            is_inside_config = False
+
+        # ХАРД-ЛОК CONFIG: Если мы внутри настроек, любые внутренние строки YAML пропускаются легитимно!
+        if is_inside_config:
+            repaired_lines.append(original_line)
+            continue
+
+        # =========================================================================
+        # 🛑 СИТО ТЕСТОВ ДЛЯ СЕКЦИИ РАСПИСАНИЯ (РАБОТАЕТ С ФЛАГОМ СОВПАДЕНИЯ)
+        # =========================================================================
         is_line_valid = False
 
-        # 1. ТЕСТ: День недели (Плоский автономный аналог normalize_weekday)
+        # 1. ТЕСТ: День недели (Плоский автономный аналог)
         raw_day = stripped.replace(":", "").replace('"', '').replace("'", '').strip().lower()
-        # Бронированный список дней TechLab в нижнем регистре
         structure_days = {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"}
         
         if raw_day in structure_days and stripped.endswith(":"):
-            # Сохраняем строку дня ровно в том регистре, который записал первый подмодуль
             repaired_line = f"{stripped}\n"
             if repaired_line != original_line:
                 is_modified = True
@@ -53,7 +69,7 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 2. ТЕСТ: Время группы (Плоский автономный аналог normalize_time)
+        # 2. ТЕСТ: Время группы (Плоский автономный аналог)
         raw_time = stripped.replace(":", "").replace('"', '').replace("'", '').strip()
         if re.fullmatch(r"\d{3,4}", raw_time) and stripped.endswith(":"):
             if len(raw_time) == 3:
@@ -85,16 +101,10 @@ def repair_yaml_structure(file_path):
             is_line_valid = True
             continue
 
-        # 5. ТЕСТ: Служебные поля секции config (копируем регулярку из твоего оригинала 1 в 1)
-        if re.match(r'^[a-z0-9_]+:', stripped):
-            repaired_lines.append(original_line)
-            is_line_valid = True
-            continue
-
-        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False) ---
+        # --- МОМЕНТАЛЬНЫЙ СТОП-СИГНАЛ (Флаг остался False во внешней базе расписания) ---
         if not is_line_valid:
             print(f"[КРИТИЧЕСКИЙ СБОЙ] {filename} (Строка {i+1}): Обнаружено неразрешенное или разорванное поле: {stripped!r}", flush=True)
-            print("[ИНСТРУК訊] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
+            print("[ИНСТРУКЦИЯ] Сборка заблокирована. Пожалуйста, исправьте эту опечатку вручную на GitHub.", flush=True)
             return False
 
     # Физически сохраняем исправленные отступы, только если проход завершился успехом
