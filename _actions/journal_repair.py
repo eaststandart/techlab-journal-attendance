@@ -28,11 +28,18 @@ from journal_repair.ja_repair_delete import delete_students_from_yaml
 # НАСТРОЙКИ
 # ==============================================================================
 DATA_DIR = "_data"
-SIGNAL_FILE = os.path.join(DATA_DIR, "signal-repair.json")
 
 def main():
+    # Проверяем, что воркфлоу передал обязательный аргумент логина преподавателя
+    if len(sys.argv) < 2:
+        print("[ОШИБКА] Запуск диспетчера произведен без указания логина преподавателя в аргументах.", flush=True)
+        sys.exit(1)
+        
+    cmd_teacher = sys.argv[1].strip()
+    SIGNAL_FILE = os.path.join(DATA_DIR, f"signal-repair-{cmd_teacher}.json")
+
     if not os.path.isdir(DATA_DIR) or not os.path.isfile(SIGNAL_FILE):
-        print("[ОШИБКА] Папка _data или входящий сигнал не найдены.", flush=True)
+        print(f"[ОШИБКА] Папка _data или персональный входящий сигнал {os.path.basename(SIGNAL_FILE)} не найдены.", flush=True)
         sys.exit(1)
 
     try:
@@ -71,7 +78,7 @@ def main():
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
-    STATUS_FILE = os.path.join(DATA_DIR, "repair-status.json")
+    STATUS_FILE = os.path.join(DATA_DIR, f"repair-status-{target_teacher}.json")
     print(f"[СИГНАЛ] Преподаватель: {target_teacher}", flush=True)
     print(f"[СИГНАЛ] Целевой файл: {filename}", flush=True)
 
