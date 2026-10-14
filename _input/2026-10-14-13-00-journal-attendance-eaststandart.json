@@ -12,5 +12,11 @@
       "tag": "@"
     }
   ],
-  "probation": []
+  "probation": [
+    {
+      "name": "вася в",
+      "direction": "столярное дело",
+      "tag": "@"
+    }
+  ]
 }
