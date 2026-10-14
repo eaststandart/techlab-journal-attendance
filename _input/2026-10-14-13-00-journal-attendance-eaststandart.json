@@ -9,8 +9,14 @@
     {
       "name": "Васька васин",
       "direction": "столярное дело",
-      "tag": "#"
+      "tag": "#techlab-qqq`"
     }
   ],
-  "probation": []
+  "probation": [
+    {
+      "name": "Васька васин",
+      "direction": "электронное конструирование",
+      "tag": "#"
+    }
+  ]
 }
