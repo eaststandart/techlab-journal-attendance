@@ -197,29 +197,44 @@ def main():
 
                 if clean_old_time and clean_new_time:
                     try:
-                        # ТВОЙ СНАЙПЕРСКИЙ ЛОГ-ТЕСТЕР СЫРОГО ФАЙЛА НА ДИСКЕ
-                        print(f"[ОТЛАДКА TECHLAB] Ищем в YML день: {clean_day!r}, старое время: {clean_old_time!r}, новое время: {clean_new_time!r}", flush=True)
+                        # СВЕРХТОЧНЫЙ ИЗМЕРИТЕЛЬНЫЙ ЗОНД TECHLAB ПОСЛЕ ШАГА №3
+                        print(f"[ОТЛАДКА ПЕРЕЧИТЫВАНИЯ] Ищем день: {clean_day!r}, старое время: {clean_old_time!r}", flush=True)
                         try:
-                            with open(file_path, "r", encoding="utf-8") as debug_f:
-                                debug_lines = debug_f.readlines()
-                            print(f"[ОТЛАДКА TECHLAB] Всего строк в YML: {len(debug_lines)}", flush=True)
+                            with open(file_path, "r", encoding="utf-8") as f_fresh:
+                                fresh_lines = f_fresh.readlines()
                             
-                            debug_inside_day = False
-                            for idx, d_line in enumerate(debug_lines):
-                                d_trimmed = d_line.strip()
-                                # Фиксируем вход в нужный день недели
-                                if not d_line.startswith(' ') and d_trimmed.endswith(':'):
-                                    debug_inside_day = (d_trimmed.replace(':', '').lower().strip() == clean_day.lower().strip())
+                            print(f"[ОТЛАДКА С ДИСКА] Файл успешно перечитан заново. Всего строк: {len(fresh_lines)}", flush=True)
+                            
+                            test_inside_day = False
+                            test_target_str = f'"{clean_old_time}":'
+                            
+                            for idx, line in enumerate(fresh_lines):
+                                trimmed = line.strip()
                                 
-                                # Печатаем все строки с двоеточием внутри этого дня (группы времени)
-                                if debug_inside_day and d_trimmed.endswith(':'):
-                                    print(f"[ОТЛАДКА СТРОКИ №{idx+1}] Сырой текст: {d_line!r} | После .strip(): {d_trimmed!r}", flush=True)
+                                # Моделируем логику фиксации дня из твоего подмодуля modify_time_in_yaml
+                                if not line.startswith(' ') and trimmed.endswith(':'):
+                                    check_day_name = trimmed.replace(':', '').lower().strip()
+                                    test_inside_day = (check_day_name == clean_day.lower().strip())
+                                    if test_inside_day:
+                                        print(f"[ОТЛАДКА ЗОНДА] Найдена строка дня №{idx+1}: {line!r} -> Взведён флаг test_inside_day = True", flush=True)
+                                
+                                # Печатаем лог для абсолютно всех строк с двоеточием, пока взведён флаг дня
+                                if test_inside_day and trimmed.endswith(':'):
+                                    print(f"--- Проверка строки №{idx+1} inside_day={test_inside_day} ---", flush=True)
+                                    print(f"Сырой текст в YML: {line!r}", flush=True)
+                                    print(f"Результат line.startswith(' '): {line.startswith(' ')}", flush=True)
+                                    print(f"Результат trimmed: {trimmed!r}", flush=True)
+                                    print(f"Сравниваем с ожидаемым: {test_target_str!r}", flush=True)
+                                    print(f"Результат совпадения (trimmed == target): {trimmed == test_target_str}", flush=True)
+                                    
+                                    # Симулируем повторную проверку дня на строке времени, как в подмодуле
+                                    if not line.startswith(' '):
+                                        print(f"[ВНИМАНИЕ ОШИБКА] Строка №{idx+1} НЕ начинается с пробела! Вызов повторной проверки дня сбросит флаг в False!", flush=True)
                         except Exception as log_err:
-                            print(f"[ОТЛАДКА ОШИБКА] Не удалось прочитать файл для лога: {log_err}", flush=True)
+                            print(f"[ОТЛАДКА ОШИБКА] Сбой измерительного зонда: {log_err}", flush=True)
 
                         success = modify_time_in_yaml(file_path, clean_day, clean_old_time, clean_new_time)
                     except Exception as e:
-
                         print(f"[КРИТИЧЕСКИЙ СБОЙ] Точечное изменение времени {filename}: {e}", flush=True)
                         success = False
                 else:
