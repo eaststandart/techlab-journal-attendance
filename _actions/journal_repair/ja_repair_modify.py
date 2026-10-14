@@ -41,6 +41,15 @@ def modify_time_in_yaml(file_path, target_day, old_time, new_time):
             # 2. Если вышли из секции дня (встретили другой день на отступе 0), гасим флаг
             if indent == 0 and stripped.endswith(":") and stripped.lower() != day_marker:
                 inside_target_day = False
+                print(f"[ОТЛАДКА МОДИФИКАТОРА] Вышли из дня! Флаг inside_target_day = False", flush=True)
+
+            # Печатаем посимвольный разбор абсолютно каждой строки с двоеточием внутри целевого дня
+            if inside_target_day and stripped.endswith(':'):
+                print(f"--- [ИНСПЕКЦИЯ СТРОКИ] inside_target_day={inside_target_day} ---", flush=True)
+                print(f"Сырая строка из файла: {line!r}", flush=True)
+                print(f"Вычисленный indent: {indent} | Вычисленный .strip(): {stripped!r}", flush=True)
+                print(f"Искомый старый маркер: {old_time_marker!r}", flush=True)
+                print(f"Результат проверки (old_time_marker in stripped): {old_time_marker in stripped}", flush=True)
 
             # 3. Находим целевую строку времени внутри нужного дня
             if inside_target_day and old_time_marker in stripped:
