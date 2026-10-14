@@ -79,57 +79,9 @@ def main():
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
-    STATUS_FILE = os.path.join(DATA_DIR, f"repair-status-{target_teacher}.json")
     print(f"[СИГНАЛ] Преподаватель: {target_teacher}", flush=True)
     print(f"[СИГНАЛ] Целевой файл: {filename}", flush=True)
 
-    # --- МОНОЛИТНЫЙ БУЛЕВЫЙ ШЛАГБАУМ ОПТИМИЗАЦИИ Unix-СЕКУНД TECHLAB ---
-    force_full_run = True  # По умолчанию - полная безопасность
-    
-    try:
-        if os.path.isfile(STATUS_FILE):
-            with open(STATUS_FILE, "r", encoding="utf-8") as f:
-                status_data = json.load(f)
-            
-            status_mode = status_data.get("mode", "").strip()
-            
-            # Аппаратно извлекаем чистые секунды Unix напрямую из истории Git
-            commit_seconds = get_file_commit_seconds(file_path)
-            robot_seconds = get_last_robot_commit_seconds()
-            
-            print(f"[ОТЛАДКА СЕКУНД] Unix-время файла расписания: {commit_seconds}", flush=True)
-            print(f"[ОТЛАДКА СЕКУНД] Unix-время прошлого ухода робота: {robot_seconds}", flush=True)
-            print(f"[ОТЛАДКА СЕКУНД] Текущий маркер режима с сайта: '{status_mode}'", flush=True)
-            
-            # ТВОЯ СЖАТАЯ МОНОЛИТНАЯ ФОРМУЛА ПРИНЯТИЯ РЕШЕНИЙ:
-            # Полная проверка запускается ТОЛЬКО если есть свежий коммит ИЛИ взведен режим repair
-            if commit_seconds > robot_seconds or status_mode == "repair":
-                print(f"[ОПТИМИЗАЦИЯ] Условия выполнены (Новый коммит: {commit_seconds > robot_seconds}, Режим: {status_mode == 'repair'}). Полный запуск.", flush=True)
-                force_full_run = True
-            else:
-                # ИНАЧЕ - коммитов нет, режим пустой -> МГНОВЕННЫЙ ФИНИШ БЕЗ ИЗБЫТОЧНЫХ ПРОВЕРОК
-                print(f"[ОПТИМИЗАЦИЯ] Новых коммитов расписания нет, принудительных команд нет. Мгновенный финиш.", flush=True)
-                force_full_run = False
-    except Exception as opt_err:
-        print(f"[ПРЕДОХРАНИТЕЛЬ] Сбой булевого оптимизатора (переход в безопасный режим полной проверки): {opt_err}", flush=True)
-        force_full_run = True
-
-    # ИСПОЛНЕНИЕ РЕШЕНИЯ АВТОМАТА
-    if not force_full_run:
-        try:
-            # Изменений нет: за 0.01 сек тушим светофор в off, очищаем mode и удаляем сигнал
-            with open(STATUS_FILE, "w", encoding="utf-8") as f:
-                json.dump({"status": "off", "mode": "", "timestamp": datetime.now().isoformat()}, f, indent=2, ensure_ascii=False)
-            
-            if os.path.isfile(SIGNAL_FILE):
-                os.remove(SIGNAL_FILE)
-                
-            print("[УСПЕХ] Оптимизатор сработал. Светофор погашен в off, сигнал зачищен. Выход.", flush=True)
-        except Exception as e:
-            print(f"[ОШИБКА] Не удалось завершить оптимизацию: {e}", flush=True)
-        sys.exit(0)
-
-    # ИНАЧЕ - РАБОТАЕМ ПО ПОЛНОЙ ПРОГРАММЕ КАК И РАНЬШЕ
     success = True
 
     # 2. Общая нормализация расписания (Подмодуль №1: Дни недели)
