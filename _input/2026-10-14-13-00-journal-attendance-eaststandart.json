@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-14",
+  "day": "понедельник",
+  "time": "13:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [],
+  "newbies": [
+    {
+      "name": "journal 1300 1200",
+      "modify": true
+    }
+  ],
+  "probation": []
+}
