@@ -212,7 +212,7 @@ def main():
             students_to_delete = signal_data.get("delete")
             if isinstance(students_to_delete, list) and len(students_to_delete) > 0:
                 target_day = signal_data.get("day", "")
-            target_time = signal_data.get("time", "")
+                target_time = signal_data.get("time", "")
             
             # Нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
             sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
