@@ -7,16 +7,10 @@
   "present_permanent": [],
   "newbies": [
     {
-      "name": "Васька васин",
-      "direction": "столярное дело",
-      "tag": "#techlab-qqq`"
+      "name": "вася в",
+      "direction": "электронное конструирование",
+      "tag": "#techlab-gg"
     }
   ],
-  "probation": [
-    {
-      "name": "Васька васин",
-      "direction": "электронное конструирование",
-      "tag": "#"
-    }
-  ]
+  "probation": []
 }
