@@ -14,7 +14,7 @@ import re
 def repair_yaml_structure(file_path):
     """Построчно проверяет текст по белому списку расписания, выставляет отступы и выводит детальные логи."""
     filename = os.path.basename(file_path)
-    print(f"[СТРУКТУРА] Контроль целостности и геометрии по белому списку для файла: {filename}", flush=True)
+    print(f"[СТРУКТУРА] Контроль целостности и геометрии для: {filename}", flush=True)
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
