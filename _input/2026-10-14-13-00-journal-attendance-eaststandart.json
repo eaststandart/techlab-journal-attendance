@@ -4,9 +4,13 @@
   "time": "13:00",
   "teacher_username": "TechLab",
   "teacher_login": "eaststandart",
-  "present_permanent": [
-    "Салоха В"
+  "present_permanent": [],
+  "newbies": [
+    {
+      "name": "Васька васин",
+      "direction": "столярное дело",
+      "tag": "#"
+    }
   ],
-  "newbies": [],
   "probation": []
 }
