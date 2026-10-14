@@ -14,10 +14,10 @@ import json
 import subprocess
 from datetime import datetime
 
-# ПОДКЛЮЧАЕМ АВТОНОМНЫЙ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ TECHLAB ИЗ ПАКЕТА
-from journal_repair.ja_session_manager import write_status, get_file_commit_seconds, get_last_robot_commit_seconds
+# ПОДКЛЮЧАЕМ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ
+from journal_repair.ja_session_manager import write_status
 
-# ПОДКЛЮЧАЕМ СИНТАКСИЧЕСКИЕ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ ИЗ ПАКЕТА
+# ПОДКЛЮЧАЕМ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
 from journal_repair.ja_repair_day import repair_day_line
 from journal_repair.ja_repair_time import repair_time_line, normalize_time_internal
 from journal_repair.ja_repair_fields import repair_fields_line
