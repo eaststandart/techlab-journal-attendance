@@ -2,8 +2,6 @@
   "teacher_login": "eaststandart",
   "day": "понедельник",
   "time": "13:00",
-  "command": "delete",
-  "delete": [
-    "Ренькевич Д"
-  ]
+  "command": "modify",
+  "modify_time": "14:00"
 }
