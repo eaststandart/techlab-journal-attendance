@@ -2,6 +2,6 @@
   "teacher_login": "eaststandart",
   "day": "понедельник",
   "time": "13:00",
-  "command": "repair",
-  "repair": ""
+  "command": "modify",
+  "modify_time": "14:00"
 }
