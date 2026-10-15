@@ -1,5 +1,6 @@
 {
-  "status": "on",
+  "status": "error",
   "mode": "repair",
-  "timestamp": "2026-10-15T07:20:50.578Z"
+  "timestamp": "2026-10-15T07:21:07.500188+00:00",
+  "errorDetails": "[КРИТИЧЕСКИЙ СБОЙ] Нормализация journal-attendance-eaststandart.yml: ТЕСТОВЫЙ КРАШ СЕРВЕРА TECHLAB: Сквозной протокол логгера работает!"
 }
