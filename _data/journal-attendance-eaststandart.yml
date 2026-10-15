@@ -74,6 +74,8 @@ config:
       direction: "электронное конструирование"
     - name: "Салоха Влад"
       direction: "столярное дело"
+    - name: "Интальева Д"
+      direction: "электронное конструирование"
 
 понедельник:
   "11:00":
@@ -82,3 +84,7 @@ config:
       tag: "@eastemitting"
     - name: "Салоха В"
       direction: "столярное дело"
+    - name: "Ренькевич Д"
+      direction: "электронное конструирование"
+      tag: "#techlab-intalyueva-dasha"
+      
