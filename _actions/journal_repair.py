@@ -89,9 +89,6 @@ def main():
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-    
-            # ИСКУССТВЕННАЯ БОМБА ДЛЯ СТРЕСС-ТЕСТА КОНТУРА ОШИБОК
-            raise RuntimeError("ТЕСТОВЫЙ КРАШ СЕРВЕРА TECHLAB: Сквозной протокол логгера работает!")
 
             is_modified = False
             has_errors = False  # Оригинальный аварийный флаг времени
