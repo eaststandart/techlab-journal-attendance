@@ -51,10 +51,15 @@ def repair_time_line(line, filename, signal_data=None):
             digits_only = "".join(c for c in raw_time if c.isdigit())
             repaired_format = f"{digits_only[:2]}:{digits_only[2:]}" if len(digits_only) in {3, 4} else ""
             
+            # Проверяем реальность нового времени суток из сигнала
+            signal_new_time = signal_data.get("modify_time", "") if isinstance(signal_data, dict) else ""
+            is_new_time_valid = normalize_time_internal(signal_new_time) is not None
+
             is_being_fixed = (
                 isinstance(signal_data, dict)
                 and signal_data.get("command") == "modify"
                 and signal_data.get("time") == repaired_format
+                and is_new_time_valid
             )
             
             if is_being_fixed:
