@@ -41,7 +41,7 @@ def get_last_robot_commit_seconds():
         print(f"[ОПТИМИЗАЦИЯ] Сбой запроса секунд коммита робота: {e}", flush=True)
     return 0
 
-def write_status(status, mode="", teacher_login=""):
+def write_status(status, mode="", teacher_login="", **kwargs):
     """Сохраняет текущий статус обработки и маркер режима (Сквозная версия сессионного контура)."""
     if not teacher_login:
         print("[КРИТИЧЕСКИЙ СБОЙ СТАТУСА] Вызов write_status произведен без указания teacher_login!", flush=True)
@@ -54,6 +54,11 @@ def write_status(status, mode="", teacher_login=""):
         "mode": mode,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+    
+    # Автоматически вживляем в payload любые переданные именованные параметры
+    if kwargs:
+        payload.update(kwargs)
+
     with open(status_filepath, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
         f.write("\n")
