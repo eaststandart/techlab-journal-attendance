@@ -144,16 +144,26 @@ def main():
                 print(f"[ИТОГ] {filename}: синтаксических исправлений текста не требуется.", flush=True)
 
         except Exception as e:
-            print(f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}", flush=True)
-            success = False
+            err_msg = f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}"
+            print(err_msg, flush=True)
+            try:
+                write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
+            except Exception as status_error:
+                print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
+            sys.exit(1)
 
     # 3. Принудительное выравнивание геометрии отступов (0, 2, 4, 6 пробелов)
     if success:
         try:
             success = repair_yaml_structure(file_path)
         except Exception as e:
-            print(f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}", flush=True)
-            success = False
+            err_msg = f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}"
+            print(err_msg, flush=True)
+            try:
+                write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
+            except Exception as status_error:
+                print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
+            sys.exit(1)
 
     # 4. Выполнение команд модификации базы данных из однотипного сигнала
     if success:
@@ -245,9 +255,8 @@ def main():
                 success = False
     
     if not success:
-
         try:
-            write_status("error", mode="", teacher_login=target_teacher)
+            write_status("error", mode="repair", teacher_login=target_teacher, errorDetails="Отказ выполнения конвейера модерации базы данных расписания.")
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
