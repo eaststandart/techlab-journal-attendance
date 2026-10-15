@@ -78,10 +78,10 @@ config:
       direction: "электронное конструирование"
 
 понедельник:
-   "19:00":
+  "19:00":
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
-      tag: "@eastemitting"
+       tag: "@eastemitting"
     - name: "Салоха В"
       direction: "столярное дело"
       
