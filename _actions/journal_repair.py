@@ -31,8 +31,6 @@ from journal_repair.ja_repair_modify import modify_time_in_yaml
 DATA_DIR = "_data"
 
 def main():
-    # ИСКУССТВЕННАЯ БОМБА ДЛЯ СТРЕСС-ТЕСТА КОНТУРА ОШИБОК
-    raise RuntimeError("ТЕСТОВЫЙ КРАШ СЕРВЕРА TECHLAB: Сквозной протокол логгера работает!")
     # Проверяем, что воркфлоу передал обязательный аргумент логина преподавателя
     if len(sys.argv) < 2:
         print("[ОШИБКА] Запуск диспетчера произведен без указания логина преподавателя в аргументах.", flush=True)
@@ -91,6 +89,9 @@ def main():
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
+    
+            # ИСКУССТВЕННАЯ БОМБА ДЛЯ СТРЕСС-ТЕСТА КОНТУРА ОШИБОК
+            raise RuntimeError("ТЕСТОВЫЙ КРАШ СЕРВЕРА TECHLAB: Сквозной протокол логгера работает!")
 
             is_modified = False
             has_errors = False  # Оригинальный аварийный флаг времени
