@@ -66,7 +66,7 @@ def modify_time_in_yaml(file_path, target_day, old_time, new_time):
 
         if is_modified:
             with open(file_path, "w", encoding="utf-8") as f:
-                f.writelines(repaired_lines)
+                f.writelines(lines)
             return True
         else:
             print(f"[МОДИФИКАЦИЯ] Предупреждение: строка времени '{old_time}' в секции '{target_day}' не найдена.", flush=True)
