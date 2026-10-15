@@ -55,13 +55,14 @@ def write_status(status, mode="", teacher_login="", **kwargs):
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
-    # Автоматически вживляем в payload любые переданные именованные параметры
+    # Автоматически упаковываем любые новые входящие параметры (включая errorDetails) в JSON-файл
     if kwargs:
         payload.update(kwargs)
 
     with open(status_filepath, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    print(f"[СТАТУС ПРЕПОДАВАТЕЛЯ: {teacher_login}] {status} (mode: {mode})", flush=True)
-
-  
+    
+    # Выводим в лог сервера состояние ключевых маркеров сессии
+    details_log = f" | errorDetails: {kwargs['errorDetails']}" if 'errorDetails' in kwargs else ""
+    print(f"[СТАТУС ПРЕПОДАВАТЕЛЯ: {teacher_login}] {status} (mode: {mode}){details_log}", flush=True) 
