@@ -121,19 +121,14 @@ def main():
 
                 repaired_lines.append(line)
 
-            # Если найдены недопустимые значения времени — завершаем процесс с ошибкой для GitHub Actions.
+            # Если найдены критические синтаксические ошибки времени — передаем лог на Красный экран сайта
             if has_errors:
-                print(
-                    f"[ОШИБКА] {filename}: найдены недопустимые значения времени.",
-                    flush=True,
-                )
+                err_msg = f"[СИНТАКСИС] {filename}: обнаружены некорректные или нераспознанные строки времени групп."
+                print(err_msg, flush=True)
                 try:
-                    write_status("error", mode="", teacher_login=target_teacher)
+                    write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
                 except Exception as status_error:
-                    print(
-                        f"[ОШИБКА] Не удалось сохранить статус: {status_error}",
-                        flush=True,
-                    )
+                    print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
                 sys.exit(1)
 
             if is_modified:
