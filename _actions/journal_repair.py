@@ -207,42 +207,6 @@ def main():
 
                 if clean_old_time and clean_new_time:
                     try:
-                        # СВЕРХТОЧНЫЙ ИЗМЕРИТЕЛЬНЫЙ ЗОНД TECHLAB ПОСЛЕ ШАГА №3
-                        print(f"[ОТЛАДКА ПЕРЕЧИТЫВАНИЯ] Ищем день: {clean_day!r}, старое время: {clean_old_time!r}", flush=True)
-                        try:
-                            with open(file_path, "r", encoding="utf-8") as f_fresh:
-                                fresh_lines = f_fresh.readlines()
-                            
-                            print(f"[ОТЛАДКА С ДИСКА] Файл успешно перечитан заново. Всего строк: {len(fresh_lines)}", flush=True)
-                            
-                            test_inside_day = False
-                            test_target_str = f'"{clean_old_time}":'
-                            
-                            for idx, line in enumerate(fresh_lines):
-                                trimmed = line.strip()
-                                
-                                # Моделируем логику фиксации дня из твоего подмодуля modify_time_in_yaml
-                                if not line.startswith(' ') and trimmed.endswith(':'):
-                                    check_day_name = trimmed.replace(':', '').lower().strip()
-                                    test_inside_day = (check_day_name == clean_day.lower().strip())
-                                    if test_inside_day:
-                                        print(f"[ОТЛАДКА ЗОНДА] Найдена строка дня №{idx+1}: {line!r} -> Взведён флаг test_inside_day = True", flush=True)
-                                
-                                # Печатаем лог для абсолютно всех строк с двоеточием, пока взведён флаг дня
-                                if test_inside_day and trimmed.endswith(':'):
-                                    print(f"--- Проверка строки №{idx+1} inside_day={test_inside_day} ---", flush=True)
-                                    print(f"Сырой текст в YML: {line!r}", flush=True)
-                                    print(f"Результат line.startswith(' '): {line.startswith(' ')}", flush=True)
-                                    print(f"Результат trimmed: {trimmed!r}", flush=True)
-                                    print(f"Сравниваем с ожидаемым: {test_target_str!r}", flush=True)
-                                    print(f"Результат совпадения (trimmed == target): {trimmed == test_target_str}", flush=True)
-                                    
-                                    # Симулируем повторную проверку дня на строке времени, как в подмодуле
-                                    if not line.startswith(' '):
-                                        print(f"[ВНИМАНИЕ ОШИБКА] Строка №{idx+1} НЕ начинается с пробела! Вызов повторной проверки дня сбросит флаг в False!", flush=True)
-                        except Exception as log_err:
-                            print(f"[ОТЛАДКА ОШИБКА] Сбой измерительного зонда: {log_err}", flush=True)
-
                         success = modify_time_in_yaml(file_path, clean_day, clean_old_time, clean_new_time)
                     except Exception as e:
                         print(f"[КРИТИЧЕСКИЙ СБОЙ] Точечное изменение времени {filename}: {e}", flush=True)
