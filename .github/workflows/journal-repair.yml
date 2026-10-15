@@ -220,6 +220,13 @@ jobs:
 
           STATUS_FILE="repair-status-${TEACHER_LOGIN}.json"
 
+          # Сохраняем локальный статус до сброса рабочей копии.
+          STATUS_BACKUP="$RUNNER_TEMP/repair/status-before-reset.json"
+
+          if [ -f "_data/$STATUS_FILE" ]; then
+            cp "_data/$STATUS_FILE" "$STATUS_BACKUP"
+          fi
+
           # Возвращаем рабочую копию к последнему состоянию на GitHub.
           git fetch origin main
           git reset --hard origin/main
@@ -234,14 +241,29 @@ jobs:
 
           teacher = sys.argv[1] if len(sys.argv) > 1 else "unknown"
           path = os.path.join("_data", f"repair-status-{teacher}.json")
+          backup_path = os.path.join(
+              os.environ.get("RUNNER_TEMP", ""),
+              "repair",
+              "status-before-reset.json",
+          )
 
+          # Сначала восстанавливаем исходные данные статуса, если они сохранились.
           try:
-              with open(path, "r", encoding="utf-8") as f:
+              with open(backup_path, "r", encoding="utf-8") as f:
                   status = json.load(f)
               if not isinstance(status, dict):
                   status = {}
           except (OSError, json.JSONDecodeError):
               status = {}
+
+          # Сохраняем errorDetails из текущего файла, если он уже существует.
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  current_status = json.load(f)
+              if isinstance(current_status, dict):
+                  status.update(current_status)
+          except (OSError, json.JSONDecodeError):
+              pass
 
           status["status"] = "error"
           status["mode"] = status.get("mode", "")
@@ -299,14 +321,29 @@ jobs:
 
           teacher = sys.argv[1] if len(sys.argv) > 1 else "unknown"
           path = os.path.join("_data", f"repair-status-{teacher}.json")
+          backup_path = os.path.join(
+              os.environ.get("RUNNER_TEMP", ""),
+              "repair",
+              "status-before-reset.json",
+          )
 
+          # Сначала восстанавливаем исходные данные статуса, если они сохранились.
           try:
-              with open(path, "r", encoding="utf-8") as f:
+              with open(backup_path, "r", encoding="utf-8") as f:
                   status = json.load(f)
               if not isinstance(status, dict):
                   status = {}
           except (OSError, json.JSONDecodeError):
               status = {}
+
+          # Сохраняем errorDetails из текущего файла, если он уже существует.
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  current_status = json.load(f)
+              if isinstance(current_status, dict):
+                  status.update(current_status)
+          except (OSError, json.JSONDecodeError):
+              pass
 
           status["status"] = "error"
           status["mode"] = status.get("mode", "")
