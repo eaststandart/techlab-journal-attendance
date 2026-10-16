@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-15",
+  "day": "понедельник",
+  "time": "12:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    "Интальева Д",
+    "Салоха В"
+  ],
+  "newbies": [
+    {
+      "name": "Вася Р",
+      "direction": ""
+    },
+    {
+      "name": "Дима К",
+      "direction": "",
+      "tag": "#"
+    },
+    {
+      "name": "Васек М",
+      "direction": "",
+      "tag": "@login"
+    }
+  ],
+  "probation": [
+    {
+      "name": "Женя Р",
+      "direction": ""
+    },
+    {
+      "name": "Миша К",
+      "direction": ""
+    }
+  ]
+}
