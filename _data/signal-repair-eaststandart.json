@@ -1,10 +1,8 @@
 {
   "teacher_login": "eaststandart",
-  "day": "понедельник",
-  "time": "10:00",
-  "timestamp": "2026-10-15T15:42:58.488Z",
-  "command": "delete",
-  "delete": [
-    "Ренькевич Д"
-  ]
+  "day": "воскресенье",
+  "time": "00:00",
+  "command": "repair",
+  "repair": "",
+  "timestamp": "2026-10-16T03:39:17.104Z"
 }
