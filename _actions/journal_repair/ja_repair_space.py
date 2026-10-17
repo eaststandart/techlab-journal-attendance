@@ -38,8 +38,8 @@ def repair_space_line(line, filename=""):
         quote_char = '"'
         if (field_value.startswith('"') and field_value.endswith('"')) or (field_value.startswith("'") and field_value.endswith("'")):
             has_quotes = True
-            quote_char = field_value[0]  # Исправлено: берем строго один символ кавычки!
-            field_value = field_value[1:-1].strip()
+            quote_char = field_value
+            field_value = field_value[1:-1]
 
         # СЦЕНАРИЙ А: Поле тега — выжигаем абсолютно все пробелы внутри под ноль
         if field_key == "tag":
@@ -95,4 +95,7 @@ def repair_space_line(line, filename=""):
                 print(f"[ПРОБЕЛЫ СПИСКА] {filename}: {stripped!r} -> {new_line.strip()!r}", flush=True)
                 return new_line, True
 
+    # ИНСПЕКТОР ВЫХОДА МОДУЛЯ
+    print(f"[ВЫХОД НАШЕГО МОДУЛЯ] {filename}: {line.strip()!r}", flush=True)
     return line, False
+
