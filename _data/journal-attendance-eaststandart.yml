@@ -77,12 +77,12 @@ config:
 
 понедельник:
   "12:00":
-    -name: "Баранова Лиза"
+    - name: "Баранова  Лиза"
       direction: "электронное конструирование"
-      tag: "@eastemitting"
+      tag: " @eastemitting"
     - name: "Дима Ж"
-      direction: "столярное дело"
-      tag: "#techlab-dima-zh"
+      direction: " столярное  дело"
+      tag: "#techlab-dima-zh "
     - name: "Интальева Д"
       direction: "электронное конструирование"
     - name: "Костя В"
