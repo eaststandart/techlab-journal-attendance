@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-17",
+  "day": "суббота",
+  "time": "12:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Безин Илья"
+    },
+    {
+      "name": "Марченко Георгий"
+    },
+    {
+      "name": "Семен Ковток"
+    }
+  ],
+  "newbies": [],
+  "probation": []
+}
