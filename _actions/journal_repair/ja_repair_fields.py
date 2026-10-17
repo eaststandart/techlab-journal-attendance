@@ -11,7 +11,7 @@
 import json
 
 def clean_field_internal(value, allowed_extra=""):
-    """Внутренняя автономная прачечная очистки букв."""
+    """Внутренняя автономная очистка букв."""
     allowed = set(
         "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
         "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
@@ -47,7 +47,7 @@ def repair_fields_line(line, filename):
         repaired_val = " ".join(repaired_val.split()).strip()
         repaired_line = f'      direction: {json.dumps(repaired_val, ensure_ascii=False)}\n'
         if repaired_line != line:
-            # ЗРЯЧИЙ ПРИНТ TECHLAB: Выводит исходную сырую строку raw_val со всей её начальной грязью
+            # Выводит исходную сырую строку raw_val со всей её начальной грязью
             print(f"[СИНТАКСИС КУРСА] {filename}:{raw_val} -> {json.dumps(repaired_val, ensure_ascii=False)}", flush=True)
             line = repaired_line
             is_modified = True
@@ -73,7 +73,7 @@ def repair_fields_line(line, filename):
         clean_val = clean_field_internal(clean_target, allowed_extra="#@-")
         repaired_line = f'      tag: {json.dumps(clean_val, ensure_ascii=False)}\n'
         if repaired_line != line:
-            # ЗРЯЧИЙ ПРИНТ TECHLAB: Выводит исходную сырую строку raw_val со всей её начальной грязью
+            # Выводит исходную сырую строку raw_val
             print(f"[СИНТАКСИС ТЕГА] {filename}:{raw_val} -> {json.dumps(clean_val, ensure_ascii=False)}", flush=True)
             line = repaired_line
             is_modified = True
