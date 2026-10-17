@@ -18,6 +18,7 @@ from datetime import datetime
 from journal_repair.ja_session_manager import write_status
 
 # ПОДКЛЮЧАЕМ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
+from journal_repair.ja_repair_space import repair_space_line
 from journal_repair.ja_repair_day import repair_day_line
 from journal_repair.ja_repair_time import repair_time_line, normalize_time_internal
 from journal_repair.ja_repair_fields import repair_fields_line
@@ -100,6 +101,11 @@ def main():
                 if not stripped or stripped.startswith('#'):
                     repaired_lines.append(line)
                     continue
+
+                # 0. Подмодуль точечного лечения и сжатия пробелов (включая config)
+                line, space_mod = repair_space_line(line, filename)
+                if space_mod:
+                    is_modified = True
 
                 # 1. Подмодуль дней недели
                 line, day_mod = repair_day_line(line, filename)
