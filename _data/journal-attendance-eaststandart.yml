@@ -84,8 +84,3 @@ config:
       direction: "электронное конструирование"
     - name: "Салоха В"
       direction: "столярное дело"
-    - name: "Вася Н"
-      tag: "#techlab-vasya-n"
-    - name: "Вася Н"
-      direction: "электронное конструирование"
-      tag: "#techlab-vasya-n"
