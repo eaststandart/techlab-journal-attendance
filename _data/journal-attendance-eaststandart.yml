@@ -84,4 +84,8 @@ config:
       direction: "электронное конструирование"
     - name: "Салоха В"
       direction: "столярное дело"
-      
+    - name: "Толя Мишин"
+      direction: "электронное конструирование"
+    - name: "Вася Носик"
+      direction: "столярное дело"
+      tag: "#techlab-vasya-nosik"
