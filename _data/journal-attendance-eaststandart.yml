@@ -80,8 +80,12 @@ config:
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
       tag: "@eastemitting"
+    - name: "Вася Носик"
+      direction: "столярное дело"
+      tag: "#techlab-vasya-nosik"
     - name: "Интальева Д"
       direction: "электронное конструирование"
     - name: "Салоха В"
       direction: "столярное дело"
-      
+    - name: "Толя Мишин"
+      direction: "электронное конструирование"
