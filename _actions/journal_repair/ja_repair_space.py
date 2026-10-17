@@ -62,8 +62,8 @@ def repair_space_line(line, filename=""):
             else:
                 new_line = f"{indent_spaces}{field_key}: {field_value}\n"
             
-            # КАНОНИЧЕСКОЕ ЛОГИРОВАНИЕ TECHLAB ПО СТАНДАРТУ ЯДРА ЖУРНАЛА
-            print(f"[ПРОБЕЛЫ ПОЛЕЙ] {filename}: {stripped!r} -> {new_line.strip()!r}", flush=True)
+            # КАНОНИЧЕСКОЕ ЗРЯЧЕЕ ЛОГИРОВАНИЕ TECHLAB: Выводим исходную сырую строку из файла до очистки
+            print(f"[ПРОБЕЛЫ ПОЛЕЙ] {filename}: {line.strip()!r} -> {new_line.strip()!r}", flush=True)
             return new_line, True
 
     # СЦЕНАРИЙ В: Строка списка (например, - "Галерея" или - name: "Вася")
