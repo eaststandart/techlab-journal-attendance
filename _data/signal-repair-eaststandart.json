@@ -1,0 +1,10 @@
+{
+  "teacher_login": "eaststandart",
+  "day": "понедельник",
+  "time": "12:00",
+  "timestamp": "2026-10-17T07:03:49.105Z",
+  "command": "delete",
+  "delete": [
+    "Толя Мишин"
+  ]
+}
