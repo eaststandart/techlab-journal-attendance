@@ -21,8 +21,8 @@ config:
   # === СТРУКТУРА ЧАТОВ ===
   tg_public_notify:
     - channel_id: -1002555901754 # ЧАТ @RadiotekhnikaClub
-#      chat_id:                   # Флаг 'g' указывает, что это главная ветка (General) чата!
-#        - 38g                    # Общие вопросы
+      chat_id:                   # Флаг 'g' указывает, что это главная ветка (General) чата!
+        - 38g                    # Общие вопросы
 
 суббота:
   "10:00":
@@ -80,9 +80,6 @@ config:
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
       tag: "@eastemitting"
-    - name: "Вася Носик"
-      direction: "столярное дело"
-      tag: "#techlab-vasya-nosik"
     - name: "Интальева Д"
       direction: "электронное конструирование"
     - name: "Салоха В"
