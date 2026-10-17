@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 @module  ja_repair_space.py
-@about   Модуль удаления лишних пробелов в Журнале
-@purpose Схлопывание множественных пробелов в именах/курсах и удаление пробелов в тегах
+@about   Модуль удаления лишних пробелов
+@purpose Удаление множественных пробелов в именах/курсах и удаление пробелов в тегах
 @author  TechLab
 @version 1.0.0
 """
@@ -61,6 +61,9 @@ def repair_space_line(line, filename=""):
                 new_line = f"{indent_spaces}{field_key}: {quote_char}{field_value}{quote_char}\n"
             else:
                 new_line = f"{indent_spaces}{field_key}: {field_value}\n"
+            
+            # КАНОНИЧЕСКОЕ ЛОГИРОВАНИЕ TECHLAB ПО СТАНДАРТУ ЯДРА ЖУРНАЛА
+            print(f"[ПРОБЕЛЫ ПОЛЕЙ] {filename}: {stripped!r} -> {new_line.strip()!r}", flush=True)
             return new_line, True
 
     # СЦЕНАРИЙ В: Строка списка (например, - "Галерея" или - name: "Вася")
@@ -68,10 +71,10 @@ def repair_space_line(line, filename=""):
         # Если это элемент списка со словарем (например, - name: "Вася")
         if ":" in stripped:
             sub_line = stripped[1:].lstrip()
-            sub_indent_len = len(stripped) - len(stripped[1:].lstrip()) - 1
             sub_line_repaired, sub_mod = repair_space_line(sub_line, filename)
             if sub_mod:
-                return f"{indent_spaces}-{sub_line_repaired.lstrip()}", True
+                # ЖЕЛЕЗНЫЙ КАНОНИЧЕСКИЙ ПРОБЕЛ ПОСЛЕ ДЕФИСА ДЛЯ ИСКЛЮЧЕНИЯ СЛИПАНИЯ СТРОК
+                return f"{indent_spaces}- {sub_line_repaired.lstrip()}", True
         else:
             # Если это простой плоский элемент списка строк (например, в блоке project_category_name)
             content = stripped[1:].strip()
@@ -85,8 +88,11 @@ def repair_space_line(line, filename=""):
             clean_content = re.sub(r' {2,}', ' ', content)
             if clean_content != content:
                 if has_quotes:
-                    return f"{indent_spaces}- {quote_char}{clean_content}{quote_char}\n", True
+                    new_line = f"{indent_spaces}- {quote_char}{clean_content}{quote_char}\n"
                 else:
-                    return f"{indent_spaces}- {clean_content}\n", True
+                    new_line = f"{indent_spaces}- {clean_content}\n"
+                
+                print(f"[ПРОБЕЛЫ СПИСКА] {filename}: {stripped!r} -> {new_line.strip()!r}", flush=True)
+                return new_line, True
 
     return line, False
