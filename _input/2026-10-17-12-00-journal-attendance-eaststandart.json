@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-17",
+  "day": "понедельник",
+  "time": "12:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Баранова Лиза"
+    },
+    {
+      "name": "Интальева Д"
+    }
+  ],
+  "newbies": [
+    {
+      "name": "Вася Н",
+      "direction": "электронное конструирование",
+      "tag": "#"
+    }
+  ],
+  "probation": [
+    {
+      "name": "Дима Р",
+      "direction": "столярное дело",
+      "tag": "#"
+    }
+  ]
+}
