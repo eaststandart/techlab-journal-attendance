@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-15",
+  "day": "понедельник",
+  "time": "12:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Салоха В"
+    }
+  ],
+  "newbies": [
+    {
+      "name": "Толя Мишин",
+      "direction": "электронное конструирование"
+    },
+    {
+      "name": "Вася Носик",
+      "direction": "столярное дело",
+      "tag": "#"
+    }
+  ],
+  "probation": []
+}
