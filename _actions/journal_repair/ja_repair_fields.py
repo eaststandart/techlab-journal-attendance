@@ -29,8 +29,12 @@ def repair_fields_line(line, filename):
 
     # 1. Проверка направления (direction)
     if line.startswith("      direction:"):
-        raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
-        clean_val = clean_field_internal(raw_val)
+        # Сохраняем исходное сырое значение ПОСЛЕ двоеточия вместе со всеми кавычками и пробелами для логгера
+        raw_val = line.split(":", 1)[1].rstrip('\n')
+        
+        # Для внутренней очистки букв снимаем кавычки и пробелы по краям
+        clean_target = raw_val.replace('"', '').replace("'", '').strip()
+        clean_val = clean_field_internal(clean_target)
         value_lower = clean_val.lower()
 
         if value_lower in electronics_letters or "электрон" in value_lower:
@@ -43,30 +47,35 @@ def repair_fields_line(line, filename):
         repaired_val = " ".join(repaired_val.split()).strip()
         repaired_line = f'      direction: {json.dumps(repaired_val, ensure_ascii=False)}\n'
         if repaired_line != line:
-            print(f"[СИНТАКСИС КУРСА] {filename}: {raw_val!r} -> {repaired_val!r}", flush=True)
+            # ЗРЯЧИЙ ПРИНТ TECHLAB: Выводит исходную сырую строку raw_val со всей её начальной грязью
+            print(f"[СИНТАКСИС КУРСА] {filename}:{raw_val} -> {json.dumps(repaired_val, ensure_ascii=False)}", flush=True)
             line = repaired_line
             is_modified = True
 
     # 2. Проверка имени ученика (- name)
     if line.startswith("    - name:"):
-        old_raw_val = line.split(":", 1)[1].strip()
-        clean_val = old_raw_val.strip('"').strip("'").strip()
+        old_raw_val = line.split(":", 1)[1].rstrip('\n')
+        clean_val = old_raw_val.strip().strip('"').strip("'").strip()
         clean_val = clean_field_internal(clean_val)
         repaired_line = f'    - name: {json.dumps(clean_val, ensure_ascii=False)}\n'
         if repaired_line != line:
-            print(f"[СИНТАКСИС ИМЕНИ] {filename}: {old_raw_val!r} -> {clean_val!r}", flush=True)
+            print(f"[СИНТАКСИС ИМЕНИ] {filename}:{old_raw_val} -> {json.dumps(clean_val, ensure_ascii=False)}", flush=True)
             line = repaired_line
             is_modified = True
 
     # 3. Проверка тега платформы (tag)
     if line.startswith("      tag:"):
-        raw_val = line.split(":", 1)[1].replace('"', '').replace("'", '').strip()
-        clean_val = clean_field_internal(raw_val, allowed_extra="#@-")
+        # Сохраняем исходное сырое значение ПОСЛЕ двоеточия вместе со всеми кавычками и пробелами для логгера
+        raw_val = line.split(":", 1)[1].rstrip('\n')
+        
+        # Для внутренней очистки букв снимаем кавычки и пробелы по краям
+        clean_target = raw_val.replace('"', '').replace("'", '').strip()
+        clean_val = clean_field_internal(clean_target, allowed_extra="#@-")
         repaired_line = f'      tag: {json.dumps(clean_val, ensure_ascii=False)}\n'
         if repaired_line != line:
-            print(f"[СИНТАКСИС ТЕГА] {filename}: {raw_val!r} -> {clean_val!r}", flush=True)
+            # ЗРЯЧИЙ ПРИНТ TECHLAB: Выводит исходную сырую строку raw_val со всей её начальной грязью
+            print(f"[СИНТАКСИС ТЕГА] {filename}:{raw_val} -> {json.dumps(clean_val, ensure_ascii=False)}", flush=True)
             line = repaired_line
             is_modified = True
 
     return line, is_modified
-    
