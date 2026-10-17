@@ -1,0 +1,10 @@
+{
+  "teacher_login": "eaststandart",
+  "day": "понедельник",
+  "time": "12:00",
+  "timestamp": "2026-10-17T06:18:47.366Z",
+  "command": "delete",
+  "delete": [
+    "Вася Н"
+  ]
+}
