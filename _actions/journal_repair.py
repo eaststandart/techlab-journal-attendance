@@ -85,7 +85,7 @@ def main():
 
     success = True
 
-    # 2. Общая нормализация расписания (Подмодуль №1: Дни недели)
+    # 1. Общая нормализация расписания
     if success:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -153,7 +153,7 @@ def main():
                 print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
             sys.exit(1)
 
-    # 3. Принудительное выравнивание геометрии отступов (0, 2, 4, 6 пробелов)
+    # 2. Принудительное выравнивание геометрии отступов (0, 2, 4, 6 пробелов)
     if success:
         try:
             success = repair_yaml_structure(file_path)
@@ -166,7 +166,7 @@ def main():
                 print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
             sys.exit(1)
 
-    # 4. Выполнение команд модификации базы данных из однотипного сигнала
+    # 3. Выполнение команд модификации базы данных из однотипного сигнала
     if success:
         cmd_type = signal_data.get("command", "").strip().lower()
         
