@@ -11,7 +11,7 @@
 import json
 
 def clean_field_internal(value, allowed_extra=""):
-    """Внутренняя автономная прачечная очистки букв из старого ja_repair_normalizer.py."""
+    """Внутренняя автономная прачечная очистки букв."""
     allowed = set(
         "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
         "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
@@ -21,7 +21,7 @@ def clean_field_internal(value, allowed_extra=""):
     return " ".join(cleaned.split()).strip()
 
 def repair_fields_line(line, filename):
-    """Проверяет и исправляет синтаксис полей учеников строго по логике оригинала."""
+    """Проверяет и исправляет синтаксис полей учеников."""
     is_modified = False
 
     electronics_letters = ["э", "Э", "е", "Е", "e", "E"]
