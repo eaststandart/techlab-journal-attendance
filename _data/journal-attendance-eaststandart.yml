@@ -82,7 +82,7 @@ config:
       tag: "@eastemitting"
     - name: "Дима Ж"
       direction: "столярное дело"
-      tag: "#techlab-dima-zh"
+      tag: "   #techlab-dima-zh"
     - name: "Интальева Д"
       direction: "электронное конструирование"
     - name: "Костя В"
