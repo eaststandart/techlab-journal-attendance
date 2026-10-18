@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-18",
+  "day": "вторник",
+  "time": "15:00",
+  "teacher_username": "eastemitting",
+  "teacher_login": "eastemitting",
+  "present_permanent": [
+    {
+      "name": "Ренькевич Дима"
+    },
+    {
+      "name": "Носовский Костя"
+    }
+  ],
+  "newbies": [],
+  "probation": []
+}
