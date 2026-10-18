@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-18",
+  "day": "воскресенье",
+  "time": "10:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Баранова Лиза"
+    },
+    {
+      "name": "Золотов Глеб"
+    },
+    {
+      "name": "Салоха Влад"
+    }
+  ],
+  "newbies": [
+    {
+      "name": "Гена Носов",
+      "direction": ""
+    }
+  ],
+  "probation": []
+}
