@@ -14,24 +14,29 @@ import json
 import subprocess
 from datetime import datetime
 
-# ПОДКЛЮЧАЕМ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ
-from journal_repair.ja_session_manager import write_status
-
-# ПОДКЛЮЧАЕМ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
-from journal_repair.ja_repair_space import repair_space_line
-from journal_repair.ja_repair_day import repair_day_line
-from journal_repair.ja_repair_time import repair_time_line, normalize_time_internal
-from journal_repair.ja_repair_fields import repair_fields_line
-from journal_repair.ja_repair_structure import repair_yaml_structure
-from journal_repair.ja_repair_delete import delete_students_from_yaml
-from journal_repair.ja_repair_modify import modify_time_in_yaml
-
 # ==============================================================================
 # НАСТРОЙКИ
 # ==============================================================================
-DATA_DIR = "_data"
+DATA_DIR = os.path.join(os.getcwd(), '_data')
 
-def main():
+ def main():
+    # Прописываем пути к локальной папке диспетчера, чтобы модули импортировались без сбоев
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if current_dir not in sys.path:
+        sys.path.append(current_dir)
+
+    # ПОДКЛЮЧАЕМ МЕНЕДЖЕР СЕССИЙ И СТАТУСОВ
+    import ja_session_manager
+     
+    # ПОДКЛЮЧАЕМ ПОДМОДУЛИ ПРОВЕРКИ РАСПИСАНИЯ
+    import ja_repair_space
+    import ja_repair_day
+    import ja_repair_time
+    import ja_repair_fields
+    import ja_repair_structure
+    import ja_repair_delete
+    import ja_repair_modify
+     
     # Проверяем, что воркфлоу передал обязательный аргумент логина преподавателя
     if len(sys.argv) < 2:
         print("[ОШИБКА] Запуск диспетчера произведен без указания логина преподавателя в аргументах.", flush=True)
