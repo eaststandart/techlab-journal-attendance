@@ -66,7 +66,7 @@ jobs:
           echo "[ВОРКФЛОУ] Обнаружен персональный сигнал для преподавателя: $TEACHER_LOGIN"
           
           # Запускаем питоновский диспетчер, передав ему логин в качестве аргумента
-          python _actions/journal_repair.py "$TEACHER_LOGIN"
+          python _actions/journal_repair/journal_repair.py "$TEACHER_LOGIN"
 
       - name: Финальная очистка сигналов и сохранение изменений
         id: publish
