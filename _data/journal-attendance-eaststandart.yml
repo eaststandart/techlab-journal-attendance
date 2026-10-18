@@ -13,14 +13,12 @@ config:
   project_category_name:
     - "Галерея"
     - "Покажи и расскажи"
-  # === СПИСОК ПОЛУЧАТЕЛЕЙ ПЕРСОНАЛЬНОГО ОТЧЕТА ===
-  tg_personal_id:
+  tg_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА
     - 511009121 # @eaststandart
-#    - 8224683738                # @eastemitting
-#    - 759585583                 # @ValVodolaz
-  # === СТРУКТУРА ЧАТОВ ===
-  tg_public_notify:
-    - channel_id: -1002555901754 # ЧАТ @RadiotekhnikaClub
+#    - 8224683738                 # @eastemitting
+#    - 759585583                  # @ValVodolaz
+  tg_public_notify:               # [СПИСОК] СТРУКТУРА ЧАТОВ
+    - channel_id: -1002555901754  # ЧАТ @RadiotekhnikaClub
 #      chat_id:                   # Флаг 'g' указывает, что это главная ветка (General) чата!
 #        - 38g                    # Общие вопросы
 
