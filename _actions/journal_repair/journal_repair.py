@@ -19,7 +19,7 @@ from datetime import datetime
 # ==============================================================================
 DATA_DIR = os.path.join(os.getcwd(), '_data')
 
- def main():
+def main():
     # Прописываем пути к локальной папке диспетчера, чтобы модули импортировались без сбоев
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
@@ -69,7 +69,7 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
     except Exception as e:
         print(f"[ОШИБКА] Некорректный сигнал: {e}", flush=True)
         try:
-            write_status("error", teacher_login=cmd_teacher if 'cmd_teacher' in locals() else "unknown")
+            ja_session_manager.write_status("error", teacher_login=cmd_teacher if 'cmd_teacher' in locals() else "unknown")
         except Exception as status_error:
             print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
         sys.exit(1)
@@ -80,7 +80,7 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
     if not os.path.isfile(file_path):
         print(f"[ОШИБКА] Файл {filename} не найден.", flush=True)
         try:
-            write_status("error", teacher_login=target_teacher)
+            ja_session_manager.write_status("error", teacher_login=target_teacher)
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
@@ -107,18 +107,18 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
                     repaired_lines.append(line)
                     continue
 
-                # 0. Подмодуль точечного лечения и сжатия пробелов (включая config)
-                line, space_mod = repair_space_line(line, filename)
+                # 0. Подмодуль точечного исправления и сжатия пробелов (включая config)
+                line, space_mod = ja_repair_space.repair_space_line(line, filename)
                 if space_mod:
                     is_modified = True
 
                 # 1. Подмодуль дней недели
-                line, day_mod = repair_day_line(line, filename)
+                line, day_mod = ja_repair_day.repair_day_line(line, filename)
                 if day_mod:
                     is_modified = True
 
                 # 2. Подмодуль времени групп
-                line, time_mod, time_err = repair_time_line(line, filename, signal_data)
+                line, time_mod, time_err = ja_repair_time.repair_time_line(line, filename, signal_data)
                 if time_mod:
                     is_modified = True
 
@@ -126,7 +126,7 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
                     has_errors = True
 
                 # 3. Подмодуль текстовых полей учащихся (курсы, имена, теги)
-                line, fields_mod = repair_fields_line(line, filename)
+                line, fields_mod = ja_repair_fields.repair_fields_line(line, filename)
                 if fields_mod:
                     is_modified = True
 
@@ -137,7 +137,7 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
                 err_msg = f"[СИНТАКСИС] {filename}: обнаружены некорректные или нераспознанные строки времени групп."
                 print(err_msg, flush=True)
                 try:
-                    write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
+                    ja_session_manager.write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
                 except Exception as status_error:
                     print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
                 sys.exit(1)
@@ -153,7 +153,7 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
             err_msg = f"[КРИТИЧЕСКИЙ СБОЙ] Нормализация {filename}: {e}"
             print(err_msg, flush=True)
             try:
-                write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
+                ja_session_manager.write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
             except Exception as status_error:
                 print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
             sys.exit(1)
@@ -161,12 +161,12 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
     # 2. Принудительное выравнивание геометрии отступов (0, 2, 4, 6 пробелов)
     if success:
         try:
-            success = repair_yaml_structure(file_path)
+            success = ja_repair_structure.repair_yaml_structure(file_path)
         except Exception as e:
             err_msg = f"[КРИТИЧЕСКИЙ СБОЙ] Геометрия отступов {filename}: {e}"
             print(err_msg, flush=True)
             try:
-                write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
+                ja_session_manager.write_status("error", mode="repair", teacher_login=target_teacher, errorDetails=err_msg)
             except Exception as status_error:
                 print(f"[ОШИБКА] Не удалось сохранить статус: {status_error}", flush=True)
             sys.exit(1)
@@ -185,10 +185,10 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
             # Нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
             sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
             clean_day = sim_day_line.replace(":", "").strip()
-            clean_time = normalize_time_internal(target_time)
+            clean_time = ja_repair_time.normalize_time_internal(target_time)
             
             try:
-                success = delete_students_from_yaml(file_path, clean_day, clean_time, students_to_delete)
+                success = ja_repair_delete.delete_students_from_yaml(file_path, clean_day, clean_time, students_to_delete)
             except Exception as e:
                 print(f"[КРИТИЧЕСКИЙ СБОЙ] Финальное вырезание учеников {filename}: {e}", flush=True)
                 success = False
@@ -209,11 +209,11 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
                 clean_old_time = f"{digits_old[:2]}:{digits_old[2:]}" if len(digits_old) in {3, 4} else ""
                 
                 # Новое целевое время проверяем по полной строгости закона суток
-                clean_new_time = normalize_time_internal(new_time)
+                clean_new_time = ja_repair_time.normalize_time_internal(new_time)
 
                 if clean_old_time and clean_new_time:
                     try:
-                        success = modify_time_in_yaml(file_path, clean_day, clean_old_time, clean_new_time)
+                        success = ja_repair_modify.modify_time_in_yaml(file_path, clean_day, clean_old_time, clean_new_time)
                     except Exception as e:
                         print(f"[КРИТИЧЕСКИЙ СБОЙ] Точечное изменение времени {filename}: {e}", flush=True)
                         success = False
@@ -226,14 +226,14 @@ DATA_DIR = os.path.join(os.getcwd(), '_data')
     
     if not success:
         try:
-            write_status("error", mode="repair", teacher_login=target_teacher, errorDetails="Отказ выполнения конвейера модерации базы данных расписания.")
+            ja_session_manager.write_status("error", mode="repair", teacher_login=target_teacher, errorDetails="Отказ выполнения конвейера модерации базы данных расписания.")
         except Exception as e:
             print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
 
     try:
         # Успешный финал полной работы: гасим светофор в off и очищаем mode в пустоту
-        write_status("off", mode="", teacher_login=target_teacher)
+        ja_session_manager.write_status("off", mode="", teacher_login=target_teacher)
     except Exception as e:
         print(f"[ОШИБКА] Не удалось сохранить статус: {e}", flush=True)
         sys.exit(1)
