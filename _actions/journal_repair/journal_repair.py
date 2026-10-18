@@ -183,7 +183,7 @@ def main():
                 target_time = signal_data.get("time", "")
             
             # Нормализуем координаты прямо перед вызовом удаления силами новых ядер TechLab
-            sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
+            sim_day_line, _ = ja_repair_day.repair_day_line(f"{target_day}:\n", filename)
             clean_day = sim_day_line.replace(":", "").strip()
             clean_time = ja_repair_time.normalize_time_internal(target_time)
             
@@ -201,7 +201,7 @@ def main():
 
             if target_day and old_time and new_time:
                 # Нормализуем координаты силами ядер TechLab перед вызовом замены
-                sim_day_line, _ = repair_day_line(f"{target_day}:\n", filename)
+                sim_day_line, _ = ja_repair_day.repair_day_line(f"{target_day}:\n", filename)
                 clean_day = sim_day_line.replace(":", "").strip()
                 
                 # Старое время принудительно приводим к ЧЧ:ММ без суточной отбраковки
