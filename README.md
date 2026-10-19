@@ -15,8 +15,8 @@
 [techlab-journal-attendance]
 └── .github/ 
     └── workflows/ 
-        ├── journal-notify.yml          # Конвейер шлюза Журнала.              
-        └── journal-repair.yml         # Модуль проверки и исправления файлов расписания.    
+        ├── journal-notify.yml        # Конвейер шлюза Журнала.              
+        └── journal-repair.yml        # Модуль проверки и исправления файлов расписания.    
 ```
 
 #### Список файлов
