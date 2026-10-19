@@ -50,8 +50,8 @@
 ```text
 [techlab-journal-attendance]
 └── _actions/
-    ├── journal-analyzer.py 
-    ├── journal-notify.py
+    ├── journal-analyzer.py            # Модуль проверки комплектности отчетов.
+    ├── journal-notify.py              # Управляющий диспетчер буферного шлюза.
     └── journal_repair/ 
         ├── ja_repair_day.py 
         ├── ja_repair_delete.py 
