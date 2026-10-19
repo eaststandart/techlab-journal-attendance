@@ -94,7 +94,7 @@
 
 ```text
 [eaststandart.github.io]
-└── _includes
+└── _includes/
     └── journal-attendance.liquid    # Шаблон интерфейса Журнала посещаемости.
 ```
 
