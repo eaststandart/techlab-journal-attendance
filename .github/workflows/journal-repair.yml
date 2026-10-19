@@ -123,7 +123,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "fix(database): автоматическое исправление расписания для $TEACHER_LOGIN [skip ci]"
+          git commit -m "проверка: исправление расписания для $TEACHER_LOGIN [skip ci]"
 
           MAX_ATTEMPTS=3
           RETRY_INTERVAL_SECONDS=600
@@ -281,7 +281,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "fix(database): сохранение статуса ошибки для $TEACHER_LOGIN [skip ci]"
+          git commit -m "проверка: сохранение статуса ошибки для $TEACHER_LOGIN [skip ci]"
 
           MAX_ATTEMPTS=3
           RETRY_INTERVAL_SECONDS=600
@@ -355,7 +355,7 @@ jobs:
           PY
 
             git add "_data/$STATUS_FILE"
-            git commit -m "fix(database): сохранение статуса ошибки для $TEACHER_LOGIN [skip ci]"
+            git commit -m "проверка: сохранение статуса ошибки для $TEACHER_LOGIN [skip ci]"
 
             echo "Статус error пересоздан поверх актуальной ветки. Повторяем публикацию."
           done
