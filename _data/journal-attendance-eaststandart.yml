@@ -18,7 +18,7 @@ config:
 #    - 8224683738                 # @eastemitting
 #    - 759585583                  # @ValVodolaz
   tg_public_notify:               # [СПИСОК] СТРУКТУРА ЧАТОВ
-    - channel_id: -1002555901754  # [ЧАТ] @RadiotekhnikaClub
+    - channel_id: -1002555901754 # [ЧАТ] @RadiotekhnikaClub
 #      chat_id:                   # Флаг 'g' указывает, что это главная ветка (General) чата!
 #        - 38g                    # Общие вопросы
 
