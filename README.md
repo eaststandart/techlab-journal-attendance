@@ -2,8 +2,6 @@
 
 
 
-0
-
 
 
 ## Репозиторий `techlab-journal-attendance`
