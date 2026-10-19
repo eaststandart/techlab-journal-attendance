@@ -53,22 +53,22 @@ jobs:
       - name: Запуск проверки и исправления расписания
         id: repair
         run: |
-          # Находим имя измененного персонального файла сигнала в папке _data
+          # Находим имя измененного персонального файла а в папке _data
           SIGNAL_PATH=$(git diff-tree --no-commit-id --name-only -r HEAD | grep -E '^_data/signal-repair-.*\.json$' | head -n 1)
           
           if [ -z "$SIGNAL_PATH" ]; then
-            echo "[КРИТИЧЕСКИЙ СБОЙ YML] Не удалось вычислить персональный файл сигнала через git diff-tree!"
+            echo "[КРИТИЧЕСКИЙ СБОЙ YML] Не удалось вычислить персональный файл а через git diff-tree!"
             exit 1
           fi
           
           # Вырезаем чистый логин преподавателя из имени файла
           TEACHER_LOGIN=$(basename "$SIGNAL_PATH" | sed 's/signal-repair-//' | sed 's/\.json//')
-          echo "[ВОРКФЛОУ] Обнаружен персональный сигнал для преподавателя: $TEACHER_LOGIN"
+          echo "[ВОРКФЛОУ] Обнаружен персональный  для преподавателя: $TEACHER_LOGIN"
           
           # Запускаем питоновский диспетчер, передав ему логин в качестве аргумента
           python _actions/journal_repair/journal_repair.py "$TEACHER_LOGIN"
 
-      - name: Финальная очистка сигналов и сохранение изменений
+      - name: Финальная очистка ов и сохранение изменений
         id: publish
         shell: bash
         run: |
@@ -77,7 +77,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@://github.com"
 
-          # Зряче восстанавливаем имя персонального файла сигнала и вычисляем персональный статус
+          # Зряче восстанавливаем имя персонального файла а и вычисляем персональный статус
           if [ -f "$RUNNER_TEMP/repair/signal-filename.txt" ]; then
             SIGNAL_NAME=$(cat "$RUNNER_TEMP/repair/signal-filename.txt")
             TEACHER_LOGIN=$(echo "$SIGNAL_NAME" | sed 's/signal-repair-//' | sed 's/\.json//')
