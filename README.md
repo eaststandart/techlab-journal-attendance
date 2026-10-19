@@ -128,30 +128,15 @@
 ```text
 [eaststandart.github.io]
 └── assets/
-    └── js/
-	    └── journal-attendance/ 
-	        ├── 01-core-auth.js           # Настройки и авторизация.
-	        ├── 02-students-loader.js     # Загрузка расписания.
-	        ├── 03-yaml-parser.js         # Разбор и проверка YAML.
-	        ├── 04-journal-ui.js          # Отображение дней и групп.
-	        ├── 05-attendance-commands.js # Посещаемость и команды /d, /r, /m.
-	        ├── 06-status-and-repair.js   # Статусы и ремонт.
-	        └── 07-validation.js          # Проверка входных данных.     
-```
-
-
-```text
-[eaststandart.github.io]
-└── assets/
-│   ├── js/ 
-│   │   ├── journal-attendance/ 
-│   │   │   ├── 01-core-auth.js 
-│   │   │   ├── 02-students-loader.js 
-│   │   │   ├── 03-yaml-parser.js 
-│   │   │   ├── 04-journal-ui.js 
-│   │   │   ├── 05-attendance-commands.js 
-│   │   │   ├── 06-status-and-repair.js 
-│   │   │   └── 07-validation.js 
+    └── js/ 
+        └── journal-attendance/ 
+            ├── 01-core-auth.js           # Настройки и авторизация. 
+            ├── 02-students-loader.js     # Загрузка расписания. 
+            ├── 03-yaml-parser.js         # Разбор и проверка YAML. 
+            ├── 04-journal-ui.js          # Отображение дней и групп. 
+            ├── 05-attendance-commands.js # Посещаемость и команды. 
+            ├── 06-status-and-repair.js   # Статусы и ремонт. 
+            └── 07-validation.js          # Проверка входных данных.  
 ```
 
 #### Список скриптов
@@ -160,7 +145,7 @@
 *   **`02-students-loader.js`** —  Загрузка расписания. 
 *   **`03-yaml-parser.js`** — Разбор и проверка YAML. 
 *   **`04-journal-ui.js`** — Отображение дней и групп. 
-*   **`05-attendance-commands.js`** — Сохранение посещаемости и обработка команд. 
+*   **`05-attendance-commands.js`** — Сохранение посещаемости и обработка команд  /d, /r, /m. 
 *   **`06-status-and-repair.js`** — Уведомления, опрос статуса и сигналы ремонта. 
 *   **`07-validation.js`** — Валидация строк ввода. 
 
