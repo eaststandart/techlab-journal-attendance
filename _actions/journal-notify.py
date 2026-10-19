@@ -56,7 +56,7 @@ def commit_and_push_bundle(teacher_login):
         if diff_check.returncode == 0:
             return False
 
-        run_command(["git", "commit", "-m", f"передано: комплект отчета для {teacher_login} в _output"])
+        run_command(["git", "commit", "-m", f"передано: комплект отчета {teacher_login} в _output"])
         
         run_command(["git", "fetch", "origin", REPOSITORY_BRANCH])
         run_command(["git", "pull", "origin", REPOSITORY_BRANCH, "--rebase"])
