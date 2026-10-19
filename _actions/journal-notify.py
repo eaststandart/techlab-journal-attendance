@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 @module  journal-notify.py
-@about   Управляющий диспетчер буферного шлюза
-@purpose Последовательная обработка комплектов через _output
+@about   Управляющий диспетчер буферного шлюза.
+@purpose Последовательная обработка комплектов через _output.
 @author  TechLab
 @version 1.0.0
 """

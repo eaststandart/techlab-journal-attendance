@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 @module  journal-analyzer.py
-@about   Изолированный модуль проверки комплектности журналов.
+@about   Модуль проверки комплектности отчетов.
 @purpose Группировка файлов по датам и дням недели, сверка с YAML-расписанием и перенос первого готового комплекта.
-@author TechLab
-@version 9.0.0
+@author  TechLab
+@version 1.0.0
 """
 
 import os
