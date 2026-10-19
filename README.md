@@ -28,7 +28,7 @@
 
 В данном каталоге сосредоточена клиентская логика сайта Лаборатории. Все модули написаны на чистом JavaScript (JS) без тяжелых внешних зависимостей для обеспечения максимальной скорости загрузки страниц.
 
-#### Структура папки 
+#### Структура папки
 
 ```text
 [techlab-journal-attendance]
@@ -45,6 +45,24 @@
         ├── ja_repair_time.py         # Модуль форматирования синтаксиса времени групп.
         ├── ja_session_manager.py     # Модуль контроля жизненного цикла сессий и статусов.
         └── journal_repair.py         # Модуль проверки корректности записей расписания.
+```
+
+```text
+[techlab-journal-attendance]
+└── _actions/ 
+    ├── journal_repair/ 
+    │   ├── __init__.py 
+    │   ├── ja_repair_day.py 
+    │   ├── ja_repair_delete.py 
+    │   ├── ja_repair_fields.py 
+    │   ├── ja_repair_modify.py 
+    │   ├── ja_repair_space.py 
+    │   ├── ja_repair_structure.py 
+    │   ├── ja_repair_time.py 
+    │   ├── ja_session_manager.py 
+    │   └── journal_repair.py 
+    ├── journal-analyzer.py 
+    └── journal-notify.py
 ```
 
 #### Список скриптов 
