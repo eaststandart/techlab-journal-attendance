@@ -50,18 +50,18 @@
 ```text
 [techlab-journal-attendance]
 └── _actions/
-    ├── journal-analyzer.py            # Модуль проверки комплектности отчетов.
-    ├── journal-notify.py              # Управляющий диспетчер буферного шлюза.
+    ├── journal-analyzer.py           # Модуль проверки комплектности отчетов.
+    ├── journal-notify.py             # Управляющий диспетчер буферного шлюза.
     └── journal_repair/ 
-        ├── ja_repair_day.py 
-        ├── ja_repair_delete.py 
-        ├── ja_repair_fields.py 
-        ├── ja_repair_modify.py 
-        ├── ja_repair_space.py 
-        ├── ja_repair_structure.py 
-        ├── ja_repair_time.py 
-        ├── ja_session_manager.py 
-        └── journal_repair.py 
+        ├── ja_repair_day.py          # Модуль нормализации название дня недели. 
+        ├── ja_repair_delete.py       # Модуль удаления учеников из базы данных расписания. 
+        ├── ja_repair_fields.py       # Модуль инспекции и чистки текстовых полей учащихся. 
+        ├── ja_repair_modify.py       # Модуль модификации структуры расписания. 
+        ├── ja_repair_space.py        # Модуль удаления лишних пробелов. 
+        ├── ja_repair_structure.py    # Модуль контроля целостности и геометрии YAML. 
+        ├── ja_repair_time.py         # Модуль форматирования синтаксиса времени групп. 
+        ├── ja_session_manager.py     # Модуль контроля жизненного цикла сессий и статусов. 
+        └── journal_repair.py         # Модуль проверки корректности записей расписания. 
 ```
 
 #### Список скриптов 
