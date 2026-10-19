@@ -53,16 +53,15 @@
     ├── journal-analyzer.py 
     ├── journal-notify.py
     └── journal_repair/ 
-    │   ├── __init__.py 
-    │   ├── ja_repair_day.py 
-    │   ├── ja_repair_delete.py 
-    │   ├── ja_repair_fields.py 
-    │   ├── ja_repair_modify.py 
-    │   ├── ja_repair_space.py 
-    │   ├── ja_repair_structure.py 
-    │   ├── ja_repair_time.py 
-    │   ├── ja_session_manager.py 
-    │   └── journal_repair.py 
+        ├── ja_repair_day.py 
+        ├── ja_repair_delete.py 
+        ├── ja_repair_fields.py 
+        ├── ja_repair_modify.py 
+        ├── ja_repair_space.py 
+        ├── ja_repair_structure.py 
+        ├── ja_repair_time.py 
+        ├── ja_session_manager.py 
+        └── journal_repair.py 
 ```
 
 #### Список скриптов 
