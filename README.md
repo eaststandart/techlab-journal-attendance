@@ -16,7 +16,7 @@
 └── .github/ 
     └── workflows/ 
         ├── journal-notify.yml        # Конвейер шлюза Журнала.              
-        └── journal-repair.yml        # Модуль проверки и исправления файлов расписания.    
+        └── journal-repair.yml        # Модуль проверки и исправления файлов расписания.   
 ```
 
 #### Список файлов
@@ -33,18 +33,18 @@
 ```text
 [techlab-journal-attendance]
 └── _actions/
-	├── journal-analyzer.py # Модуль проверки комплектности отчетов.
-	├── journal-notify.py   # Управляющий диспетчер буферного шлюза.
+	├── journal-analyzer.py           # Модуль проверки комплектности отчетов.
+	├── journal-notify.py             # Управляющий диспетчер буферного шлюза.
     └── journal_repair/ 
-        ├── ja_repair_day.py               # Модуль нормализации название дня недели.
-        ├── ja_repair_delete.py            # Модуль удаления учеников из базы данных расписания.
-        ├── ja_repair_fields.py            # Модуль инспекции и чистки текстовых полей учащихся.
-        ├── ja_repair_modify.py            # Модуль модификации структуры расписания.
-        ├── ja_repair_space.py             # Модуль удаления лишних пробелов.
-        ├── ja_repair_structure.py         # Модуль контроля целостности и геометрии YAML.
-        ├── ja_repair_time.py              # Модуль форматирования синтаксиса времени групп.
-        ├── ja_session_manager.py          # Модуль контроля жизненного цикла сессий и статусов.
-        └── journal_repair.py              # Модуль проверки корректности записей расписания.
+        ├── ja_repair_day.py          # Модуль нормализации название дня недели.
+        ├── ja_repair_delete.py       # Модуль удаления учеников из базы данных расписания.
+        ├── ja_repair_fields.py       # Модуль инспекции и чистки текстовых полей учащихся.
+        ├── ja_repair_modify.py       # Модуль модификации структуры расписания.
+        ├── ja_repair_space.py        # Модуль удаления лишних пробелов.
+        ├── ja_repair_structure.py    # Модуль контроля целостности и геометрии YAML.
+        ├── ja_repair_time.py         # Модуль форматирования синтаксиса времени групп.
+        ├── ja_session_manager.py     # Модуль контроля жизненного цикла сессий и статусов.
+        └── journal_repair.py         # Модуль проверки корректности записей расписания.
 ```
 
 #### Список скриптов 
@@ -78,7 +78,7 @@
 [eaststandart.github.io]
 └── .github/ 
     └── workflows/ 
-        └── journal-attendance.yml         # Модуль формирования Журнала посещаемости.              
+        └── journal-attendance.yml    # Модуль формирования Журнала посещаемости.
 ```
 
 #### Список файлов
@@ -94,7 +94,7 @@
 ```text
 [eaststandart.github.io]
 └── _includes
-    └── journal-attendance.liquid          # Шаблон интерфейса Журнала посещаемости.
+    └── journal-attendance.liquid    # Шаблон интерфейса Журнала посещаемости.
 ```
 
 #### Список файлов
@@ -112,8 +112,7 @@
 [eaststandart.github.io]
 └── assets/ 
     └── css/ 
-        └── journal-attendance.css # Стили веб-страницы журнала посещений.
-   
+        └── journal-attendance.css    # Стили веб-страницы журнала посещений.
 ```
 
 #### Список стилей
@@ -128,16 +127,15 @@
 
 ```text
 [eaststandart.github.io]
-└── assets/ 
-    └── js/ 
-        └── journal-attendance/ 
-            ├── 01-core-auth.js                # Настройки и авторизация.
-            ├── 02-students-loader.js          # Загрузка расписания.
-            ├── 03-yaml-parser.js              # Разбор и проверка YAML.
-            ├── 04-journal-ui.js               # Отображение дней и групп.
-            ├── 05-attendance-commands.js      # Посещаемость и команды /d, /r, /m.
-            ├── 06-status-and-repair.js        # Статусы и ремонт.
-            └── 07-validation.js               # Проверка входных данных.
+└── assets/js/
+    └── journal-attendance/ 
+        ├── 01-core-auth.js           # Настройки и авторизация.
+        ├── 02-students-loader.js     # Загрузка расписания.
+        ├── 03-yaml-parser.js         # Разбор и проверка YAML.
+        ├── 04-journal-ui.js          # Отображение дней и групп.
+        ├── 05-attendance-commands.js # Посещаемость и команды /d, /r, /m.
+        ├── 06-status-and-repair.js   # Статусы и ремонт.
+        └── 07-validation.js          # Проверка входных данных.     
 ```
 
 #### Список скриптов
@@ -161,12 +159,12 @@
 [eaststandart.github.io]
 └── _actions/ 
     └── journal_attendance/ 
-        ├── ja_data_parser.py                # Сетевой парсер и сборщик сырых данных Журнала.
-        ├── ja_gate_closer.py                # Шлюзовой модуль закрытия смены.
-        ├── ja_report_builder.py             # Маркдаун-дизайнер и GraphQL-публикатор отчётов Журнала.
-        ├── ja_tgbot_notify.py               # Модуль отправки отчетов в каналы и группы Телеграм.
-        ├── ja_tgbot_personal.py             # Модуль отправки персональных отчетов в Телеграм.
-        └── journal_attendance.py            # Модуль управления сборкой отчета посещений.
+        ├── ja_data_parser.py         # Сетевой парсер и сборщик сырых данных Журнала.
+        ├── ja_gate_closer.py         # Шлюзовой модуль закрытия смены.
+        ├── ja_report_builder.py      # Маркдаун-дизайнер и GraphQL-публикатор отчётов Журнала.
+        ├── ja_tgbot_notify.py        # Модуль отправки отчетов в каналы и группы Телеграм.
+        ├── ja_tgbot_personal.py      # Модуль отправки персональных отчетов в Телеграм.
+        └── journal_attendance.py     # Модуль управления сборкой отчета посещений.
 ```
 
 #### Список скриптов 
