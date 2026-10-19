@@ -139,6 +139,21 @@
 	        └── 07-validation.js          # Проверка входных данных.     
 ```
 
+
+```text
+[eaststandart.github.io]
+└── assets/
+│   ├── js/ 
+│   │   ├── journal-attendance/ 
+│   │   │   ├── 01-core-auth.js 
+│   │   │   ├── 02-students-loader.js 
+│   │   │   ├── 03-yaml-parser.js 
+│   │   │   ├── 04-journal-ui.js 
+│   │   │   ├── 05-attendance-commands.js 
+│   │   │   ├── 06-status-and-repair.js 
+│   │   │   └── 07-validation.js 
+```
+
 #### Список скриптов
 
 *   **`01-core-auth.js`** — Настройки, вход, авторизация и выход. 
