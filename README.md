@@ -64,19 +64,20 @@
 
 В этой части описаны компоненты Журнала посещаемости, которые физически находятся на стороне публичного репозитория сайта Лаборатории. Они отвечают за визуальный интерфейс, авторизацию преподавателей, отправку заполненных форм и финальную сборку отчетов.
 
-### Структура репозитория
+### Интерактивная карта компонентов сайта
 
 <pre>
 [eaststandart.github.io]
 ├── 📂 .github/workflows/
-│   └── 📄 <a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/.github/workflows/journal-attendance.yml">journal-attendance.yml</a>    # Модуль формирования Журнала посещаемости
+│   └── 📄 <a href="https://github.com">journal-attendance.yml</a>    # Модуль формирования Журнала посещаемости
+├── 📂 _actions/
+│   └── 📂 <a href="https://github.com">journal_attendance/</a>        # Генератор отчетов и боты (Локальный README)
 ├── 📂 _includes/
 │   └── 📄 <a href="https://github.com">journal-attendance.liquid</a>   # Шаблон интерфейса Журнала
-├── 📂 assets/
-│   ├── 📂 css/
-│   │   └── 📄 <a href="https://github.com">journal-attendance.css</a>  # Стили веб-страницы Журнала
-│   └── 📂 <a href="https://github.com">js/journal-attendance/</a>      # Клиентские JS-скрипты (Локальный README)
-└── 📂 <a href="https://github.com">_actions/journal_attendance/</a>    # Генератор отчетов и боты (Локальный README)
+└── 📂 assets/
+    ├── 📂 css/
+    │   └── 📄 <a href="https://github.com">journal-attendance.css</a>  # Стили веб-страницы Журнала
+    └── 📂 <a href="https://github.com">js/journal-attendance/</a>      # Клиентские JS-скрипты (Локальный README)
 </pre>
 
 ### Автоматизация и конвейеры (GitHub Actions)
@@ -100,5 +101,5 @@
     *   *Подробная спецификация работы каждого JS-файла находится в локальном README внутри этой папки.*
 
 *   **📂 [Скрипты генерации отчетов и боты](https://github.com) (`_actions/journal_attendance/`)**
-    *   **Описание:** Автономная серверная подсистема на Python, координирующая публикацию результатов смены и отправку уведомлений.
+    *   **Описание:** Автономная серверная подсистема на Python, координирующая публикацию результатов учебного дня и отправку уведомлений.
     *   *Подробная техническая документация логики парсинга, сборки Markdown-таблиц и рассылок находится в локальном README внутри этой папки.*
