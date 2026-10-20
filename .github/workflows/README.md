@@ -9,8 +9,8 @@
 [techlab-journal-attendance]
 └── .github/ 
     └── workflows/ 
-        ├── journal-notify.yml        # Модуль автоматизации отправки отчетов.              
-        └── journal-repair.yml        # Модуль исправления и обновления базы расписания.   
+        ├── journal-notify.yml        # Модуль автоматизации отправки отчетов              
+        └── journal-repair.yml        # Модуль исправления и обновления базы расписания   
 ```
 
 *   **`journal-notify.yml` (Модуль автоматизации отправки отчетов)**

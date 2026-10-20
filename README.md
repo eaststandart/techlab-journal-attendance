@@ -24,17 +24,6 @@
 
 ### Структура репозитория
 
-<!---
-```text
-[techlab-journal-attendance]
-├── 📂 [.github/workflows/](.github/workflows/README.md)  # Сценарии запуска автоматизации (GitHub Actions)
-├── 📂 [_actions/](_actions/README.md)           # Скрипты Python и подмодули конвейера ремонта базы
-├── 📂 [_data/](_data/README.md)              # YAML-база данных расписания и JSON-файлы статусов
-├── 📁 _input/                              # Буферная зона приема одиночных JSON-отчетов с сайта
-└── 📁 _output/                             # Выходной шлюз скомплектованных отчетов за учебный день
-```
--->
-
 <pre>
 [techlab-journal-attendance]
 ├── 📂 <a href=".github/workflows/">.github/workflows/</a>     # Сценарии запуска автоматизации (GitHub Actions)
@@ -64,20 +53,20 @@
 
 В этой части описаны компоненты Журнала посещаемости, которые физически находятся на стороне публичного репозитория сайта Лаборатории. Они отвечают за визуальный интерфейс, авторизацию преподавателей, отправку заполненных форм и финальную сборку отчетов.
 
-### Интерактивная карта компонентов сайта
+### Структура папок и компонентов
 
 <pre>
 [eaststandart.github.io]
 ├── 📂 .github/workflows/
-│   └── 📄 <a href="https://github.com">journal-attendance.yml</a>    # Модуль формирования Журнала посещаемости
+│   └── 📄 <a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/.github/workflows/journal-attendance.yml">journal-attendance.yml</a>    # Модуль формирования Журнала посещаемости
 ├── 📂 _actions/
-│   └── 📂 <a href="https://github.com">journal_attendance/</a>        # Генератор отчетов и боты (Локальный README)
+│   └── 📂 <a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/_actions/journal_attendance">journal_attendance/</a>        # Каталог скриптов сборки отчетов и ботов
 ├── 📂 _includes/
-│   └── 📄 <a href="https://github.com">journal-attendance.liquid</a>   # Шаблон интерфейса Журнала
+│   └── 📄 <a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/_includes/journal-attendance.liquid">journal-attendance.liquid</a>   # Модуль шаблона интерфейса Журнала посещаемости
 └── 📂 assets/
     ├── 📂 css/
-    │   └── 📄 <a href="https://github.com">journal-attendance.css</a>  # Стили веб-страницы Журнала
-    └── 📂 <a href="https://github.com">js/journal-attendance/</a>      # Клиентские JS-скрипты (Локальный README)
+    │   └── 📄 <a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/assets/css/journal-attendance.css">journal-attendance.css</a>  # Модуль стилей веб-страницы журнала посещений
+    └── 📂 <a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/assets/js">js/journal-attendance/</a>      # Каталог скриптов управления интерфейсом (Локальный README)
 </pre>
 
 ### Автоматизация и конвейеры (GitHub Actions)
@@ -85,14 +74,6 @@
 *   **`journal-attendance.yml` (Модуль формирования Журнала посещаемости)**
     *   **Когда запускается:** Автоматически по внешнему сигналу `journal-notify` (событие `repository_dispatch`) из приватного репозитория данных.
     *   **Что делает:** Выполняет загрузку данных из изолированной базы, разворачивает Python-окружение и запускает главный управляющий конвейер сборки отчетов.
-
-### Системные модули разметки и стилей
-
-*   **`journal-attendance.liquid` (Шаблон интерфейса Журнала посещаемости)**
-    *   **Назначение:** Динамическое отображение формы авторизации по персональному токену и генерация списков учебных групп на веб-странице сайта.
-
-*   **`journal-attendance.css` (Стили веб-страницы журнала посещений)**
-    *   **Назначение:** Модульное графическое оформление элементов авторизации, календарной сетки, таблиц и списков групп на странице Журнала.
 
 ### Автономные подсистемы фронтенда и бэкенда
 
@@ -103,3 +84,11 @@
 *   **📂 [Скрипты генерации отчетов и боты](https://github.com) (`_actions/journal_attendance/`)**
     *   **Описание:** Автономная серверная подсистема на Python, координирующая публикацию результатов учебного дня и отправку уведомлений.
     *   *Подробная техническая документация логики парсинга, сборки Markdown-таблиц и рассылок находится в локальном README внутри этой папки.*
+
+### Системные модули разметки и стилей
+
+*   **`journal-attendance.liquid` (Модуль шаблона интерфейса Журнала посещаемости)**
+    *   **Назначение:** Динамическое построение HTML-структуры веб-страницы Журнала, генерация интерактивной формы авторизации по персональному токену, вывод сетки дней недели и регламента заполнения полей.
+
+*   **`journal-attendance.css` (Модуль стилей веб-страницы журнала посещений)**
+    *   **Назначение:** Модульное графическое оформление каскадных таблиц стилей, адаптивная геометрия чекбоксов, цветовая разметка активных дней недели, а также стилизация консоли починки времени и аварийных красных баннеров блокировки.
