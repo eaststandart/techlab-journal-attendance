@@ -66,7 +66,7 @@
 └── 📂 assets/
     ├── 📂 css/
     │   └── 📄 <a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/assets/css/journal-attendance.css">journal-attendance.css</a>   # Модуль стилей веб-страницы журнала посещений
-    └── 📂 <a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/assets/js">js/journal-attendance/</a>     # Каталог скриптов управления интерфейсом
+    └── 📂 <a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/assets/js">js/journal-attendance/</a>      # Каталог скриптов управления интерфейсом
 </pre>
 
 ### Автоматизация и конвейеры (GitHub Actions)
