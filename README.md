@@ -22,6 +22,17 @@
 
 ### Карта компонентов репозитория
 
+<!---
+```text
+[techlab-journal-attendance]
+├── 📂 [.github/workflows/](.github/workflows/README.md)  # Сценарии запуска автоматизации (GitHub Actions)
+├── 📂 [_actions/](_actions/README.md)           # Скрипты Python и подмодули конвейера ремонта базы
+├── 📂 [_data/](_data/README.md)              # YAML-база данных расписания и JSON-файлы статусов
+├── 📁 _input/                              # Буферная зона приема одиночных JSON-отчетов с сайта
+└── 📁 _output/                             # Выходной шлюз скомплектованных отчетов за учебный день
+```
+-->
+
 <pre>
 [techlab-journal-attendance]
 ├── 📂 <a href=".github/workflows/">.github/workflows/</a>     # Сценарии запуска автоматизации (GitHub Actions)
