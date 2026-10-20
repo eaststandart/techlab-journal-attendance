@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-20",
+  "day": "понедельник",
+  "time": "11:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Дима В"
+    },
+    {
+      "name": "Интальева Д"
+    }
+  ],
+  "newbies": [],
+  "probation": []
+}
