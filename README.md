@@ -35,6 +35,14 @@
 * 📁 **[techlab-journal-attendance](.)** * ├── 📂 **[.github/workflows/](.github/workflows/)** — Сценарии запуска автоматизации (GitHub Actions) * ├── 📂 **[_actions/](_actions/)** — Скрипты Python и подмодули конвейера ремонта базы * ├── 📂 **[_data/](_data/)** — YAML-база данных расписания и JSON-файлы статусов * ├── 📁 **[_input/](_input/)** — Буферная зона приема одиночных JSON-отчетов с сайта * └── 📁 **[_output/](_output/)** — Выходной шлюз скомплектованных отчетов за учебный день
 ```
 
+<pre>
+[techlab-journal-attendance]
+├── 📂 <a href=".github/workflows/">.github/workflows/</a>  # Сценарии запуска автоматизации (GitHub Actions)
+├── 📂 <a href="_actions/">_actions/</a>           # Скрипты Python и подмодули конвейера ремонта базы
+├── 📂 <a href="_data/">_data/</a>              # YAML-база данных расписания и JSON-файлы статусов
+├── 📁 _input/                              # Буферная зона приема одиночных JSON-отчетов с сайта
+└── 📁 _output/                             # Выходной шлюз скомплектованных отчетов за учебный день
+</pre>
 
 #### Назначение директорий
 
