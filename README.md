@@ -72,7 +72,7 @@
 <pre>
 [eaststandart.github.io]
 ├── 📂 .github/workflows/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/.github/workflows/journal-attendance.yml">journal-attendance.yml</a>    # Модуль формирования Журнала посещаемости
-├── 📂 _actions/<a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/_actions/journal_attendance">journal_attendance/</a>          # Каталог скриптов сборки отчетов и ботов
+├── 📂 _actions/<a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/_actions/journal_attendance">journal_attendance/</a>              # Каталог скриптов сборки отчетов и ботов
 ├── 📂 _includes/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/_includes/journal-attendance.liquid">journal-attendance.liquid</a>    # Модуль шаблона интерфейса Журнала посещаемости
 └── 📂 assets/
     ├── 📂 css/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/assets/css/journal-attendance.css">journal-attendance.css</a>   # Модуль стилей веб-страницы журнала посещений
