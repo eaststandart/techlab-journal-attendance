@@ -43,9 +43,9 @@
 ```text
 [techlab-journal-attendance]
 └── _data/ 
-    ├── journal-attendance-eastemitting.yml  # YAML-база расписания преподавателя
-    ├── journal-attendance-techlab.yml        # YAML-база расписания администратора
-    └── repair-status-eastemitting.json      # JSON-файл обмена статусами команд
+    ├── journal-attendance-eastemitting.yml    # YAML-база расписания преподавателя
+    ├── journal-attendance-techlab.yml         # YAML-база расписания администратора
+    └── repair-status-eastemitting.json        # JSON-файл обмена статусами команд
 ```
 
 *   **`journal-attendance-[логин GitHub].yml` (Личный файл конфигурации и расписания)**
