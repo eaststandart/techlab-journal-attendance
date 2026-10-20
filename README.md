@@ -69,6 +69,7 @@
 ├── 📂 .github/workflows/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/.github/workflows/journal-attendance.yml">journal-attendance.yml</a>  # Модуль формирования Журнала посещений
 ├── 📂 _actions/<a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/_actions/journal_attendance">journal_attendance/</a>              # Каталог скриптов сборки отчетов и ботов
 ├── 📂 _includes/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/_includes/journal-attendance.liquid">journal-attendance.liquid</a>       # Модуль шаблона интерфейса Журнала посещений
+├── 📂 _pages/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/_pages/journal-attendance.md">journal-attendance.md</a> # Веб-страница Журнала посещений
 └── 📂 assets/
     ├── 📂 css/<a href="https://github.com/eaststandart/eaststandart.github.io/blob/main/assets/css/journal-attendance.css">journal-attendance.css</a>            # Модуль стилей веб-страницы журнала посещений
     └── 📂 <a href="https://github.com/eaststandart/eaststandart.github.io/tree/main/assets/js">js/journal-attendance/</a>                # Каталог скриптов управления интерфейсом
@@ -91,6 +92,9 @@
     *   *Подробная техническая документация логики парсинга, сборки Markdown-таблиц и рассылок находится в локальном README внутри этой папки.*
 
 ### Системные модули разметки и стилей
+
+*   **`journal-attendance.md` (Веб-страница Журнала посещаемости)**
+    *   **Назначение:** Точка входа для генератора страниц Jekyll. Содержит Front Matter метаданные адреса страницы (`/journal-attendance/`), вызывает модуль разметки `.liquid`, подключает индивидуальные стили и хранит встроенную текстовую инструкцию по генерации классических GitHub-токенов доступа для преподавателей.
 
 *   **`journal-attendance.liquid` (Модуль шаблона интерфейса Журнала посещений)**
     *   **Назначение:** Динамическое построение HTML-структуры веб-страницы Журнала, генерация интерактивной формы авторизации по персональному токену, вывод сетки дней недели и регламента заполнения полей.
