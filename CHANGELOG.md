@@ -11,7 +11,7 @@ keywords: ["project/management", "documentation"]
 
 Формат основан на [Keep a Changelog](https://keepachangelog.com).
 
-## [1.0.0] — 2026-10-21
+## [1.0.0] – 2026-10-21
 
 ### Добавлено
 
