@@ -13,9 +13,6 @@
 
 [![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Лицензия&style=flat-square&color=brightgreen)](LICENSE.txt)
 
-[![История изменений](https://img.shields.io/badge/История-Changelog-informational.svg?style=flat-square)](CHANGELOG.md)
-[![Текущий релиз](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Релиз&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/)
-
 ---
 
 # 📅 Система автоматизации и хранения данных Журнала посещений
