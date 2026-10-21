@@ -12,7 +12,7 @@
 
 
 
-[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=license&style=flat-square&color=brightgreen)](LICENSE.txt)
+[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance-informational.svg?label=license&style=flat-square)](LICENSE.txt)
 
 
 [![Текущий релиз](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Релиз&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/)
