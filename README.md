@@ -9,6 +9,9 @@
 
 [![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Лицензия&style=flat-square&color=brightgreen)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/LICENSE.txt)
 
+[![Лицензия проекта](https://img.shields.io/badge/Лицензия-CC%20BY%204.0-brightgreen.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/LICENSE.txt)
+
+
 
 [![История изменений](https://img.shields.io/badge/История-Changelog-informational.svg?style=flat-square)](CHANGELOG.md)
 [![Текущий релиз](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Релиз&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/)
