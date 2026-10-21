@@ -21,3 +21,6 @@ keywords: ["project/management", "documentation"]
 * **Клиентский дистрибутив:** Сформирована и прикреплена к релизу стабильная сборка фронтенда (`journal-frontend-v1.0.0.zip`) для интеграции в репозиторий основного сайта.
 
 👉 [Страница официального релиза этой версии на GitHub](https://github.com/eaststandart/techlab-journal-attendance/releases/tag/v1.0.0)
+
+
+[1.0.0]: https://github.com/eaststandart/techlab-journal-attendance/releases/tag/v1.0.0
