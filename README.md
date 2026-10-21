@@ -5,7 +5,7 @@
 [![Дискуссии активны](https://img.shields.io/badge/Дискуссии-активны-red.svg?style=flat-square&logo=github)](https://github.com/eaststandart/eaststandart.github.io/discussions/38?sort=new)
 [![Планы развития](https://img.shields.io/badge/Планы-Roadmap-yellow.svg?style=flat-square)](ROADMAP.md)
 
-[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](LICENSE)
+[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=license&style=flat-square&color=blue)](LICENSE)
 
 
 [![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Лицензия&style=flat-square&color=brightgreen)](LICENSE.txt)
