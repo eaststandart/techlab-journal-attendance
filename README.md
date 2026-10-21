@@ -1,15 +1,19 @@
 [![Журнал работает](https://img.shields.io/badge/Журнал-работает-success.svg?style=flat-square)](https://eaststandart.github.io/journal-attendance/)
-[![Текущий релиз](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Релиз&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/)
+[![Текущая версия](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/latest)
+[![Журнал изменений](https://img.shields.io/badge/changelog-Keep%20a%20Changelog%20v1.1.0-orange.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/CHANGELOG.md)
+
 [![Сайт работает](https://img.shields.io/badge/Сайт-работает-success.svg?style=flat-square)](https://eaststandart.github.io/)
 [![Дискуссии активны](https://img.shields.io/badge/Дискуссии-активны-orange.svg?style=flat-square&logo=github)](https://github.com/eaststandart/eaststandart.github.io/discussions/38?sort=new)
 [![История изменений](https://img.shields.io/badge/История-Changelog-informational.svg?style=flat-square)](CHANGELOG.md)
 [![Планы развития](https://img.shields.io/badge/Планы-Roadmap-cyan.svg?style=flat-square)](ROADMAP.md)
 
 
-[![GitHub release](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/latest)
-[![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog%20v1.1.0-orange.svg?style=flat-square)](https://keepachangelog.com/ru/1.1.0/)
+
+
 [![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=license&style=flat-square&color=brightgreen)](LICENSE.txt)
 
+
+[![Текущий релиз](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Релиз&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/)
 
 ---
 
