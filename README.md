@@ -1,6 +1,6 @@
 [![Журнал работает](https://img.shields.io/badge/Журнал-работает-success.svg?style=flat-square)](https://eaststandart.github.io/journal-attendance/)
 [![Текущая версия](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/latest)
-[![Журнал изменений](https://img.shields.io/badge/История-Changelog-orange.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/CHANGELOG.md)
+[![Журнал изменений](https://img.shields.io/badge/История-Changelog-orange.svg?style=flat-square)](CHANGELOG.md)
 [![Дискуссии активны](https://img.shields.io/badge/Дискуссии-активны-red.svg?style=flat-square&logo=github)](https://github.com/eaststandart/eaststandart.github.io/discussions/38?sort=new)
 [![Планы развития](https://img.shields.io/badge/Планы-Roadmap-yellow.svg?style=flat-square)](ROADMAP.md)
 [![Лицензия проекта](https://img.shields.io/badge/Лицензия-CC%20BY%204.0-teal.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/LICENSE.txt)
