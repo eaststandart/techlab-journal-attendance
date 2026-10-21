@@ -3,7 +3,7 @@
 [![Журнал изменений](https://img.shields.io/badge/История-Changelog%20v1.1.0-orange.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/CHANGELOG.md)
 [![Сайт работает](https://img.shields.io/badge/Сайт-работает-success.svg?style=flat-square)](https://eaststandart.github.io/)
 
-[![Дискуссии активны](https://img.shields.io/badge/Дискуссии-активны-purple.svg?style=flat-square&logo=github)](https://github.com/eaststandart/eaststandart.github.io/discussions/38?sort=new)
+[![Дискуссии активны](https://img.shields.io/badge/Дискуссии-активны-red.svg?style=flat-square&logo=github)](https://github.com/eaststandart/eaststandart.github.io/discussions/38?sort=new)
 
 
 [![История изменений](https://img.shields.io/badge/История-Changelog-informational.svg?style=flat-square)](CHANGELOG.md)
