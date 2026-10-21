@@ -1,7 +1,7 @@
 ---
 repo: techlab-journal-attendance
 type: changelog
-description: "Все заметные изменения в проекте «Журнала посещений» будут фиксироваться в этом файле."
+description: "Все значимые изменения в этом проекте будут фиксироваться в данном файле."
 title: Журнал изменений проекта
 last_updated: 2026-10-21
 keywords: ["project/management", "documentation"]
