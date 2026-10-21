@@ -80,6 +80,7 @@ config:
     - name: "Баранова Лиза"
       direction: "электронное конструирование"
       tag: "@eastemitting"
+    - name: "Вася Ромов"
     - name: "Дима В"
       direction: "электронное конструирование"
     - name: "Дима Ж"
