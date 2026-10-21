@@ -7,7 +7,7 @@
 
 
 [![История изменений](https://img.shields.io/badge/История-Changelog-informational.svg?style=flat-square)](CHANGELOG.md)
-[![Планы развития](https://img.shields.io/badge/Планы-Roadmap-yellow . svg?style=flat-square&logo=github)](ROADMAP.md)
+[![Планы развития](https://img.shields.io/badge/Планы-Roadmap-yellow.svg?style=flat-square&logo=github)](ROADMAP.md)
 
 
 
