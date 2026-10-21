@@ -5,16 +5,6 @@
 [![Планы развития](https://img.shields.io/badge/Планы-Roadmap-yellow.svg?style=flat-square)](ROADMAP.md)
 [![Лицензия проекта](https://img.shields.io/badge/Лицензия-CC%20BY%204.0-teal.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/LICENSE.txt)
 
-[![Лицензия проекта](https://img.shields.io/badge/Лицензия-CC%20BY%204.0-teal.svg?style=flat-square)](https://github.com/eaststandart/techlab-journal-attendance/blob/main/LICENSE.txt)
-
-
-[![Сайт работает](https://img.shields.io/badge/Сайт-работает-success.svg?style=flat-square)](https://eaststandart.github.io/)
-
-[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=license&style=flat-square&color=blue)](LICENSE.txt)
-
-
-[![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Лицензия&style=flat-square&color=brightgreen)](LICENSE.txt)
-
 ---
 
 # 📅 Система автоматизации и хранения данных Журнала посещений
