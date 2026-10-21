@@ -6,8 +6,8 @@
 [![Планы развития](https://img.shields.io/badge/Планы-Roadmap-cyan.svg?style=flat-square)](ROADMAP.md)
 
 
-[![GitHub release](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](https://github . com/eaststandart/techlab-journal-attendance/releases/latest)
-[![Keep a Changelog](https://img.shields.io/badge/Стандарт-Keep%20a%20Changelog%20v1.1.0-orange.svg?style=flat-square)](https://keepachangelog . com/ru/1.1.0/)
+[![GitHub release](https://img.shields.io/github/v/release/eaststandart/techlab-journal-attendance.svg?label=Версия&style=flat-square&color=blue)](https://github.com/eaststandart/techlab-journal-attendance/releases/latest)
+[![Keep a Changelog](https://img.shields.io/badge/Стандарт-Keep%20a%20Changelog%20v1.1.0-orange.svg?style=flat-square)](https://keepachangelog.com/ru/1.1.0/)
 [![GitHub license](https://img.shields.io/github/license/eaststandart/techlab-journal-attendance.svg?label=Лицензия&style=flat-square&color=brightgreen)](LICENSE)
 
 
