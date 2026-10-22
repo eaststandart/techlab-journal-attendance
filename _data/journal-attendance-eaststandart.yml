@@ -13,7 +13,7 @@ config:
   project_category_name:
     - "Галерея"
     - "Покажи и расскажи"
-  tg_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА
+  tg_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА В TELEGRAM
     - 511009121                   # @eaststandart
 #    - 759585583                   # @ValVodolaz
 #    - 8224683738                 # @eastemitting
@@ -21,7 +21,7 @@ config:
     - channel_id: -1002555901754  # [ЧАТ] @RadiotekhnikaClub
 #      chat_id:                    # Флаг 'g' указывает, что это главная ветка (General) чата!
 #        - 38g                     # Общие вопросы
-  wa_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ОТЧЕТА В WHATSAPP
+  wa_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА В WHATSAPP
     - 79147207794                 # @eaststandart
     - 79149741567                 # @ValVodolaz
 
