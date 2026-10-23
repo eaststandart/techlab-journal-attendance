@@ -15,14 +15,14 @@ config:
     - "Покажи и расскажи"
   tg_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА В TELEGRAM
     - 511009121                   # @eaststandart
-#    - 759585583                   # @ValVodolaz
+    - 759585583                   # @ValVodolaz
   tg_public_notify:               # [СПИСОК] СТРУКТУРА ЧАТОВ
     - channel_id: -1002555901754  # [ЧАТ] @RadiotekhnikaClub
-#      chat_id:                    # Флаг 'g' указывает, что это главная ветка (General) чата!
-#        - 38g                     # Общие вопросы
+      chat_id:                    # Флаг 'g' указывает, что это главная ветка (General) чата!
+        - 38g                     # Общие вопросы
   wa_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА В WHATSAPP
     - 79147207794                 # @eaststandart
-#    - 79149741567                 # @ValVodolaz
+    - 79149741567                 # @ValVodolaz
 
 суббота:
   "10:00":
