@@ -17,7 +17,7 @@ config:
     - 511009121                   # @eaststandart
     - 759585583                   # @ValVodolaz
   tg_public_notify:               # [СПИСОК] СТРУКТУРА ЧАТОВ
-    - channel_id: -1002555901754  # [ЧАТ] @RadiotekhnikaClub
+    - channel_id: -1002555901754 # [ЧАТ] @RadiotekhnikaClub
       chat_id:                    # Флаг 'g' указывает, что это главная ветка (General) чата!
         - 38g                     # Общие вопросы
   wa_personal_id:                 # [СПИСОК] ПОЛУЧАТЕЛИ ПЕРСОНАЛЬНОГО ОТЧЕТА В WHATSAPP
@@ -34,8 +34,6 @@ config:
       direction: "электронное конструирование"
     - name: "Марченко Тася"
       direction: "столярное дело"
-    - name: "Рыжов Лев"
-      direction: "электронное конструирование"
     - name: "Туцкин Игорь"
       direction: "столярное дело"
   "11:00":
