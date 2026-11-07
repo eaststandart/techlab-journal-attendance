@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-07",
+  "day": "суббота",
+  "time": "11:00",
+  "teacher_username": "TechLab",
+  "teacher_login": "eaststandart",
+  "present_permanent": [
+    {
+      "name": "Марченко Георгий"
+    },
+    {
+      "name": "Гризин Алексей"
+    },
+    {
+      "name": "Долматов Артем"
+    },
+    {
+      "name": "Матвеев Игнат"
+    },
+    {
+      "name": "Подвезько Иван"
+    }
+  ],
+  "newbies": [],
+  "probation": []
+}
