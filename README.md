@@ -10,7 +10,7 @@
 # 📅 Система автоматизации Журнала посещений
 
 <p align="center"> 
-    <i>An isolated database (GitOps) and automated pipeline for tracking class attendance and publishing reports to GitHub Discussions.</i>
+    <i>An isolated database (GitOps) and automation system for tracking class attendance and publishing reports to GitHub Discussions.</i>
 </p>
 
 Этот репозиторий выполняет роль изолированной базы данных и сервера автоматической обработки данных для Журнала посещений регулярных занятий в детско-юношеском инженерном клубе во Владивостоке. Проект развернут на платформе [Творческой лаборатории познавательного развития](https://eaststandart.github.io/).
